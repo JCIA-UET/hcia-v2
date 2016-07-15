@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated Jun 29, 2016 9:02:32 AM by Hibernate Tools 3.5.0.Final -->
+<hibernate-mapping>
+    <class name="uet.jcia.shop.is.entities.Customer" table="CUSTOMER">
+        <id name="customerId" type="java.lang.Integer">
+            <column name="CUSTOMER_ID" />
+            <generator class="increment" />
+        </id>
+        <property name="firstName" type="java.lang.String">
+            <column name="FIRSTNAME" />
+        </property>
+        <property name="lastName" type="java.lang.String">
+            <column name="LASTNAME" />
+        </property>
+        <property name="email" type="java.lang.String">
+            <column name="EMAIL" />
+        </property>
+        <property name="telephone" type="java.lang.String">
+            <column name="TELEPHONE" />
+        </property>
+        <property name="password" type="java.lang.String">
+            <column name="PASSWORD" />
+        </property>
+        <property name="addressId" type="java.lang.Integer">
+            <column name="ADDRESS_ID" />
+        </property>
+        <property name="dateAdded" type="java.util.Date">
+            <column name="DATE_ADDED" />
+        </property>
+        
+        <set name="addresses" table="Customer_To_Address" inverse="false" lazy="false" fetch="select" cascade="all">
+            <key column="customer_id" not-null="true"/>
+            <many-to-many column="address_id" class="uet.jcia.shop.is.entities.Address" unique="true"/>
+        </set>
+        
+        <set name="orders" inverse="true">
+            <key column="customer_id"/>
+            <one-to-many class="uet.jcia.shop.is.entities.Order"/>
+        </set>
+    </class>
+</hibernate-mapping>
