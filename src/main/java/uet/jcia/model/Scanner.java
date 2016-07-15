@@ -11,13 +11,18 @@ import java.util.zip.ZipInputStream;
 
 public class Scanner {
 
-	private Extractor ext = new Extractor();
+	private Extractor ext;
 	
-	public List<String> searchXmlFile(String zipFile) {
+	public Scanner() {
+		ext = new Extractor();
+	}
+	
+	public List<String> searchAndExtractXmlFile(String zipFile) {
 		List<String> namesList = new ArrayList<>();
 		String xmlFileDir = null;
 		try {
-			ZipInputStream zis = new ZipInputStream(new FileInputStream(zipFile));
+			String zipFileDir = getPath(zipFile);
+			ZipInputStream zis = new ZipInputStream(new FileInputStream(zipFileDir));
 			
 			ZipEntry ze = zis.getNextEntry();
 			System.out.println("-- FINDING XML MAPPING FILE --");
@@ -26,7 +31,7 @@ public class Scanner {
 				String fileName = ze.getName();
 				
 				if(fileName.endsWith(".xml")) {
-					xmlFileDir = Extractor.OUTPUT_DIR + File.separator + fileName;
+					xmlFileDir = getPath(fileName);
 					System.out.println("-- FOUND XML FILE. EXTRACTING: " + xmlFileDir + " --");
 					File xmlFile = new File(xmlFileDir);
 					
@@ -50,5 +55,9 @@ public class Scanner {
 			e.printStackTrace();
 		}
 		return namesList;
+	}
+	
+	private String getPath(String fileName) {
+		return Extractor.OUTPUT_DIR + File.separator + fileName;
 	}
 }
