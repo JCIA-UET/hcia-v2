@@ -1,3 +1,8 @@
+/* File : Parser.class 
+ * Author : hieusonson9x@gmail.com
+ * Details: to  parser XML to List<Table> . Key API parserAllToListTable 
+ * */
+
 package uet.jcia.model;
 
 import java.io.File;
@@ -14,6 +19,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import uet.jcia.entities.Column;
+import uet.jcia.entities.Relationship;
 import uet.jcia.entities.Table;
 
 public class Parser {
@@ -96,13 +102,28 @@ public class Parser {
 		
 		//add list column to Table result
 		List<Column> columns = new ArrayList<>();
+		
 		// Add column Id
 		columns.add(parseIdTagToColumn(element.getElementsByTagName("id").item(0)));
+		
 		//add list column by property tags
 		NodeList pNodeList = element.getElementsByTagName("property");
 		for(int temp = 0; temp < pNodeList.getLength(); temp++){
 			columns.add(parseOnePropertyTagToColumn(pNodeList.item(temp)));
 		}
+		
+		// add list relationship
+		List<Relationship> relationships = new ArrayList<>();
+		NodeList r1NodeList = element.getElementsByTagName("many-to-one");
+		for(int temp = 0; temp < r1NodeList.getLength(); temp++){
+			relationships.add(parseOneTagManyToOne(r1NodeList.item(temp)));
+		
+		}
+		NodeList r2NodeList = element.getElementsByTagName("set");
+		for(int temp = 0; temp < r2NodeList.getLength(); temp++){
+			relationships.add(parseOneTagOneToMany(r2NodeList.item(temp)));
+		}
+		result.setListRelationship(relationships);
 		result.setListColumn(columns);
 		return result;
 	}
@@ -149,6 +170,31 @@ public class Parser {
 		if(test.equals("true")){
 			result.setNot_null(true);
 		} else result.setNot_null(false);
+		
+		return result;
+	}
+	private Relationship parseOneTagManyToOne(Node rNode){
+		Relationship result = new Relationship();
+		Element element = (Element)rNode;
+		result.setReferTable(element.getAttribute("name").toUpperCase());
+		result.setType("manytoone");
+		
+		Element col = (Element) element.getElementsByTagName("column").item(0);
+		result.setJoinColumn(col.getAttribute("name").toUpperCase());
+		
+		return result; 
+	}
+	private Relationship parseOneTagOneToMany(Node rNode){
+		Relationship result = new Relationship(); 
+		result.setType("onetomany");
+		
+		Element element = (Element)rNode;
+		result.setReferTable(element.getAttribute("table").toUpperCase());
+		
+		Element key = (Element) element.getElementsByTagName("key").item(0);
+		Element col = (Element) key.getElementsByTagName("column").item(0);
+		
+		result.setJoinColumn(col.getAttribute("name").toUpperCase());
 		
 		return result;
 	}
