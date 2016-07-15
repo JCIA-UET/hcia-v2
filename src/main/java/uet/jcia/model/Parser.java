@@ -112,7 +112,11 @@ public class Parser {
 		Element element = (Element) idNode;
 		
 		//get Attribute name and type ,primary key , not null property
-		result.setName(element.getAttribute("name").toUpperCase());
+		
+		Element col = (Element) element.getElementsByTagName("column").item(0);
+		result.setName(col.getAttribute("name").toUpperCase());
+		result.setLength(col.getAttribute("length"));
+		
 		result.setType(mappingType.get(element.getAttribute("type")));
 		result.setPrimaryKey(true);
 		result.setNot_null(true);
@@ -131,7 +135,10 @@ public class Parser {
 		Element element = (Element) pNode;
 		
 		//set name , type , primary key and AutoIcrement
-		result.setName(element.getAttribute("name").toUpperCase());
+		Element col = (Element) element.getElementsByTagName("column").item(0);
+		result.setName(col.getAttribute("name").toUpperCase());
+		result.setLength(col.getAttribute("length"));
+
 		result.setType(mappingType.get(element.getAttribute("type")));
 		result.setPrimaryKey(false);
 		result.setAutoIcrement(false);

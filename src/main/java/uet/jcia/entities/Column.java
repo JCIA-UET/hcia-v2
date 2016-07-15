@@ -6,8 +6,18 @@ public class Column {
 	private boolean primaryKey;
 	private boolean autoIcrement;
 	private boolean not_null;
+	private String length;
 	
+	public Column(){
+
+	}
 	
+	public String getLength() {
+		return length;
+	}
+	public void setLength(String length) {
+		this.length = length;
+	}
 	public boolean isNot_null() {
 		return not_null;
 	}
@@ -41,6 +51,7 @@ public class Column {
 	
 	public String toString(){
 		
-		return "Column: "+  name+ "(" +type+ ","+ "AI:" + autoIcrement +", " + "Primary key:"+primaryKey+", Not-null:"+not_null+")"+"\n" ;
+		return "Column: "+  name+ "(" +type+ ","+ "AI:" + autoIcrement +", "
+				+ "Primary key:"+primaryKey+", Not-null:"+not_null+" , Length:" +length+ ")"+"\n" ;
 	}
 }
