@@ -64,9 +64,12 @@ public class Parser {
 	// key API for controller layer 
 	public List<Table> parseAllToListTable(List<String> xmlLinkList){
 		List<Table> result = new ArrayList<Table>();
+		
+		// add list table to result with each file *.hbm.xml
 		for(String iter:xmlLinkList){
 			result.addAll(parseOneXmlToListTable(iter));
 		}
+		
 		return result;
 	}
 	
@@ -82,10 +85,12 @@ public class Parser {
 			
 			NodeList listClass = doc.getElementsByTagName("class");
 			
+			// add one table to result with each class tag
 			for(int temp = 0; temp < listClass.getLength(); temp++){
 				Table table = parseOneTagClassToTable(listClass.item(temp));
 				result.add(table);
 			}
+			
 			return result;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -103,8 +108,17 @@ public class Parser {
 		//add list column to Table result
 		List<Column> columns = new ArrayList<>();
 		
-		// Add column Id
-		columns.add(parseIdTagToColumn(element.getElementsByTagName("id").item(0)));
+		// Add column Id if have tag
+		NodeList id = element.getElementsByTagName("id");
+		if(id.getLength()!=0){
+			columns.add(parseIdTagToColumn(id.item(0)));
+		}
+		
+		//add list column PK if have tag composite-id
+		NodeList composite = element.getElementsByTagName("composite-id");
+		if(composite.getLength() != 0){
+			columns.addAll(parserOneCompositeIdTagToListColumn(composite.item(0)));
+		}
 		
 		//add list column by property tags
 		NodeList pNodeList = element.getElementsByTagName("property");
@@ -123,17 +137,20 @@ public class Parser {
 		for(int temp = 0; temp < r2NodeList.getLength(); temp++){
 			relationships.add(parseOneTagOneToMany(r2NodeList.item(temp)));
 		}
+		
+		//set column and relation to table result
 		result.setListRelationship(relationships);
 		result.setListColumn(columns);
 		return result;
 	}
 	
 	private Column parseIdTagToColumn(Node idNode){
+		if(idNode== null ){ return null;}
+		
 		Column result = new Column();
 		Element element = (Element) idNode;
 		
 		//get Attribute name and type ,primary key , not null property
-		
 		Element col = (Element) element.getElementsByTagName("column").item(0);
 		result.setName(col.getAttribute("name").toUpperCase());
 		result.setLength(col.getAttribute("length"));
@@ -151,6 +168,7 @@ public class Parser {
 		 else result.setAutoIcrement(false);
 		return result;
 	}
+	
 	private Column parseOnePropertyTagToColumn(Node pNode){
 		Column result = new Column();
 		Element element = (Element) pNode;
@@ -173,6 +191,7 @@ public class Parser {
 		
 		return result;
 	}
+	
 	private Relationship parseOneTagManyToOne(Node rNode){
 		Relationship result = new Relationship();
 		Element element = (Element)rNode;
@@ -184,6 +203,7 @@ public class Parser {
 		
 		return result; 
 	}
+	
 	private Relationship parseOneTagOneToMany(Node rNode){
 		Relationship result = new Relationship(); 
 		result.setType("onetomany");
@@ -198,4 +218,30 @@ public class Parser {
 		
 		return result;
 	}
+	
+	private List<Column> parserOneCompositeIdTagToListColumn(Node cpNode){
+		if(cpNode == null ) return null;
+		List<Column> result = new ArrayList<>();
+		Element element = (Element)cpNode;
+		NodeList listKey = element.getElementsByTagName("key-property");
+		
+		// create one column by each key-property tag
+		for(int temp = 0 ; temp < listKey.getLength() ; temp++){
+			Element e = (Element)listKey.item(temp);
+			Column column = new Column();
+			
+			// set type, default not-null , default PK , default AI
+			column.setType(mappingType.get(e.getAttribute("type")));
+			column.setNot_null(true);
+			column.setPrimaryKey(true);
+			column.setAutoIcrement(false);
+			
+			Element col = (Element) e.getElementsByTagName("column").item(0);
+			column.setName(col.getAttribute("name"));
+			column.setLength(col.getAttribute("length"));
+			result.add(column);
+		}
+		return result;
+	}
+	
 }

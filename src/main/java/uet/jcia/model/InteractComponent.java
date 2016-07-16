@@ -12,6 +12,10 @@ public class InteractComponent {
 	
 	private InteractComponent(){
 		listTable = new ArrayList<>();
+		Scanner scanner = new Scanner();
+		List<String> listLinkXml = scanner.searchAndExtractXmlFile("resources.zip");
+		Parser parser = new Parser();
+		listTable = parser.parseAllToListTable(listLinkXml);
 	}
 	
 	public static InteractComponent getIntance(){
