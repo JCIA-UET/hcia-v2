@@ -1,0 +1,49 @@
+.left-tab {
+    position: relative;
+    width: 300px;
+    height: 100%;
+}
+
+.ui-tabs .ui-tabs-panel {
+    background: rgba(0, 0, 0, 0) none repeat scroll 0 center;
+    border-bottom-width: 1px;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 0;
+    padding: 1em 1.4em;
+}
+
+/* .ui-tabs.ui-tabs-top .ui-tabs-nav {
+	border-bottom: 0 none;
+} */
+
+.ui-tabs {
+	padding: 0.0em;
+}
+
+.main-panel td {
+    vertical-align: top;
+    width: 100%;
+}
+
+.main-panel>tbody>tr>td {
+    vertical-align: top;
+}
+
+.ui-panelgrid {
+    border-collapse: inherit;
+}
+
+.ui-panelgrid>*>tr,
+.ui-panelgrid .ui-panelgrid-cell {
+    border: none;
+    padding: 0px 0px;
+}
+
+.col-content>label {
+	vertical-align: top;
+}
+
+.col-content>textarea, .col-content>input {
+	float:right;
+}
