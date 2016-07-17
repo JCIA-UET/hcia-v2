@@ -18,7 +18,7 @@
 	<p:panelGrid styleClass="main-panel">
 		<p:row>
 			<p:column rowspan="2" colspan="3"
-				style="width:250px;height:680px;padding-top:4px;">
+				style="width:270px;height:680px;padding-top:4px;">
 				
 				<p:tabView styleClass="left-tab">
 					<p:tab title="Menu" styleClass="asdad">
@@ -58,7 +58,7 @@
 					<p:tab title="Tree">
 							<h:form>
 							<p:tree value="#{treeBean.root}" var="node" dynamic="true"
-								selectionMode="single" selection="#{treeBean.selectedNode}">
+								selectionMode="single" selection="#{treeBean.selectedNode}" >
 								<p:treeNode type="table" icon="ui-icon ui-icon-calculator">
 									<h:outputText value="#{node.tableName}" />
 								</p:treeNode>
@@ -77,8 +77,7 @@
 			<p:column colspan="9"
 				style="width:1100px;height:680px;padding-left:10px;padding-top:6px;">
 				<p:tabView ajax="true">
-					<p:tab title="Table" ajax="true">
-						<form>
+					<p:tab title="Table">
 						<p:dataTable id="dttable" var="column"
 							value="#{tableBean.table.listColumn}">
 							<p:column headerText="Column Name">
@@ -102,63 +101,66 @@
 
 
 						</p:dataTable>
-						</form>
 						<p:tabView style="height: 100%;">
 							<p:tab title="Detail">
-								<div class="ui-g">
+							<form id="dtcolumn"> 
+								<div class="ui-g" >
 									<div class="ui-g">
 										<div class="ui-g-6 ui-g-nopad">
+										
 											<div class="ui-g-12 left-col-content">
 												<h:outputLabel for="name" value="Name:" />
 												<p:inputTextarea id="name" rows="1" cols="35"
-													value="something here"
+													value="#{columnBean.column.name}"
 													readonly="#{facesContext.renderResponse}" />
-
 											</div>
+											
 											<div class="ui-g-12 left-col-content">
 												<h:outputLabel for="type" value="Type:" />
 												<p:inputTextarea id="type" rows="1" cols="35"
-													value="something here"
+													value="#{columnBean.column.type}"
 													readonly="#{facesContext.renderResponse}" />
 											</div>
 											<div class="ui-g-12 left-col-content">
 												<h:outputLabel for="length" value="Length:" />
 												<p:inputTextarea id="length" rows="1" cols="35"
-													value="something here"
+													value="#{columnBean.column.length}"
 													readonly="#{facesContext.renderResponse}" />
 											</div>
 										</div>
 										<div class="ui-g-6 ui-g-nopad">
 											<div class="ui-g-12 right-col-content">
 												<h:outputLabel value="Primary Key: " />
-												<p:selectBooleanCheckbox value="true" />
+												<p:selectBooleanCheckbox value="#{columnBean.column.primaryKey}" />
 											</div>
 											<div class="ui-g-12 right-col-content">
 												<h:outputLabel value="Auto Increament: " />
-												<p:selectBooleanCheckbox styleClass="asda" value="true" />
+												<p:selectBooleanCheckbox styleClass="asda" value="#{columnBean.column.autoIcrement}" />
 											</div>
 											<div class="ui-g-12 right-col-content">
 												<h:outputLabel value="Not Null: " />
-												<p:selectBooleanCheckbox value="true" />
+												<p:selectBooleanCheckbox value="#{columnBean.column.not_null}" />
 											</div>
 										</div>
 									</div>
 								</div>
+								</form>
 							</p:tab>
 						</p:tabView>
 					</p:tab>
 					<p:tab title="Relation">
-						<p:dataTable style="height:600px;padding-top: 2px;">
+						<p:dataTable id="dttabler" var="relationship"
+							value="#{tableBean.table.listRelationship}" style="height:600px;padding-top: 2px;">
 							<p:column headerText="Column Name">
-								<h:outputText value="" />
+								<h:outputText value="'#{tableBean.table.tableName}'.'#{relationship.joinColumn}'" />
 							</p:column>
 
 							<p:column headerText="Relation Type">
-								<h:outputText value="" />
+								<h:outputText value="#{relationship.type}" />
 							</p:column>
 
 							<p:column headerText="Referenced Table">
-								<p:selectBooleanCheckbox value="" />
+								<h:outputText value="'#{relationship.referTable}'.'#{relationship.joinColumn}'"/>
 							</p:column>
 						</p:dataTable>
 					</p:tab>
