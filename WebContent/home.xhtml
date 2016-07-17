@@ -1,4 +1,4 @@
-?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -42,49 +42,50 @@
 		<p:row>
 			<p:column rowspan="2" colspan="3"
 				style="width:250px;height:680px;padding-top:4px;">
-				<p:tabView styleClass="left-tab">
-					<p:tab title="Menu" styleClass="content">
-					</p:tab>
-					<p:tab title="Tree">
-					</p:tab>
-				</p:tabView>
-				<!-- <p:tree value="#{treeBean.root}" var="node" dynamic="true"
-					selectionMode="single" selection="#{treeBean.selectedNode}">
-					<p:treeNode expandedIcon="ui-icon ui-icon-folder-open"
-						collapsedIcon="ui-icon ui-icon-folder-collapsed">
-						<h:form>
-							<p:remoteCommand name="dspTbl" update="tbl"
-								actionListener="#{tableBean.displayTable}" ajax="true">
-								<f:attribute name="tblname" value="#{node}" />
-							</p:remoteCommand>
-							<p:growl id="tbl" showDetail="true" />
-							<p:commandLink onclick="dspTbl()" value="#{node}" />
-						</h:form>
-					</p:treeNode>
-				</p:tree> -->
+				<h:form>
+					<p:tabView styleClass="left-tab">
+						<p:tab title="Menu" styleClass="content">
+						</p:tab>
+						<p:tab title="Tree">
+							<p:tree value="#{treeBean.root}" var="node" dynamic="true"
+								selectionMode="single" selection="#{treeBean.selectedNode}">
+								<p:treeNode type="table" icon="ui-icon ui-icon-calculator">
+									<h:outputText value="#{node.tableName}" />
+								</p:treeNode>
+								<p:treeNode type="column" icon="ui-icon-grip-dotted-vertical">
+									<h:outputText value="#{node.name}" />
+								</p:treeNode>
+								
+								<p:ajax event="select" listener="#{treeBean.onSelectNode}"></p:ajax>
+							</p:tree>
+						</p:tab>
+					</p:tabView>
+				</h:form>
 			</p:column>
 			<p:column colspan="9"
 				style="width:1100px;height:350px;padding-left:10px;padding-top:6px;">
-				<p:dataTable>
+				<p:dataTable id="dttable" var="column"
+					value="#{tableBean.table.listColumn}">
 					<p:column headerText="Column Name">
-						<h:outputText value="" />
+						<h:outputText value="#{column.name}" />
 					</p:column>
 
 					<p:column headerText="Type">
-						<h:outputText value="" />
+						<h:outputText value="#{column.type} (#{column.length})" />
 					</p:column>
 
 					<p:column headerText="Primary Key">
-						<p:selectBooleanCheckbox value="" />
+						<p:selectBooleanCheckbox value="#{column.primaryKey}" />
 					</p:column>
 
 					<p:column headerText="Auto Increment">
-						<p:selectBooleanCheckbox value="" />
+						<p:selectBooleanCheckbox value="#{column.autoIcrement}" />
+					</p:column>
+					<p:column headerText="Not Null">
+						<p:selectBooleanCheckbox value="#{column.not_null}" />
 					</p:column>
 
-					<p:column headerText="Expression">
-						<p:inputTextarea rows="4" cols="20" autoResize="false" />
-					</p:column>
+
 				</p:dataTable>
 
 			</p:column>
@@ -95,7 +96,8 @@
 					<p:tab title="Column">
 						<div class="ui-g">
 							<div class="ui-g-12 ui-md-6 col-content">
-								<h:outputLabel for="name" value="Name:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" />
+								<h:outputLabel for="name"
+									value="Name:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" />
 								<h:inputText id="name" value="name"
 									readonly="#{facesContext.renderResponse}" />
 							</div>
@@ -106,7 +108,8 @@
 						</div>
 						<div class="ui-g">
 							<div class="ui-g-12 ui-md-6 col-content">
-								<h:outputLabel for="expression" value="Default/Expression:&nbsp;&nbsp;&nbsp;&nbsp;" />
+								<h:outputLabel for="expression"
+									value="Default/Expression:&nbsp;&nbsp;&nbsp;&nbsp;" />
 								<p:inputTextarea id="expression" rows="6" cols="33"
 									value="something here"
 									readonly="#{facesContext.renderResponse}" />

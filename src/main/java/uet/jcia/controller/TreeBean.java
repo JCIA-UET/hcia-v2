@@ -4,7 +4,11 @@ import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 
+import org.primefaces.context.RequestContext;
+import org.primefaces.event.NodeSelectEvent;
 import org.primefaces.model.TreeNode;
+
+import uet.jcia.entities.Table;
 
 @ManagedBean
 public class TreeBean {
@@ -15,6 +19,25 @@ public class TreeBean {
 	@ManagedProperty("#{treeService}")
 	private TreeService treeService;
 	
+	@ManagedProperty("#{tableBean}")
+	private TableBean tableBean;
+	
+	public TableBean getTableBean() {
+		return tableBean;
+	}
+
+	public void setTableBean(TableBean tableBean) {
+		this.tableBean = tableBean;
+	}
+
+	public TreeService getTreeService() {
+		return treeService;
+	}
+
+	public void setRoot(TreeNode root) {
+		this.root = root;
+	}
+
 	@PostConstruct
 	public void init(){
 		root = treeService.createTable();
@@ -34,5 +57,12 @@ public class TreeBean {
 	
 	public TreeNode getRoot() {
 		return root;
+	}
+	public void onSelectNode(NodeSelectEvent event){
+		if(event.getTreeNode().getData() instanceof Table){
+			tableBean.setTable((Table)event.getTreeNode().getData());
+			 RequestContext ctx = RequestContext.getCurrentInstance();
+		        ctx.update("dttable");
+		}
 	}
 }
