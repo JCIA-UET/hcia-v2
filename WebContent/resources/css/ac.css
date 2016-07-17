@@ -40,10 +40,27 @@
     padding: 0px 0px;
 }
 
-.col-content>label {
-	vertical-align: top;
+.left-col-content>label {
+	display: inline-block;
+    text-align: right;
+    vertical-align: baseline;
+    width: 150px;
 }
 
-.col-content>textarea, .col-content>input {
+.left-col-content>textarea {
+	resize:none;
 	float:right;
+}
+
+.right-col-content > label {
+    display: inline-block;
+    text-align: right;
+    vertical-align: text-bottom;
+    width: 300px;
+}
+
+.ui-chkbox {
+    display: inline-block;
+    text-align: right;
+    width: 7%;
 }
