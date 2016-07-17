@@ -12,11 +12,11 @@
 
 <h:head>
 	<title>JSF 2.0 Hello World</title>
-	<!-- <h:outputStylesheet name="css/style.css"/> -->
 </h:head>
 <h:body>
-	<h:form>
-		<!--  <p:growl id="messages"/> -->
+	<h:outputStylesheet name="css/u.css" />
+	<!-- <h:form>
+		 <p:growl id="messages"/>
 		<p:menubar>
 			<p:submenu label="Open" icon="ui-icon-document">
 				<p:menuitem value="XML File" icon="ui-icon-document-b"
@@ -24,7 +24,6 @@
 				<p:menuitem value="Zip File" icon="ui-icon-folder-collapsed"
 					oncomplete="PF('dlgzip').show()" />
 			</p:submenu>
-
 			<p:submenu label="Edit" icon="ui-icon-pencil">
 			</p:submenu>
 		</p:menubar>
@@ -35,42 +34,99 @@
 					fileUploadListener="#{fileUploadBean.handleFileUpload}"
 					mode="advanced" dragDropSupport="true" auto="true"
 					update="messages" allowTypes="/(\.|\/)(hbm.xml|zip)$/" />
-
 				<p:growl id="messages" showDetail="true" />
 			</h:form>
 		</p:dialog>
-	</h:form>
-	<p:panelGrid>
+	</h:form> -->
+	<p:panelGrid styleClass="main-panel">
 		<p:row>
-			<p:column rowspan="2" colspan="3" style="width:250px;height:575px;">
-				<p:tree value="#{treeBean.root}" var="node" dynamic="true"
-						selectionMode="single"
-						selection="#{treeBean.selectedNode}">
+			<p:column rowspan="2" colspan="3"
+				style="width:250px;height:680px;padding-top:4px;">
+				<p:tabView styleClass="left-tab">
+					<p:tab title="Menu" styleClass="content">
+					</p:tab>
+					<p:tab title="Tree">
+					</p:tab>
+				</p:tabView>
+				<!-- <p:tree value="#{treeBean.root}" var="node" dynamic="true"
+					selectionMode="single" selection="#{treeBean.selectedNode}">
 					<p:treeNode expandedIcon="ui-icon ui-icon-folder-open"
-								collapsedIcon="ui-icon ui-icon-folder-collapsed">
-                        <h:form>
-                            <p:remoteCommand name="dspTbl" update="tbl" actionListener="#{tableBean.displayTable}"  ajax="true">
-                              <f:attribute name="tblname" value="#{node}" />
-                            </p:remoteCommand>
-                            <p:growl id="tbl" showDetail="true" />
-                            <p:commandLink onclick="dspTbl()" value="#{node}"/>
-                        </h:form>
-						
+						collapsedIcon="ui-icon ui-icon-folder-collapsed">
+						<h:form>
+							<p:remoteCommand name="dspTbl" update="tbl"
+								actionListener="#{tableBean.displayTable}" ajax="true">
+								<f:attribute name="tblname" value="#{node}" />
+							</p:remoteCommand>
+							<p:growl id="tbl" showDetail="true" />
+							<p:commandLink onclick="dspTbl()" value="#{node}" />
+						</h:form>
 					</p:treeNode>
-				</p:tree>
+				</p:tree> -->
 			</p:column>
-			<p:column colspan="9"  style="width:1100px;height:350px;">
-			   table here
+			<p:column colspan="9"
+				style="width:1100px;height:350px;padding-left:10px;padding-top:6px;">
+				<p:dataTable>
+					<p:column headerText="Column Name">
+						<h:outputText value="" />
+					</p:column>
+
+					<p:column headerText="Type">
+						<h:outputText value="" />
+					</p:column>
+
+					<p:column headerText="Primary Key">
+						<p:selectBooleanCheckbox value="" />
+					</p:column>
+
+					<p:column headerText="Auto Increment">
+						<p:selectBooleanCheckbox value="" />
+					</p:column>
+
+					<p:column headerText="Expression">
+						<p:inputTextarea rows="4" cols="20" autoResize="false" />
+					</p:column>
+				</p:dataTable>
+
 			</p:column>
 		</p:row>
 		<p:row>
-			<p:column>
-				option here
+			<p:column style="padding-left:10px;padding-top:4px;height:320px;">
+				<p:tabView style="height: 100%;">
+					<p:tab title="Column">
+						<div class="ui-g">
+							<div class="ui-g-12 ui-md-6 col-content">
+								<h:outputLabel for="name" value="Name:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" />
+								<h:inputText id="name" value="name"
+									readonly="#{facesContext.renderResponse}" />
+							</div>
+							<div class="ui-g-12 ui-md-6 col-content">
+								<h:outputText value="Primary Key: " />
+								<p:selectBooleanCheckbox value="true" />
+							</div>
+						</div>
+						<div class="ui-g">
+							<div class="ui-g-12 ui-md-6 col-content">
+								<h:outputLabel for="expression" value="Default/Expression:&nbsp;&nbsp;&nbsp;&nbsp;" />
+								<p:inputTextarea id="expression" rows="6" cols="33"
+									value="something here"
+									readonly="#{facesContext.renderResponse}" />
+							</div>
+							<div class="ui-g-12 ui-md-6 col-content">
+								<h:outputText value="Auto Increment: " />
+								<p:selectBooleanCheckbox value="true" />
+							</div>
+						</div>
+					</p:tab>
+					<p:tab title="Foreign Key">
+						<h:panelGrid>
+						</h:panelGrid>
+					</p:tab>
+				</p:tabView>
 			</p:column>
 		</p:row>
-		
+
 	</p:panelGrid>
-	
-	
+
+
 </h:body>
 </html>
