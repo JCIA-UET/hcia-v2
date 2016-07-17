@@ -14,7 +14,7 @@
 	<title>JSF 2.0 Hello World</title>
 </h:head>
 <h:body>
-	<h:outputStylesheet name="css/u.css" />
+	<h:outputStylesheet name="css/ac.css" />
 	<!-- <h:form>
 		 <p:growl id="messages"/>
 		<p:menubar>
@@ -45,12 +45,44 @@
 			<p:column rowspan="2" colspan="3"
 				style="width:250px;height:680px;padding-top:4px;">
 				<p:tabView styleClass="left-tab">
-					<p:tab title="Menu" styleClass="content">
+					<p:tab title="Menu" styleClass="asdad">
+						<h:form style="height:605px">
+							<p:growl id="growl" life="2000" />
+							<p:commandButton value="Open Xml File"
+								onclick="PF('dlgxml').show()" update="growl"
+								icon="ui-icon-document" />
+							<p:separator style="border:0"></p:separator>
+							<p:commandButton value="Open Zip File"
+								onclick="PF('dlgzip').show()" update="growl" icon="ui-icon-note" />
+							<p:dialog header="Choose an xml file..." widgetVar="dlgxml"
+								modal="true" height="250" weigh="250">
+								<h:form enctype="multipart/form-data">
+									<p:fileUpload required="true"
+										requiredMessage="No files selected." style="weigh:250px;"
+										fileUploadListener="#{fileUploadBean.handleFileUpload}"
+										mode="advanced" dragDropSupport="true" update="messages"
+										allowTypes="/(\.|\/)(hbm.xml)$/" />
+
+									<p:growl id="messages" showDetail="true" />
+								</h:form>
+							</p:dialog>
+							<p:dialog header="Choose a zip file..." widgetVar="dlgzip"
+								modal="true" height="250" weigh="250">
+								<h:form enctype="multipart/form-data">
+									<p:fileUpload required="true"
+										requiredMessage="No files selected." style="weigh:250px;"
+										fileUploadListener="#{fileUploadBean.handleFileUpload}"
+										mode="advanced" dragDropSupport="true" update="messages"
+										allowTypes="/(\.|\/)(zip)$/" />
+									<p:growl id="messages" showDetail="true" />
+								</h:form>
+							</p:dialog>
+						</h:form>
 					</p:tab>
 					<p:tab title="Tree">
 					</p:tab>
 				</p:tabView>
-				<!-- <p:tree value="#{treeBean.root}" var="node" dynamic="true"
+				<p:tree style="height:605px;" value="#{treeBean.root}" var="node" dynamic="true"
 					selectionMode="single" selection="#{treeBean.selectedNode}">
 					<p:treeNode expandedIcon="ui-icon ui-icon-folder-open"
 						collapsedIcon="ui-icon ui-icon-folder-collapsed">
@@ -64,67 +96,139 @@
 						</h:form>
 
 					</p:treeNode>
-				</p:tree> -->
+				</p:tree>
 			</p:column>
 			<p:column colspan="9"
-				style="width:1100px;height:350px;padding-left:10px;padding-top:6px;">
-				<p:dataTable>
-					<p:column headerText="Column Name">
-						<h:outputText value="" />
-					</p:column>
+				style="width:1100px;height:680px;padding-left:10px;padding-top:6px;">
+				<p:tabView>
+					<p:tab title="Table">
+						<p:dataTable style="height:366px;padding-top: 2px;">
+							<p:column headerText="Column Name">
+								<h:outputText value="" />
+							</p:column>
 
-					<p:column headerText="Type">
-						<h:outputText value="" />
-					</p:column>
+							<p:column headerText="Type">
+								<h:outputText value="" />
+							</p:column>
 
-					<p:column headerText="Primary Key">
-						<p:selectBooleanCheckbox value="" />
-					</p:column>
+							<p:column headerText="Primary Key">
+								<p:selectBooleanCheckbox value="" />
+							</p:column>
 
-					<p:column headerText="Auto Increment">
-						<p:selectBooleanCheckbox value="" />
-					</p:column>
+							<p:column headerText="Auto Increment">
+								<p:selectBooleanCheckbox value="" />
+							</p:column>
+						</p:dataTable>
 
-					<p:column headerText="Expression">
-						<p:inputTextarea rows="4" cols="20" autoResize="false" />
-					</p:column>
-				</p:dataTable>
+						<p:tabView style="height: 100%;">
+							<p:tab title="Detail">
+								<div class="ui-g">
+									<div class="ui-g">
+										<div class="ui-g-6 ui-g-nopad">
+											<div class="ui-g-12 left-col-content">
+												<h:outputLabel for="name" value="Name:" />
+												<p:inputTextarea id="name" rows="1" cols="35"
+													value="something here"
+													readonly="#{facesContext.renderResponse}" />
+
+											</div>
+											<div class="ui-g-12 left-col-content">
+												<h:outputLabel for="type" value="Type:" />
+												<p:inputTextarea id="type" rows="1" cols="35"
+													value="something here"
+													readonly="#{facesContext.renderResponse}" />
+											</div>
+											<div class="ui-g-12 left-col-content">
+												<h:outputLabel for="length" value="Length:" />
+												<p:inputTextarea id="length" rows="1" cols="35"
+													value="something here"
+													readonly="#{facesContext.renderResponse}" />
+											</div>
+										</div>
+										<div class="ui-g-6 ui-g-nopad">
+											<div class="ui-g-12 right-col-content">
+												<h:outputLabel value="Primary Key: " />
+												<p:selectBooleanCheckbox value="true" />
+											</div>
+											<div class="ui-g-12 right-col-content">
+												<h:outputLabel value="Auto Increament: " />
+												<p:selectBooleanCheckbox styleClass="asda" value="true" />
+											</div>
+											<div class="ui-g-12 right-col-content">
+												<h:outputLabel value="Not Null: " />
+												<p:selectBooleanCheckbox value="true" />
+											</div>
+										</div>
+									</div>
+								</div>
+							</p:tab>
+						</p:tabView>
+					</p:tab>
+					<p:tab title="Relation">
+						<p:dataTable style="height:600px;padding-top: 2px;">
+							<p:column headerText="Column Name">
+								<h:outputText value="" />
+							</p:column>
+
+							<p:column headerText="Relation Type">
+								<h:outputText value="" />
+							</p:column>
+
+							<p:column headerText="Referenced Table">
+								<p:selectBooleanCheckbox value="" />
+							</p:column>
+						</p:dataTable>
+					</p:tab>
+				</p:tabView>
+
 
 			</p:column>
 		</p:row>
 		<p:row>
 			<p:column style="padding-left:10px;padding-top:4px;height:320px;">
-				<p:tabView style="height: 100%;">
-					<p:tab title="Column">
+				<!-- <p:tabView style="height: 100%;">
+					<p:tab title="Detail">
 						<div class="ui-g">
-							<div class="ui-g-12 ui-md-6 col-content">
-								<h:outputLabel for="name" value="Name:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" />
-								<h:inputText id="name" value="name"
-									readonly="#{facesContext.renderResponse}" />
-							</div>
-							<div class="ui-g-12 ui-md-6 col-content">
-								<h:outputText value="Primary Key: " />
-								<p:selectBooleanCheckbox value="true" />
-							</div>
-						</div>
-						<div class="ui-g">
-							<div class="ui-g-12 ui-md-6 col-content">
-								<h:outputLabel for="expression" value="Default/Expression:&nbsp;&nbsp;&nbsp;&nbsp;" />
-								<p:inputTextarea id="expression" rows="6" cols="33"
-									value="something here"
-									readonly="#{facesContext.renderResponse}" />
-							</div>
-							<div class="ui-g-12 ui-md-6 col-content">
-								<h:outputText value="Auto Increment: " />
-								<p:selectBooleanCheckbox value="true" />
+							<div class="ui-g">
+								<div class="ui-g-6 ui-g-nopad">
+									<div class="ui-g-12 left-col-content">
+										<h:outputLabel for="name" value="Name:" />
+										<p:inputTextarea id="name" rows="1" cols="35"
+											value="something here"
+											readonly="#{facesContext.renderResponse}" />
+
+									</div>
+									<div class="ui-g-12 left-col-content">
+										<h:outputLabel for="type" value="Type:" />
+										<p:inputTextarea id="type" rows="1" cols="35"
+											value="something here"
+											readonly="#{facesContext.renderResponse}" />
+									</div>
+									<div class="ui-g-12 left-col-content">
+										<h:outputLabel for="length" value="Length:" />
+										<p:inputTextarea id="length" rows="1" cols="35"
+											value="something here"
+											readonly="#{facesContext.renderResponse}" />
+									</div>
+								</div>
+								<div class="ui-g-6 ui-g-nopad">
+									<div class="ui-g-12 right-col-content">
+										<h:outputLabel value="Primary Key: " />
+										<p:selectBooleanCheckbox value="true" />
+									</div>
+									<div class="ui-g-12 right-col-content">
+										<h:outputLabel value="Auto Increament: " />
+										<p:selectBooleanCheckbox styleClass="asda" value="true" />
+									</div>
+									<div class="ui-g-12 right-col-content">
+										<h:outputLabel value="Not Null: " />
+										<p:selectBooleanCheckbox value="true" />
+									</div>
+								</div>
 							</div>
 						</div>
 					</p:tab>
-					<p:tab title="Foreign Key">
-						<h:panelGrid>
-						</h:panelGrid>
-					</p:tab>
-				</p:tabView>
+				</p:tabView> -->
 			</p:column>
 		</p:row>
 
