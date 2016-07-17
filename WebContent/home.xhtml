@@ -12,9 +12,9 @@
 
 <h:head>
 	<title>JSF 2.0 Hello World</title>
-	<!-- <h:outputStylesheet name="css/style.css"/> -->
 </h:head>
 <h:body>
+	<h:outputStylesheet name="css/l.css" />
 	<h:form>
 		<!--  <p:growl id="messages"/> -->
 		<p:menubar>
@@ -40,37 +40,67 @@
 			</h:form>
 		</p:dialog>
 	</h:form>
-	<p:panelGrid>
+	<p:panelGrid styleClass = "foo">
 		<p:row>
-			<p:column rowspan="2" colspan="3" style="width:250px;height:575px;">
+			<p:column rowspan="2" colspan="3" style="width:250px;height:575px;padding-top:4px;">
 				<p:tree value="#{treeBean.root}" var="node" dynamic="true"
-						selectionMode="single"
-						selection="#{treeBean.selectedNode}">
+					selectionMode="single" selection="#{treeBean.selectedNode}">
 					<p:treeNode expandedIcon="ui-icon ui-icon-folder-open"
-								collapsedIcon="ui-icon ui-icon-folder-collapsed">
-                        <h:form>
-                            <p:remoteCommand name="dspTbl" update="tbl" actionListener="#{tableBean.displayTable}"  ajax="true">
-                              <f:attribute name="tblname" value="#{node}" />
-                            </p:remoteCommand>
-                            <p:growl id="tbl" showDetail="true" />
-                            <p:commandLink onclick="dspTbl()" value="#{node}"/>
-                        </h:form>
-						
+						collapsedIcon="ui-icon ui-icon-folder-collapsed">
+						<h:form>
+							<p:remoteCommand name="dspTbl" update="tbl"
+								actionListener="#{tableBean.displayTable}" ajax="true">
+								<f:attribute name="tblname" value="#{node}" />
+							</p:remoteCommand>
+							<p:growl id="tbl" showDetail="true" />
+							<p:commandLink onclick="dspTbl()" value="#{node}" />
+						</h:form>
+
 					</p:treeNode>
 				</p:tree>
 			</p:column>
-			<p:column colspan="9"  style="width:1100px;height:350px;">
-			   table here
+			<p:column colspan="9" style="width:1100px;height:350px;padding-left:10px;padding-top:4px;">
+					<p:dataTable>
+					<p:column headerText="Column Name">
+						<h:outputText value="" />
+					</p:column>
+
+					<p:column headerText="Type">
+						<h:outputText value="" />
+					</p:column>
+
+					<p:column headerText="Primary Key">
+						<p:selectBooleanCheckbox value="" />
+					</p:column>
+
+					<p:column headerText="Auto Increment">
+						<p:selectBooleanCheckbox value="" />
+					</p:column>
+
+					<p:column headerText="Expression">
+						<p:inputTextarea rows="4" cols="20" autoResize="false" />
+					</p:column>
+				</p:dataTable>
+				
 			</p:column>
 		</p:row>
 		<p:row>
-			<p:column>
-				option here
+			<p:column style="padding-left:10px;padding-top:4px;">
+				<p:tabView>
+					<p:tab title="Column">
+						<h:panelGrid >
+						</h:panelGrid>
+					</p:tab>
+					<p:tab title="Foreign Key">
+						<h:panelGrid >
+						</h:panelGrid>
+					</p:tab>
+				</p:tabView>
 			</p:column>
 		</p:row>
-		
+
 	</p:panelGrid>
-	
-	
+
+
 </h:body>
 </html>

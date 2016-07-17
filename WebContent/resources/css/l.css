@@ -1,0 +1,28 @@
+.ui-tree {
+    position: relative;
+    width: 300px;
+    height: 100%;
+}
+
+.ui-tabs.ui-tabs-top .ui-tabs-nav {
+	border-bottom: 0 none;
+}
+
+.foo td {
+    vertical-align: top;
+    width: 100%;
+}
+
+.foo>tbody>tr>td {
+    vertical-align: top;
+}
+
+.ui-panelgrid {
+    border-collapse: inherit;
+}
+
+.ui-panelgrid>*>tr,
+.ui-panelgrid .ui-panelgrid-cell {
+    border: none;
+    padding: 0px 0px;
+}
