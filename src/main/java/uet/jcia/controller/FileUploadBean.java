@@ -40,8 +40,10 @@ public class FileUploadBean {
         try {
         	if(fileName.endsWith(".hbm.xml")) {
 				InputStream input = uploadedFile.getInputstream();
-				ext.saveUploadFile(input, fileName);
-				filesList.add(scanner.getPath(fileName));
+				//ext.saveUploadFile(input, fileName);
+				String fileDir = scanner.getPath(fileName);
+				filesList.add(fileDir);
+				System.out.println(fileDir);
 				List<Table> tablesList = new ArrayList<>();
 				tablesList = parser.parseAllToListTable(filesList);
 				ic.setListTable(tablesList);
@@ -49,6 +51,9 @@ public class FileUploadBean {
         	else if(fileName.endsWith(".zip")) {
 				InputStream input = uploadedFile.getInputstream();
 				ext.saveUploadFile(input, fileName);
+				String fileDir = scanner.getPath(fileName);
+				filesList.add(fileDir);
+				System.out.println(fileDir);
 				filesList = scanner.searchAndExtractXmlFile(fileName);
 				List<Table> tablesList = new ArrayList<>();
 				tablesList = parser.parseAllToListTable(filesList);

@@ -31,7 +31,7 @@ public class Scanner {
 				
 				String fileName = ze.getName();
 				
-				if(fileName.endsWith(".xml")) {
+				if(fileName.endsWith(".hbm.xml")) {
 					xmlFileDir = getPath(fileName);
 					System.out.println("-- FOUND XML FILE. EXTRACTING: " + xmlFileDir + " --");
 					File xmlFile = new File(xmlFileDir);
@@ -59,8 +59,7 @@ public class Scanner {
 	}
 	
 	public String getPath(String fileName) {
-		Scanner scanner = new Scanner();
-		ClassLoader classLoader = scanner.getClass().getClassLoader();
+		ClassLoader classLoader = getClass().getClassLoader();
 		String fileDir = classLoader.getResource(fileName).getFile();
 		return fileDir;
 	}
