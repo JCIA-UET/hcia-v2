@@ -21,13 +21,13 @@
 
 				<p:tabView id="left-tab" styleClass="left-tab">
 					<p:tab id="menu-tab" title="Menu">
-						<h:form style="height:602px;">
+						<h:form style="height:602px;text-align:center;">
 							<p:growl id="growl" life="2000" />
-							<p:commandButton value="Open Xml File"
+							<p:commandButton style="width:170px" value="Open Xml File"
 								onclick="PF('dlgxml').show()" update="growl"
 								icon="ui-icon-document" />
 							<p:separator style="border:0"></p:separator>
-							<p:commandButton value="Open Zip File"
+							<p:commandButton style="width:170px" value="Open Zip File"
 								onclick="PF('dlgzip').show()" update="growl" icon="ui-icon-note" />
 							<p:dialog header="Choose an xml file..." widgetVar="dlgxml"
 								modal="true" height="250" weigh="250">
@@ -36,8 +36,8 @@
 									<p:fileUpload required="true"
 										requiredMessage="No files selected." style="weigh:250px;"
 										fileUploadListener="#{fileUploadBean.handleFileUpload}"
-										oncomplete="PF('dlgxml').hide()"
-										mode="advanced" dragDropSupport="true" update="messages"
+										oncomplete="PF('dlgxml').hide()" mode="advanced"
+										dragDropSupport="true" update="messages"
 										allowTypes="/(\.|\/)(hbm.xml)$/" />
 
 									<p:growl id="messages" showDetail="true" />
@@ -50,8 +50,8 @@
 									<p:fileUpload required="true"
 										requiredMessage="No files selected." style="weigh:250px;"
 										fileUploadListener="#{fileUploadBean.handleFileUpload}"
-										oncomplete="PF('dlgzip').hide()"
-										mode="advanced" dragDropSupport="true" update="messages"
+										oncomplete="PF('dlgzip').hide()" mode="advanced"
+										dragDropSupport="true" update="messages"
 										allowTypes="/(\.|\/)(zip)$/" />
 									<p:growl id="messages" showDetail="true" />
 								</h:form>
@@ -59,7 +59,7 @@
 						</h:form>
 					</p:tab>
 					<p:tab id="tree-tab" title="Tree">
-						<h:form style="height:602px;">
+						<h:form id="tree-form" style="height:602px;">
 							<p:tree id="tree" style="border:0 none;width: 250px;height:100%"
 								value="#{treeBean.root}" var="node" dynamic="true"
 								selectionMode="single" selection="#{treeBean.selectedNode}"
@@ -88,8 +88,8 @@
 						<h:form id="formTable">
 							<p:dataTable id="dttable" var="column"
 								value="#{tableBean.table.listColumn}"
-								style="height:365px;padding-top:2px;" scrollable="true"
-								scrollHeight="360">
+								style="height:339px;padding:1px;" scrollable="true"
+								scrollHeight="290">
 								<p:column headerText="Column Name" colspan="2">
 									<h:outputText value="#{column.name}" />
 								</p:column>
@@ -99,14 +99,17 @@
 								</p:column>
 
 								<p:column headerText="Primary Key">
-									<p:selectBooleanCheckbox value="#{column.primaryKey}" />
+									<p:selectBooleanCheckbox value="#{column.primaryKey}"
+										disabled="true" />
 								</p:column>
 
 								<p:column headerText="Auto Increment">
-									<p:selectBooleanCheckbox value="#{column.autoIcrement}" />
+									<p:selectBooleanCheckbox value="#{column.autoIcrement}"
+										disabled="true" />
 								</p:column>
 								<p:column headerText="Not Null">
-									<p:selectBooleanCheckbox value="#{column.not_null}" />
+									<p:selectBooleanCheckbox value="#{column.not_null}"
+										disabled="true" />
 								</p:column>
 
 
@@ -155,6 +158,9 @@
 													<h:outputLabel value="Not Null: " />
 													<p:selectBooleanCheckbox
 														value="#{columnBean.column.not_null}" />
+												</div>
+												<div class="ui-g-12 right-col-content">
+													<p:commandButton  style="float:right;" value="Save"/>
 												</div>
 											</div>
 										</div>
