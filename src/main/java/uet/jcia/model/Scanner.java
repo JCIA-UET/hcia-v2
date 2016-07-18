@@ -22,6 +22,7 @@ public class Scanner {
 		String xmlFileDir = null;
 		try {
 			String zipFileDir = getPath(zipFile);
+			System.out.println(zipFileDir);
 			ZipInputStream zis = new ZipInputStream(new FileInputStream(zipFileDir));
 			
 			ZipEntry ze = zis.getNextEntry();
@@ -57,7 +58,10 @@ public class Scanner {
 		return namesList;
 	}
 	
-	private String getPath(String fileName) {
-		return Extractor.OUTPUT_DIR + File.separator + fileName;
+	public String getPath(String fileName) {
+		Scanner scanner = new Scanner();
+		ClassLoader classLoader = scanner.getClass().getClassLoader();
+		String fileDir = classLoader.getResource(fileName).getFile();
+		return fileDir;
 	}
 }

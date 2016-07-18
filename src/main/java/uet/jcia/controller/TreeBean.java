@@ -1,5 +1,7 @@
 package uet.jcia.controller;
 
+import java.io.Serializable;
+
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
@@ -14,7 +16,8 @@ import uet.jcia.entities.Table;
 
 @ManagedBean
 @ViewScoped
-public class TreeBean {
+public class TreeBean implements Serializable{
+	private static final long serialVersionUID = 1L;
 	
 	private TreeNode root;
 	private TreeNode selectedNode;

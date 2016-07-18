@@ -4,6 +4,10 @@
     height: 100%;
 }
 
+.left-tab > ui-tabs-panels {
+	padding: 0px;
+}
+
 .ui-tabs .ui-tabs-panel {
     background: rgba(0, 0, 0, 0) none repeat scroll 0 center;
     border-bottom-width: 1px;
@@ -19,6 +23,10 @@
 
 .ui-tabs {
 	padding: 0.0em;
+}
+
+.ui-tabs.ui-tabs-top {
+	border :0px none;
 }
 
 .main-panel td {
@@ -63,4 +71,9 @@
     display: inline-block;
     text-align: right;
     width: 7%;
+}
+
+.tree-tab {
+	border : 0 none;
+	width: 250px;
 }

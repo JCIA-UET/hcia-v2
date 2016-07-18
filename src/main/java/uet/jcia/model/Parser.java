@@ -196,7 +196,7 @@ public class Parser {
 		Relationship result = new Relationship();
 		Element element = (Element)rNode;
 		result.setReferTable(element.getAttribute("name").toUpperCase());
-		result.setType("manytoone");
+		result.setType("many-to-one");
 		
 		Element col = (Element) element.getElementsByTagName("column").item(0);
 		result.setJoinColumn(col.getAttribute("name").toUpperCase());
@@ -206,7 +206,7 @@ public class Parser {
 	
 	private Relationship parseOneTagOneToMany(Node rNode){
 		Relationship result = new Relationship(); 
-		result.setType("onetomany");
+		result.setType("one-to-many");
 		
 		Element element = (Element)rNode;
 		result.setReferTable(element.getAttribute("table").toUpperCase());

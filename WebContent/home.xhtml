@@ -7,22 +7,21 @@
 	xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:f="http://java.sun.com/jsf/core"
 	xmlns:h="http://java.sun.com/jsf/html"
-	xmlns:p="http://primefaces.org/ui"
-	xmlns:c="http://java.sun.com/jstl/core">
+	xmlns:p="http://primefaces.org/ui">
 
 <h:head>
 	<title>JSF 2.0 Hello World</title>
 </h:head>
 <h:body>
-	<h:outputStylesheet name="css/ac.css" />
+	<h:outputStylesheet name="css/ai.css" />
 	<p:panelGrid styleClass="main-panel">
 		<p:row>
 			<p:column rowspan="2" colspan="3"
-				style="width:270px;height:400px;padding-top:4px;" resizable="false">
-				
-				<p:tabView styleClass="left-tab">
-					<p:tab title="Menu" styleClass="asdad">
-						 <h:form style="height:500px">
+				style="width:400px;height:680px;padding-top:4px;" resizable="false">
+
+				<p:tabView id="left-tab" styleClass="left-tab">
+					<p:tab id="menu-tab" title="Menu">
+						<h:form style="height:602px;">
 							<p:growl id="growl" life="2000" />
 							<p:commandButton value="Open Xml File"
 								onclick="PF('dlgxml').show()" update="growl"
@@ -32,10 +31,12 @@
 								onclick="PF('dlgzip').show()" update="growl" icon="ui-icon-note" />
 							<p:dialog header="Choose an xml file..." widgetVar="dlgxml"
 								modal="true" height="250" weigh="250">
+								<p:ajax event="close" update="left-tab" />
 								<h:form enctype="multipart/form-data">
 									<p:fileUpload required="true"
 										requiredMessage="No files selected." style="weigh:250px;"
 										fileUploadListener="#{fileUploadBean.handleFileUpload}"
+										oncomplete="PF('dlgxml').hide()"
 										mode="advanced" dragDropSupport="true" update="messages"
 										allowTypes="/(\.|\/)(hbm.xml)$/" />
 
@@ -44,22 +45,25 @@
 							</p:dialog>
 							<p:dialog header="Choose a zip file..." widgetVar="dlgzip"
 								modal="true" height="250" weigh="250">
+								<p:ajax event="close" update="left-tab" />
 								<h:form enctype="multipart/form-data">
 									<p:fileUpload required="true"
 										requiredMessage="No files selected." style="weigh:250px;"
 										fileUploadListener="#{fileUploadBean.handleFileUpload}"
+										oncomplete="PF('dlgzip').hide()"
 										mode="advanced" dragDropSupport="true" update="messages"
 										allowTypes="/(\.|\/)(zip)$/" />
 									<p:growl id="messages" showDetail="true" />
 								</h:form>
 							</p:dialog>
-						</h:form> 
+						</h:form>
 					</p:tab>
-					<p:tab title="Tree" >
-							<h:form style="height:800px;width:200px" >  
-							<p:tree value="#{treeBean.root}" var="node" dynamic="true"
-								selectionMode="single" selection="#{treeBean.selectedNode}" 
-								scrollable="true" >
+					<p:tab id="tree-tab" title="Tree">
+						<h:form style="height:602px;">
+							<p:tree id="tree" style="border:0 none;width: 250px;height:100%"
+								value="#{treeBean.root}" var="node" dynamic="true"
+								selectionMode="single" selection="#{treeBean.selectedNode}"
+								scrollable="true">
 								<p:treeNode type="table" icon="ui-icon ui-icon-calculator">
 									<h:outputText value="#{node.tableName}" />
 								</p:treeNode>
@@ -67,98 +71,106 @@
 									<h:outputText value="#{node.name}" />
 								</p:treeNode>
 
-								<p:ajax event="select" listener="#{treeBean.onSelectNode}" update="tabview"/>
+								<p:ajax event="select" listener="#{treeBean.onSelectNode}"
+									update="main-tab" />
 							</p:tree>
-							</h:form>
+						</h:form>
 					</p:tab>
 				</p:tabView>
-				
+
 
 			</p:column>
 			<p:column colspan="9"
-				style="width:1100px;height:500px;padding-left:10px;padding-top:6px;" resizable="false">
-				<p:tabView id="tabview">
+				style="width:600px;height:680px;padding-left:10px;padding-top:6px;"
+				resizable="false">
+				<p:tabView id="main-tab">
 					<p:tab title="Table">
-					<h:form id="formTable" style="height:200px;" >
-						<p:dataTable id="dttable" var="column"
-							value="#{tableBean.table.listColumn}" style="height:200px"
-							scrollable="true" scrollHeight="150">
-							<p:column headerText="Column Name" colspan="2">
-								<h:outputText value="#{column.name}" />
-							</p:column>
+						<h:form id="formTable">
+							<p:dataTable id="dttable" var="column"
+								value="#{tableBean.table.listColumn}"
+								style="height:365px;padding-top:2px;" scrollable="true"
+								scrollHeight="360">
+								<p:column headerText="Column Name" colspan="2">
+									<h:outputText value="#{column.name}" />
+								</p:column>
 
-							<p:column headerText="Type" colspan="2">
-								<h:outputText value="#{column.type} (#{column.length})" />
-							</p:column>
+								<p:column headerText="Type" colspan="2">
+									<h:outputText value="#{column.type} (#{column.length})" />
+								</p:column>
 
-							<p:column headerText="Primary Key">
-								<p:selectBooleanCheckbox value="#{column.primaryKey}" />
-							</p:column>
+								<p:column headerText="Primary Key">
+									<p:selectBooleanCheckbox value="#{column.primaryKey}" />
+								</p:column>
 
-							<p:column headerText="Auto Increment">
-								<p:selectBooleanCheckbox value="#{column.autoIcrement}" />
-							</p:column>
-							<p:column headerText="Not Null">
-								<p:selectBooleanCheckbox value="#{column.not_null}" />
-							</p:column>
+								<p:column headerText="Auto Increment">
+									<p:selectBooleanCheckbox value="#{column.autoIcrement}" />
+								</p:column>
+								<p:column headerText="Not Null">
+									<p:selectBooleanCheckbox value="#{column.not_null}" />
+								</p:column>
 
 
-						</p:dataTable>
+							</p:dataTable>
 						</h:form>
 						<p:tabView>
-							<form id="dtcolumn" style="height:100px"> 
-							<p:tab title="Detail" >
-							
-								<div class="ui-g" >
+							<form id="dtcolumn" style="height: 100px">
+								<p:tab title="Detail">
+
 									<div class="ui-g">
-										<div class="ui-g-6 ui-g-nopad">
-										
-											<div class="ui-g-12 left-col-content">
-												<h:outputLabel for="name" value="Name:" />
-												<p:inputTextarea id="name" rows="1" cols="35"
-													value="#{columnBean.column.name}"
-													readonly="#{facesContext.renderResponse}" />
+										<div class="ui-g">
+											<div class="ui-g-6 ui-g-nopad">
+
+												<div class="ui-g-12 left-col-content">
+													<h:outputLabel for="name" value="Name:" />
+													<p:inputTextarea id="name" rows="1" cols="35"
+														value="#{columnBean.column.name}"
+														readonly="#{facesContext.renderResponse}" />
+												</div>
+
+												<div class="ui-g-12 left-col-content">
+													<h:outputLabel for="type" value="Type:" />
+													<p:inputTextarea id="type" rows="1" cols="35"
+														value="#{columnBean.column.type}"
+														readonly="#{facesContext.renderResponse}" />
+												</div>
+												<div class="ui-g-12 left-col-content">
+													<h:outputLabel for="length" value="Length:" />
+													<p:inputTextarea id="length" rows="1" cols="35"
+														value="#{columnBean.column.length}"
+														readonly="#{facesContext.renderResponse}" />
+												</div>
 											</div>
-											
-											<div class="ui-g-12 left-col-content">
-												<h:outputLabel for="type" value="Type:" />
-												<p:inputTextarea id="type" rows="1" cols="35"
-													value="#{columnBean.column.type}"
-													readonly="#{facesContext.renderResponse}" />
-											</div>
-											<div class="ui-g-12 left-col-content">
-												<h:outputLabel for="length" value="Length:" />
-												<p:inputTextarea id="length" rows="1" cols="35"
-													value="#{columnBean.column.length}"
-													readonly="#{facesContext.renderResponse}" />
-											</div>
-										</div>
-										<div class="ui-g-6 ui-g-nopad">
-											<div class="ui-g-12 right-col-content">
-												<h:outputLabel value="Primary Key: " />
-												<p:selectBooleanCheckbox value="#{columnBean.column.primaryKey}" />
-											</div>
-											<div class="ui-g-12 right-col-content">
-												<h:outputLabel value="Auto Increament: " />
-												<p:selectBooleanCheckbox styleClass="asda" value="#{columnBean.column.autoIcrement}" />
-											</div>
-											<div class="ui-g-12 right-col-content">
-												<h:outputLabel value="Not Null: " />
-												<p:selectBooleanCheckbox value="#{columnBean.column.not_null}" />
+											<div class="ui-g-6 ui-g-nopad">
+												<div class="ui-g-12 right-col-content">
+													<h:outputLabel value="Primary Key: " />
+													<p:selectBooleanCheckbox
+														value="#{columnBean.column.primaryKey}" />
+												</div>
+												<div class="ui-g-12 right-col-content">
+													<h:outputLabel value="Auto Increament: " />
+													<p:selectBooleanCheckbox styleClass="asda"
+														value="#{columnBean.column.autoIcrement}" />
+												</div>
+												<div class="ui-g-12 right-col-content">
+													<h:outputLabel value="Not Null: " />
+													<p:selectBooleanCheckbox
+														value="#{columnBean.column.not_null}" />
+												</div>
 											</div>
 										</div>
 									</div>
-								</div>
-								
-							</p:tab>
+
+								</p:tab>
 							</form>
 						</p:tabView>
 					</p:tab>
 					<p:tab title="Relation">
 						<p:dataTable id="dttabler" var="relationship"
-							value="#{tableBean.table.listRelationship}" style="height:600px;padding-top: 2px;">
+							value="#{tableBean.table.listRelationship}"
+							style="height:600px;padding-top: 2px;">
 							<p:column headerText="Column Name" colspan="3">
-								<h:outputText value="'#{tableBean.table.tableName}'.'#{relationship.joinColumn}'" />
+								<h:outputText
+									value="'#{tableBean.table.tableName}'.'#{relationship.joinColumn}'" />
 							</p:column>
 
 							<p:column headerText="Relation Type">
@@ -166,7 +178,8 @@
 							</p:column>
 
 							<p:column headerText="Referenced Table" colspan="3">
-								<h:outputText value="'#{relationship.referTable}'.'#{relationship.joinColumn}'"/>
+								<h:outputText
+									value="'#{relationship.referTable}'.'#{relationship.joinColumn}'" />
 							</p:column>
 						</p:dataTable>
 					</p:tab>

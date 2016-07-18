@@ -22,11 +22,16 @@ public class TreeService {
 		
 		TreeNode root = new DefaultTreeNode("root",null) ;
 		
-		for(Table table : list){
-			TreeNode tableNode = new DefaultTreeNode("table",table,root);
-			List<Column> listColumn = table.getListColumn();
-			for(Column column:listColumn){
-				tableNode.getChildren().add(new DefaultTreeNode("column",column,tableNode));
+		if(list == null) {
+			return root;
+		}
+		else {
+			for(Table table : list){
+				TreeNode tableNode = new DefaultTreeNode("table",table,root);
+				List<Column> listColumn = table.getListColumn();
+				for(Column column:listColumn){
+					tableNode.getChildren().add(new DefaultTreeNode("column",column,tableNode));
+				}
 			}
 		}
 		

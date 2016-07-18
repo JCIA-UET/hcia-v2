@@ -1,6 +1,5 @@
 package uet.jcia.model;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import uet.jcia.entities.Table;
@@ -11,11 +10,6 @@ public class InteractComponent {
 	private List<Table> listTable ;
 	
 	private InteractComponent(){
-		listTable = new ArrayList<>();
-		Scanner scanner = new Scanner();
-		List<String> listLinkXml = scanner.searchAndExtractXmlFile("resources.zip");
-		Parser parser = new Parser();
-		listTable = parser.parseAllToListTable(listLinkXml);
 	}
 	
 	public static InteractComponent getIntance(){
@@ -24,11 +18,9 @@ public class InteractComponent {
 	public List<Table> getListTable(){
 		return listTable;
 	}
-	public void setListTable(String zipFile){
-		Scanner scanner = new Scanner();
-		List<String> listLinkXml = scanner.searchAndExtractXmlFile(zipFile);
-		Parser parser = new Parser();
-		listTable = parser.parseAllToListTable(listLinkXml);
+	public void setListTable(List<Table> tablesList){
+		InteractComponent ic = InteractComponent.getIntance();
+		ic.listTable = tablesList;
 	}
 
 }
