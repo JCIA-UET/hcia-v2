@@ -18,11 +18,11 @@
 	<p:panelGrid styleClass="main-panel">
 		<p:row>
 			<p:column rowspan="2" colspan="3"
-				style="width:270px;height:680px;padding-top:4px;">
+				style="width:270px;height:400px;padding-top:4px;" resizable="false">
 				
 				<p:tabView styleClass="left-tab">
 					<p:tab title="Menu" styleClass="asdad">
-						 <h:form style="height:605px">
+						 <h:form style="height:500px">
 							<p:growl id="growl" life="2000" />
 							<p:commandButton value="Open Xml File"
 								onclick="PF('dlgxml').show()" update="growl"
@@ -55,10 +55,11 @@
 							</p:dialog>
 						</h:form> 
 					</p:tab>
-					<p:tab title="Tree">
-							<h:form>
+					<p:tab title="Tree" >
+							<h:form style="height:800px;width:200px" >  
 							<p:tree value="#{treeBean.root}" var="node" dynamic="true"
-								selectionMode="single" selection="#{treeBean.selectedNode}" >
+								selectionMode="single" selection="#{treeBean.selectedNode}" 
+								scrollable="true" >
 								<p:treeNode type="table" icon="ui-icon ui-icon-calculator">
 									<h:outputText value="#{node.tableName}" />
 								</p:treeNode>
@@ -66,7 +67,7 @@
 									<h:outputText value="#{node.name}" />
 								</p:treeNode>
 
-								<p:ajax event="select" listener="#{treeBean.onSelectNode}"></p:ajax>
+								<p:ajax event="select" listener="#{treeBean.onSelectNode}" update="tabview"/>
 							</p:tree>
 							</h:form>
 					</p:tab>
@@ -75,16 +76,18 @@
 
 			</p:column>
 			<p:column colspan="9"
-				style="width:1100px;height:680px;padding-left:10px;padding-top:6px;">
-				<p:tabView ajax="true">
+				style="width:1100px;height:500px;padding-left:10px;padding-top:6px;" resizable="false">
+				<p:tabView id="tabview">
 					<p:tab title="Table">
+					<h:form id="formTable" style="height:200px;" >
 						<p:dataTable id="dttable" var="column"
-							value="#{tableBean.table.listColumn}">
-							<p:column headerText="Column Name">
+							value="#{tableBean.table.listColumn}" style="height:200px"
+							scrollable="true" scrollHeight="150">
+							<p:column headerText="Column Name" colspan="2">
 								<h:outputText value="#{column.name}" />
 							</p:column>
 
-							<p:column headerText="Type">
+							<p:column headerText="Type" colspan="2">
 								<h:outputText value="#{column.type} (#{column.length})" />
 							</p:column>
 
@@ -101,9 +104,11 @@
 
 
 						</p:dataTable>
-						<p:tabView style="height: 100%;">
-							<p:tab title="Detail">
-							<form id="dtcolumn"> 
+						</h:form>
+						<p:tabView>
+							<form id="dtcolumn" style="height:100px"> 
+							<p:tab title="Detail" >
+							
 								<div class="ui-g" >
 									<div class="ui-g">
 										<div class="ui-g-6 ui-g-nopad">
@@ -144,14 +149,15 @@
 										</div>
 									</div>
 								</div>
-								</form>
+								
 							</p:tab>
+							</form>
 						</p:tabView>
 					</p:tab>
 					<p:tab title="Relation">
 						<p:dataTable id="dttabler" var="relationship"
 							value="#{tableBean.table.listRelationship}" style="height:600px;padding-top: 2px;">
-							<p:column headerText="Column Name">
+							<p:column headerText="Column Name" colspan="3">
 								<h:outputText value="'#{tableBean.table.tableName}'.'#{relationship.joinColumn}'" />
 							</p:column>
 
@@ -159,7 +165,7 @@
 								<h:outputText value="#{relationship.type}" />
 							</p:column>
 
-							<p:column headerText="Referenced Table">
+							<p:column headerText="Referenced Table" colspan="3">
 								<h:outputText value="'#{relationship.referTable}'.'#{relationship.joinColumn}'"/>
 							</p:column>
 						</p:dataTable>
