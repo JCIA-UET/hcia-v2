@@ -1,6 +1,7 @@
 package uet.jcia.controller;
 
 import java.io.Serializable;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
@@ -13,6 +14,7 @@ import org.primefaces.model.TreeNode;
 
 import uet.jcia.entities.Column;
 import uet.jcia.entities.Table;
+import uet.jcia.model.InteractComponent;
 
 @ManagedBean
 @ViewScoped

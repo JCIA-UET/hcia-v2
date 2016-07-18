@@ -7,8 +7,9 @@ import java.util.List;
 
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
 
-import org.primefaces.context.RequestContext;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.UploadedFile;
 
@@ -59,7 +60,8 @@ public class FileUploadBean {
 				tablesList = parser.parseAllToListTable(filesList);
 				ic.setListTable(tablesList);
         	}
-        	RequestContext.getCurrentInstance().update("tree");
+        	ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
+        	context.redirect("home.xhtml");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
