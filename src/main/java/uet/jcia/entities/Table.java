@@ -5,9 +5,15 @@
 
 package uet.jcia.entities;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class Table {
+public class Table implements Serializable {
+
+    private static final long serialVersionUID = 9196607214146645073L;
+    
+    private String refXml;
+    private String className;
 	private String tableName;
 	private List<Column> listColumn;
 	private List<Relationship> listRelationship;
@@ -36,15 +42,29 @@ public class Table {
 	public void setListColumn(List<Column> listColumn) {
 		this.listColumn = listColumn;
 	}
-	public String toString(){
-		String result = "";
-		result += "Table : " + tableName +"\n";
-		for(Column col : listColumn){
-			result+=col;
-		}
-		for(Relationship re:listRelationship){
-			result+=re;
-		}
-		return result;
-	}
+	
+	public String getClassName() {
+        return className;
+    }
+	
+	public void setClassName(String className) {
+        this.className = className;
+    }
+	
+	public String getRefXml() {
+        return refXml;
+    }
+	
+	public void setRefXml(String refXml) {
+        this.refXml = refXml;
+    }
+
+    @Override
+    public String toString() {
+        return "\nTable [\n"
+                + "  className=" + className + ", tableName=" + tableName + ", refXml = " + refXml + "\n"
+                + "  listColumn=" + listColumn + ",\n"
+                + "  listRelationship=" + listRelationship + "]";
+    }
+	
 }

@@ -23,10 +23,21 @@ import uet.jcia.entities.Relationship;
 import uet.jcia.entities.Table;
 
 public class Parser {
+    
+    private static final String ONE_TO_ONE = "one-to-one";
+    private static final String ONE_TO_MANY = "one-to-many";
+    private static final String MANY_TO_ONE = "many-to-one";
+    
 	private HashMap<String,String> mappingType;
+	private HashMap<String, String> classTableMapper;
+	
+	private HashMap<String, Column> cachedColumns;
 	
 	public Parser(){
 		mappingType = new HashMap<>();
+		classTableMapper = new HashMap<>();
+		cachedColumns = new HashMap<>();
+		
 		mappingType.put("java.lang.Integer", "INTEGER");
 		mappingType.put("int", "INTEGER");
 		mappingType.put("java.lang.Long", "BIGINT");
@@ -62,35 +73,74 @@ public class Parser {
 	
 	
 	// key API for controller layer 
-	public List<Table> parseAllToListTable(List<String> xmlLinkList){
-		List<Table> result = new ArrayList<Table>();
+	public List<Table> parseXmlList(List<String> xmlLinkList){
+	    System.out.println("[Parser] starting....");
+
+	    List<Table> result = new ArrayList<Table>();
 		
 		// add list table to result with each file *.hbm.xml
 		for(String iter:xmlLinkList){
 			result.addAll(parseOneXmlToListTable(iter));
 		}
 		
+		System.out.println("[Parser] add relationships....");
+		// get information of reference tables 
+        for (Table t : result) {
+            List<Relationship> relationshipList = t.getListRelationship();
+            for (Relationship r : relationshipList) {
+                String refTableName = classTableMapper.get(r.getReferClass());
+                String refColumnName = r.getReferColumn();
+                r.setReferTable(refTableName);
+                
+                if (r.getType().equals(MANY_TO_ONE)) {
+                    Column refColumn = cachedColumns.get(refTableName.toUpperCase() 
+                            + "." 
+                            + refColumnName.toUpperCase());
+                    // clone reference column to own table
+                    if (refColumn != null) {
+                        refColumn.setPrimaryKey(false);
+                        refColumn.setAutoIncrement(false);
+                        refColumn.setHbmTag(r.getHbmTag());
+                        refColumn.setMappingName(r.getMappingName());
+                    }
+                    t.getListColumn().add(refColumn);
+                }
+            }
+        }
+		
+        System.out.println("[Parser] done!");
 		return result;
 	}
 	
 	
-	private List<Table> parseOneXmlToListTable(String xmlLink){
+	public List<Table> parseOneXmlToListTable(String xmlLink){
 		List<Table> result = new ArrayList<>();
 		try {
 			File fXmlFile = new File(xmlLink);
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+			
+			System.out.println("[Parser] parsing [" + xmlLink + "]....");
 			Document doc = dBuilder.parse(fXmlFile);
 			doc.getDocumentElement().normalize();
+			System.out.println("[Parser] parsed....");
+			
+			System.out.println("[Parser] analylising....");
+			// invalid hbm xml must contain hibernate-mapping tag
+			if (doc.getElementsByTagName("hibernate-mapping").getLength() == 0) {
+			    return result;
+			}
 			
 			NodeList listClass = doc.getElementsByTagName("class");
 			
 			// add one table to result with each class tag
 			for(int temp = 0; temp < listClass.getLength(); temp++){
 				Table table = parseOneTagClassToTable(listClass.item(temp));
+				table.setRefXml(xmlLink);
 				result.add(table);
 			}
 			
+			System.out.println("[Parser] analylised....");
 			return result;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -100,10 +150,16 @@ public class Parser {
 	
 	private Table parseOneTagClassToTable(Node classNode){
 		Table result = new Table();
-		//write code here
+		//write code here/
 		Element element = (Element)classNode;
-		result.setTableName(element.getAttribute("table").toUpperCase());
 		
+		String className = element.getAttribute("name");
+		String tableName = element.getAttribute("table").toUpperCase();
+		result.setClassName(className);
+		result.setTableName(tableName);
+		
+		// add to mapper of class and table
+		classTableMapper.put(className, tableName);
 		
 		//add list column to Table result
 		List<Column> columns = new ArrayList<>();
@@ -111,7 +167,10 @@ public class Parser {
 		// Add column Id if have tag
 		NodeList id = element.getElementsByTagName("id");
 		if(id.getLength()!=0){
-			columns.add(parseIdTagToColumn(id.item(0)));
+		    Column c = parseIdTagToColumn(id.item(0));
+			columns.add(c);
+			
+			cachedColumns.put(tableName.toUpperCase() + "." + c.getName().toUpperCase(), c);
 		}
 		
 		//add list column PK if have tag composite-id
@@ -123,7 +182,10 @@ public class Parser {
 		//add list column by property tags
 		NodeList pNodeList = element.getElementsByTagName("property");
 		for(int temp = 0; temp < pNodeList.getLength(); temp++){
-			columns.add(parseOnePropertyTagToColumn(pNodeList.item(temp)));
+		    Column c = parseOnePropertyTagToColumn(pNodeList.item(temp));
+			columns.add(c);
+			
+			cachedColumns.put(tableName.toUpperCase() + "." + c.getName().toUpperCase(), c);
 		}
 		
 		// add list relationship
@@ -133,9 +195,11 @@ public class Parser {
 			relationships.add(parseOneTagManyToOne(r1NodeList.item(temp)));
 		
 		}
+		
+		// actually, this is 1-n relationship
 		NodeList r2NodeList = element.getElementsByTagName("set");
 		for(int temp = 0; temp < r2NodeList.getLength(); temp++){
-			relationships.add(parseOneTagOneToMany(r2NodeList.item(temp)));
+			relationships.add(parseSet(r2NodeList.item(temp)));
 		}
 		
 		//set column and relation to table result
@@ -150,6 +214,9 @@ public class Parser {
 		Column result = new Column();
 		Element element = (Element) idNode;
 		
+		result.setHbmTag("id");
+		result.setMappingName(element.getAttribute("name"));
+		
 		//get Attribute name and type ,primary key , not null property
 		Element col = (Element) element.getElementsByTagName("column").item(0);
 		result.setName(col.getAttribute("name").toUpperCase());
@@ -157,21 +224,25 @@ public class Parser {
 		
 		result.setType(mappingType.get(element.getAttribute("type")));
 		result.setPrimaryKey(true);
-		result.setNot_null(true);
+		result.setNotNull(true);
 		
 		//get generator
-		 Element generatorNode = (Element) element.getElementsByTagName("generator").item(0);
-		 String test =  generatorNode.getAttribute("class");
-		 if(!test.equals("select")){
-			 result.setAutoIcrement(true);
-		 }
-		 else result.setAutoIcrement(false);
+		Element generatorNode = (Element) element.getElementsByTagName("generator").item(0);
+		String test =  generatorNode.getAttribute("class");
+		if(!test.equals("select")){
+		    result.setAutoIncrement(true);
+		}
+		else result.setAutoIncrement(false);
+		
 		return result;
 	}
 	
 	private Column parseOnePropertyTagToColumn(Node pNode){
 		Column result = new Column();
 		Element element = (Element) pNode;
+		
+		result.setHbmTag("property");
+        result.setMappingName(element.getAttribute("name"));
 		
 		//set name , type , primary key and AutoIcrement
 		Element col = (Element) element.getElementsByTagName("column").item(0);
@@ -180,41 +251,60 @@ public class Parser {
 
 		result.setType(mappingType.get(element.getAttribute("type")));
 		result.setPrimaryKey(false);
-		result.setAutoIcrement(false);
+		result.setAutoIncrement(false);
 		
 		//set not-null
 		Element generatorNode = (Element) element.getElementsByTagName("column").item(0);
 		String test = generatorNode.getAttribute("not-null");
 		if(test.equals("true")){
-			result.setNot_null(true);
-		} else result.setNot_null(false);
+			result.setNotNull(true);
+		} else result.setNotNull(false);
 		
 		return result;
 	}
 	
 	private Relationship parseOneTagManyToOne(Node rNode){
 		Relationship result = new Relationship();
+		
 		Element element = (Element)rNode;
-		result.setReferTable(element.getAttribute("name").toUpperCase());
-		result.setType("many-to-one");
+		
+		result.setHbmTag("many-to-one");
+        result.setMappingName(element.getAttribute("name"));
+		
+		result.setReferClass(element.getAttribute("class"));
+		
+		// n-1 tag enable unique will be an 1-1 relationship 
+		String unique = element.getAttribute("unique");
+		if (unique != null && unique.equalsIgnoreCase("true")) {
+		    result.setType(ONE_TO_ONE);
+		} else {
+		    result.setType(MANY_TO_ONE);
+		}
 		
 		Element col = (Element) element.getElementsByTagName("column").item(0);
-		result.setJoinColumn(col.getAttribute("name").toUpperCase());
+		result.setReferColumn(col.getAttribute("name").toUpperCase());
 		
 		return result; 
 	}
 	
-	private Relationship parseOneTagOneToMany(Node rNode){
+	private Relationship parseSet(Node rNode){
 		Relationship result = new Relationship(); 
-		result.setType("one-to-many");
+		result.setType(ONE_TO_MANY);
 		
 		Element element = (Element)rNode;
-		result.setReferTable(element.getAttribute("table").toUpperCase());
+		
+		result.setHbmTag("set");
+        result.setMappingName(element.getAttribute("name"));
 		
 		Element key = (Element) element.getElementsByTagName("key").item(0);
 		Element col = (Element) key.getElementsByTagName("column").item(0);
 		
-		result.setJoinColumn(col.getAttribute("name").toUpperCase());
+		// set key column
+        result.setReferColumn(col.getAttribute("name").toUpperCase());
+		
+		Element oneToManyTag = (Element) 
+		        element.getElementsByTagName("one-to-many").item(0);
+		result.setReferClass(oneToManyTag.getAttribute("class"));
 		
 		return result;
 	}
@@ -232,9 +322,9 @@ public class Parser {
 			
 			// set type, default not-null , default PK , default AI
 			column.setType(mappingType.get(e.getAttribute("type")));
-			column.setNot_null(true);
+			column.setNotNull(true);
 			column.setPrimaryKey(true);
-			column.setAutoIcrement(false);
+			column.setAutoIncrement(false);
 			
 			Element col = (Element) e.getElementsByTagName("column").item(0);
 			column.setName(col.getAttribute("name"));
@@ -243,5 +333,9 @@ public class Parser {
 		}
 		return result;
 	}
+	
+	public HashMap<String, String> getClassTableMapper() {
+        return classTableMapper;
+    }
 	
 }
