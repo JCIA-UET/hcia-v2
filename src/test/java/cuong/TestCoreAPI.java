@@ -11,7 +11,7 @@ public class TestCoreAPI {
     public static void main(String[] args) {
         CoreAPI api = new CoreAPI();
         
-        String resultPath = api.parse("I:\\Workspace\\hcia-v2\\temp\\upload\\vnu.zip");
+        String resultPath = api.parse("C:\\Users\\vy\\workspace\\hcia-v2\\temp\\upload\\vnu.zip");
         System.out.println("[temp data] " + resultPath);
         
         List<Table> tableList = api.getTableList(resultPath);
