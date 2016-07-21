@@ -115,6 +115,7 @@ public class Parser {
                     if (refColumn != null) {
                         refColumn.setPrimaryKey(false);
                         refColumn.setAutoIncrement(false);
+                        refColumn.setForeignKey(true);
                         refColumn.setTempId("" + tempIdGenerator++);
                     }
                     t.getListColumn().add(refColumn);

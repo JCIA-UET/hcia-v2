@@ -11,6 +11,7 @@ public class Column implements Serializable {
 	private boolean primaryKey;
 	private boolean autoIncrement;
 	private boolean notNull;
+	private boolean foreignKey; 
 	private String length;
 	
 	private String refXml;
@@ -19,6 +20,14 @@ public class Column implements Serializable {
 	public Column(){
 
 	}
+	
+	public boolean isForeignKey() {
+        return foreignKey;
+    }
+	
+	public void setForeignKey(boolean foreignKey) {
+        this.foreignKey = foreignKey;
+    }
 
     public String getName() {
         return name;
@@ -88,7 +97,7 @@ public class Column implements Serializable {
     public String toString() {
         return "\n    Column ["
                 + "name=" + name + ", type=" + type + ", primaryKey=" + primaryKey + ", autoIncrement=" + autoIncrement
-                + ",\n           notNull=" + notNull + ", length=" + length + ", tempId=" + tempId + "]";
+                + ",\n           foreignKey= " + foreignKey + ", notNull=" + notNull + ", length=" + length + ", tempId=" + tempId + "]";
     }
 
 }
