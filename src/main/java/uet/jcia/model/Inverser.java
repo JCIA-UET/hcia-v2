@@ -56,6 +56,7 @@ public class Inverser {
             format.setStandalone(true);
             serializer.setOutputFormat(format);
             serializer.serialize(doc);
+            System.out.println("[Inverser] done!");
             
         } catch (ParserConfigurationException e) {
             e.printStackTrace();

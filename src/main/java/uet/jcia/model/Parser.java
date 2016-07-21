@@ -85,14 +85,13 @@ public class Parser {
 	
 	
 	// key API for controller layer 
-	public List<Table> parseXmlList(List<String> xmlLinkList){
+	public List<Table> parseXmlList(List<String> xmlList){
 	    System.out.println("[Parser] starting....");
 
 	    List<Table> result = new ArrayList<Table>();
 		
-		// add list table to result with each file *.hbm.xml
-		for(String iter:xmlLinkList){
-			result.addAll(parseOneXmlToListTable(iter));
+		for(String xml : xmlList){
+			result.addAll(parseOneXmlToListTable(xml));
 		}
 		
 		System.out.println("[Parser] add relationships....");

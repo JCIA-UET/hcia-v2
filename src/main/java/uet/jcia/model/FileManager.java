@@ -1,5 +1,6 @@
 package uet.jcia.model;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -8,36 +9,37 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import uet.jcia.entities.Table;
 import uet.jcia.utils.Constants;
+import uet.jcia.utils.Helper;
 
 public class FileManager {
     
-    private static DateFormat dateFormat =
-            new SimpleDateFormat("yyyyMMdd-HHmmss");
-    
-    public static void saveTables(List<Table> tableList) {
+    public String saveTables(List<Table> tableList) {
         Date d = new Date();
-        String filePath = Constants.TEMP_SOURCE_FOLDER 
-                + "temp-data-" + dateFormat.format(d);
+        String filePath = Constants.TEMP_SOURCE_FOLDER + File.separator
+                + "temp-data-" + Helper.DATE_FORMATER.format(d);
         
         try {
             FileOutputStream fos = new FileOutputStream(filePath);
             ObjectOutputStream oos = new ObjectOutputStream(fos);
             oos.writeObject(tableList);
             
+            return filePath;
         } catch (FileNotFoundException e) {
             e.printStackTrace();
+            return null;
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
+            return null;
         }
     }
     
-    public static List<Table> readTables(String filePath) {
+    public List<Table> readTables(String filePath) {
         try {
             FileInputStream fis = new FileInputStream(filePath);
             ObjectInputStream ois = new ObjectInputStream(fis);
@@ -54,6 +56,23 @@ public class FileManager {
         }
         
         return null;
+    }
+    
+    public void findFiles(
+            String srcFolder, String pattern, List<String> resultList) {
+        File node = new File(srcFolder);
+        if (!node.exists()) return;
+
+        if (node.isFile() && node.getName().matches(pattern)) {
+            String absPath = node.getAbsolutePath();
+            System.out.println("[Scanner] found [" + absPath + "]");
+            resultList.add(absPath);
+            
+        } else if (node.isDirectory()) {
+            for (File child : node.listFiles()) {
+                findFiles(child.getAbsolutePath(), pattern, resultList);
+            }
+        }
     }
     
 }
