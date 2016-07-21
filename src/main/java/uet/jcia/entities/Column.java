@@ -13,10 +13,8 @@ public class Column implements Serializable {
 	private boolean notNull;
 	private String length;
 	
-	private String hbmTag;
 	private String refXml;
-	private String className;
-	private String mappingName;
+	private String tempId;
 	
 	public Column(){
 
@@ -70,22 +68,6 @@ public class Column implements Serializable {
         this.length = length;
     }
 
-    public String getHbmTag() {
-        return hbmTag;
-    }
-
-    public void setHbmTag(String hbmTag) {
-        this.hbmTag = hbmTag;
-    }
-
-    public String getMappingName() {
-        return mappingName;
-    }
-
-    public void setMappingName(String mappingName) {
-        this.mappingName = mappingName;
-    }
-
     public String getRefXml() {
         return refXml;
     }
@@ -93,20 +75,20 @@ public class Column implements Serializable {
     public void setRefXml(String refXml) {
         this.refXml = refXml;
     }
-
-    public String getClassName() {
-        return className;
+    
+    public String getTempId() {
+        return tempId;
     }
-
-    public void setClassName(String className) {
-        this.className = className;
+    
+    public void setTempId(String tempId) {
+        this.tempId = tempId;
     }
 
     @Override
     public String toString() {
         return "\n    Column ["
                 + "name=" + name + ", type=" + type + ", primaryKey=" + primaryKey + ", autoIncrement=" + autoIncrement
-                + ",\n           notNull=" + notNull + ", length=" + length + ", hbmTag=" + hbmTag + ", mappingName=" + mappingName + "]";
+                + ",\n           notNull=" + notNull + ", length=" + length + ", tempId=" + tempId + "]";
     }
 
 }

@@ -16,25 +16,9 @@ public class Relationship implements Serializable {
 	private String referClass;
 	private String type;
 	
-	private String hbmTag;
-	private String mappingName;
+	private String refXml;
+	private String tempId;
 	
-	public String getHbmTag() {
-        return hbmTag;
-    }
-
-    public void setHbmTag(String hbmTag) {
-        this.hbmTag = hbmTag;
-    }
-
-    public String getMappingName() {
-        return mappingName;
-    }
-
-    public void setMappingName(String mappingName) {
-        this.mappingName = mappingName;
-    }
-
     public String getReferColumn() {
         return referColumn;
     }
@@ -66,12 +50,27 @@ public class Relationship implements Serializable {
         this.referClass = referClass;
     }
 	
+	public String getRefXml() {
+        return refXml;
+    }
+	
+	public void setRefXml(String refXml) {
+        this.refXml = refXml;
+    }
+	
+	public String getTempId() {
+        return tempId;
+    }
+	
+	public void setTempId(String tempId) {
+        this.tempId = tempId;
+    }
 	
     @Override
     public String toString() {
         return "\n    Relationship ["
                 + "referColumn=" + referColumn + ", referTable=" + referTable + ", referClass=" + referClass
-                + ", type=" + type + "]";
+                + ", type=" + type + ", tempId=" + tempId + "]";
     }
 	
 }

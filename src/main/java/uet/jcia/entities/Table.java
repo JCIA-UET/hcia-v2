@@ -12,15 +12,25 @@ public class Table implements Serializable {
 
     private static final long serialVersionUID = 9196607214146645073L;
     
-    private String refXml;
     private String className;
 	private String tableName;
 	private List<Column> listColumn;
 	private List<Relationship> listRelationship;
 	
+	private String refXml;
+	private String tempId;
+	
 	public Table(){
 		
 	}
+	
+	public String getTempId() {
+        return tempId;
+    }
+	
+	public void setTempId(String tempId) {
+        this.tempId = tempId;
+    }
 	
 	public List<Relationship> getListRelationship() {
 		return listRelationship;
@@ -62,7 +72,7 @@ public class Table implements Serializable {
     @Override
     public String toString() {
         return "\nTable [\n"
-                + "  className=" + className + ", tableName=" + tableName + ", refXml = " + refXml + "\n"
+                + "  className=" + className + ", tableName=" + tableName + ", refXml = " + refXml + ", tempId= " + tempId + "\n"
                 + "  listColumn=" + listColumn + ",\n"
                 + "  listRelationship=" + listRelationship + "]";
     }

@@ -25,6 +25,8 @@ import uet.jcia.entities.Table;
 
 public class Parser {
     
+    private static int tempIdGenerator = 0;
+    
     private static final String ONE_TO_ONE = "one-to-one";
     private static final String ONE_TO_MANY = "one-to-many";
     private static final String MANY_TO_ONE = "many-to-one";
@@ -42,12 +44,14 @@ public class Parser {
     
 	private HashMap<String,String> mappingType;
 	private HashMap<String, String> classTableMapper;
+	private HashMap<String, Document> tagMapper;
 	
 	private HashMap<String, Column> cachedColumns;
 	
 	public Parser(){
 		mappingType = new HashMap<>();
 		classTableMapper = new HashMap<>();
+		tagMapper = new HashMap<>();
 		cachedColumns = new HashMap<>();
 		
 		mappingType.put("java.lang.Integer", "INTEGER");
@@ -111,8 +115,7 @@ public class Parser {
                     if (refColumn != null) {
                         refColumn.setPrimaryKey(false);
                         refColumn.setAutoIncrement(false);
-                        refColumn.setHbmTag(r.getHbmTag());
-                        refColumn.setMappingName(r.getMappingName());
+                        refColumn.setTempId("" + tempIdGenerator++);
                     }
                     t.getListColumn().add(refColumn);
                 }
@@ -141,12 +144,20 @@ public class Parser {
 			    return result;
 			}
 			
+			// map xmlLink and document
+			tagMapper.put(xmlLink, doc);
+			
 			NodeList listClass = doc.getElementsByTagName("class");
 			
 			// add one table to result with each class tag
 			for(int temp = 0; temp < listClass.getLength(); temp++){
-				Table table = parseOneTagClassToTable(listClass.item(temp));
+			    Node classNode = listClass.item(temp);
+				Table table = parseOneTagClassToTable(classNode);
 				table.setRefXml(xmlLink);
+				
+				String tempId = "" + tempIdGenerator++;
+				table.setTempId(tempId);
+				((Element)classNode).setAttribute("temp_id", tempId);
 				result.add(table);
 			}
 			
@@ -224,8 +235,9 @@ public class Parser {
 		Column result = new Column();
 		Element element = (Element) idNode;
 		
-		result.setHbmTag("id");
-		result.setMappingName(element.getAttribute("name"));
+		String tempId = "" + tempIdGenerator++;
+        result.setTempId(tempId);
+        element.setAttribute("temp_id", tempId);
 		
 		//get Attribute name and type ,primary key , not null property
 		Element col = (Element) element.getElementsByTagName("column").item(0);
@@ -251,8 +263,9 @@ public class Parser {
 		Column result = new Column();
 		Element element = (Element) pNode;
 		
-		result.setHbmTag("property");
-        result.setMappingName(element.getAttribute("name"));
+		String tempId = "" + tempIdGenerator++;
+        result.setTempId(tempId);
+        element.setAttribute("temp_id", tempId);
 		
 		//set name , type , primary key and AutoIcrement
 		Element col = (Element) element.getElementsByTagName("column").item(0);
@@ -275,14 +288,13 @@ public class Parser {
 	
 	private Relationship parseOneTagManyToOne(Node rNode){
 		Relationship result = new Relationship();
-		
 		Element element = (Element)rNode;
 		
-		result.setHbmTag("many-to-one");
-        result.setMappingName(element.getAttribute("name"));
+		String tempId = "" + tempIdGenerator++;
+        result.setTempId(tempId);
+        element.setAttribute("temp_id", tempId);
 		
 		result.setReferClass(element.getAttribute("class"));
-		
 		// n-1 tag enable unique will be an 1-1 relationship 
 		String unique = element.getAttribute("unique");
 		if (unique != null && unique.equalsIgnoreCase("true")) {
@@ -303,8 +315,9 @@ public class Parser {
 		
 		Element element = (Element)rNode;
 		
-		result.setHbmTag("set");
-        result.setMappingName(element.getAttribute("name"));
+		String tempId = "" + tempIdGenerator++;
+        result.setTempId(tempId);
+        element.setAttribute("temp_id", tempId);
 		
 		Element key = (Element) element.getElementsByTagName("key").item(0);
 		Element col = (Element) key.getElementsByTagName("column").item(0);
@@ -330,6 +343,10 @@ public class Parser {
 			Element e = (Element)listKey.item(temp);
 			Column column = new Column();
 			
+			String tempId = "" + tempIdGenerator++;
+	        column.setTempId(tempId);
+	        e.setAttribute("temp_id", tempId);
+			
 			// set type, default not-null , default PK , default AI
 			column.setType(mappingType.get(e.getAttribute("type")));
 			column.setNotNull(true);
@@ -346,6 +363,10 @@ public class Parser {
 	
 	public HashMap<String, String> getClassTableMapper() {
         return classTableMapper;
+    }
+	
+	public HashMap<String, Document> getTagMapper() {
+        return tagMapper;
     }
 	
 }

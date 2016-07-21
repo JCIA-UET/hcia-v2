@@ -6,7 +6,13 @@ import java.io.IOException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 
+import org.apache.catalina.filters.RemoteIpFilter.XForwardedRequest;
 import org.apache.xml.serialize.OutputFormat;
 import org.apache.xml.serialize.XMLSerializer;
 import org.w3c.dom.Document;
@@ -30,155 +36,119 @@ public class Inverser {
         }
     }
     
-    public void updateHbmClass(Table table) {
-        try {
-            File xmlFile = new File(table.getRefXml());
-            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-            System.out.println("[Inverser] parsing [" + table.getRefXml() + "]...");
-            Document doc = dBuilder.parse(xmlFile);
-            doc.normalize();
-            
-            Element rootNode = doc.getDocumentElement();
-            NodeList classNodes = rootNode.getElementsByTagName("class");
-            
-            System.out.println("[Inverser] modifying...");
-            for (int count = 0; count < classNodes.getLength(); count++) {
-                Element e = (Element) classNodes.item(count);
-                if (e.getAttribute("name").equalsIgnoreCase(table.getClassName())) {
-                    e.setAttribute("table", table.getTableName());
-                }
+    public void updateHbmClass(Table tbl, Document doc) {
+        if (tbl == null || doc == null) return;
+        
+        Element rootNode = doc.getDocumentElement();
+        NodeList classNodes = rootNode.getElementsByTagName("class");
+        
+        System.out.println("[Inverser] modifying...");
+        for (int count = 0; count < classNodes.getLength(); count++) {
+            Element e = (Element) classNodes.item(count);
+            if (e.getAttribute("temp_id").equals(tbl.getTempId())) {
+                e.setAttribute("table", tbl.getTableName());
             }
-            
-            System.out.println("[Inverser] saving...");
-            XMLSerializer serializer = new XMLSerializer();
-            serializer.setOutputCharStream(new java.io.FileWriter(table.getRefXml()));
-            OutputFormat format = new OutputFormat();
-            format.setStandalone(true);
-            serializer.setOutputFormat(format);
-            serializer.serialize(doc);
-            System.out.println("[Inverser] done!");
-            
-        } catch (ParserConfigurationException e) {
-            e.printStackTrace();
-        } catch (SAXException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
+        
+        System.out.println("[Inverser] done!");
         
     }
     
-    public void updateHbmProperty(Column column) {
-        try {
-            File xmlFile = new File(column.getRefXml());
-            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-            System.out.println("[Inverser] parsing [" + column.getRefXml() + "]...");
-            Document doc = dBuilder.parse(xmlFile);
-            doc.normalize();
-            
-            Element rootNode = doc.getDocumentElement();
-            
-            // column means in mySQL, it may be property tag
-            NodeList columnNodes = rootNode.getElementsByTagName("property");
-            
-            System.out.println("[Inverser] modifying...");
-            for (int count = 0; count < columnNodes.getLength(); count++) {
-                Element e = (Element) columnNodes.item(count);
-                if (e.getAttribute("name").equalsIgnoreCase(column.getMappingName())) {
-                    if (column.getType() != null) {
-                        e.setAttribute("type", column.getType());
-                    }
-                    if (column.getLength() != null) {
-                        e.setAttribute("length", column.getLength());
-                    }
-                    
-                    Element childCol = (Element) e.getElementsByTagName("column").item(0);
-                    if (column.getName() != null) {
-                        childCol.setAttribute("name", column.getName());
-                    }
-                    if (column.isNotNull()) {
-                        childCol.setAttribute("not-null", "true");
-                    } else {
-                        childCol.setAttribute("not-null", "false");
-                    }
-                    
-                }
-            }
-            
-            System.out.println("[Inverser] saving...");
-            XMLSerializer serializer = new XMLSerializer();
-            serializer.setOutputCharStream(new java.io.FileWriter(column.getRefXml()));
-            OutputFormat format = new OutputFormat();
-            format.setStandalone(true);
-            serializer.setOutputFormat(format);
-            serializer.serialize(doc);
-            
-        } catch (ParserConfigurationException e) {
-            e.printStackTrace();
-        } catch (SAXException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public void updateHbmProperty(Column tbl, Document doc) {
+        if (tbl == null || doc == null) return;
+        Element rootNode = doc.getDocumentElement();
         
-    }
-    
-    public void updateHbmId(Column column) {
-        try {
-            File xmlFile = new File(column.getRefXml());
-            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-            System.out.println("[Inverser] parsing [" + column.getRefXml() + "]...");
-            Document doc = dBuilder.parse(xmlFile);
-            doc.normalize();
-            
-            Element rootNode = doc.getDocumentElement();
-            
-            // column means in mySQL, it may be property tag
-            Element idNode = (Element) rootNode.getElementsByTagName("id").item(0);
-            
-            System.out.println("[Inverser] modifying...");
-            if (idNode.getAttribute("name").equals(column.getMappingName())) {
-                if (column.getType() != null) {
-                    idNode.setAttribute("type", column.getType());
+        // column means in mySQL, it may be property tag
+        NodeList columnNodes = rootNode.getElementsByTagName("property");
+        
+        System.out.println("[Inverser] modifying [" + tbl.getRefXml() + "]");
+        for (int count = 0; count < columnNodes.getLength(); count++) {
+            Element e = (Element) columnNodes.item(count);
+            if (e.getAttribute("temp_id").equals(tbl.getTempId())) {
+                if (tbl.getType() != null) {
+                    e.setAttribute("type", tbl.getType());
                 }
-                if (column.getLength() != null) {
-                    idNode.setAttribute("length", column.getLength());
+                if (tbl.getLength() != null) {
+                    e.setAttribute("length", tbl.getLength());
                 }
                 
-                Element childCol = (Element) idNode.getElementsByTagName("column").item(0);
-                if (column.getName() != null) {
-                    childCol.setAttribute("name", column.getName());
+                Element childCol = (Element) e.getElementsByTagName("column").item(0);
+                if (tbl.getName() != null) {
+                    childCol.setAttribute("name", tbl.getName());
                 }
-                if (column.isNotNull()) {
+                if (tbl.isNotNull()) {
                     childCol.setAttribute("not-null", "true");
                 } else {
                     childCol.setAttribute("not-null", "false");
                 }
                 
-                Element childGen = (Element) idNode.getElementsByTagName("generator").item(0);
-                if (column.isAutoIncrement()) {
-                    childGen.setAttribute("class", "increment");
-                } else {
-                    childGen.setAttribute("class", "assigned");
-                }
+            }
+        }
+        System.out.println("[Inverser] done!");
+        
+    }
+    
+    public void updateHbmId(Column col, Document doc) {
+        if (col == null || doc == null) return;
+        Element rootNode = doc.getDocumentElement();
+        
+        // column means in mySQL, it may be property tag
+        Element idNode = (Element) rootNode.getElementsByTagName("id").item(0);
+        
+        System.out.println("[Inverser] modifying [" + col.getRefXml() + "]");
+        if (idNode.getAttribute("temp_id").equals(col.getTempId())) {
+            if (col.getType() != null) {
+                idNode.setAttribute("type", col.getType());
+            }
+            if (col.getLength() != null) {
+                idNode.setAttribute("length", col.getLength());
             }
             
-            System.out.println("[Inverser] saving...");
+            Element childCol = (Element) idNode.getElementsByTagName("column").item(0);
+            if (col.getName() != null) {
+                childCol.setAttribute("name", col.getName());
+            }
+            if (col.isNotNull()) {
+                childCol.setAttribute("not-null", "true");
+            } else {
+                childCol.setAttribute("not-null", "false");
+            }
+            
+            Element childGen = (Element) idNode.getElementsByTagName("generator").item(0);
+            if (col.isAutoIncrement()) {
+                childGen.setAttribute("class", "increment");
+            } else {
+                childGen.setAttribute("class", "assigned");
+            }
+        }
+        
+        System.out.println("[Inverser] done!");
+    }
+    
+    public void saveXml(String xmlPath, Document doc) {
+        try {
+            XPathFactory xFactory = XPathFactory.newInstance();
+            XPath xPath = xFactory.newXPath();
+            XPathExpression exprs = xPath.compile("//*[@temp_id]");
+            
+            NodeList nodeList = (NodeList) exprs.evaluate(doc, XPathConstants.NODESET);
+            for (int count = 0; count < nodeList.getLength(); count++) {
+                Element e = (Element) nodeList.item(count);
+                e.removeAttribute("temp_id");
+            }
+            
             XMLSerializer serializer = new XMLSerializer();
-            serializer.setOutputCharStream(new java.io.FileWriter(column.getRefXml()));
+            serializer.setOutputCharStream(new java.io.FileWriter(xmlPath));
             OutputFormat format = new OutputFormat();
             format.setStandalone(true);
             serializer.setOutputFormat(format);
             serializer.serialize(doc);
             
-        } catch (ParserConfigurationException e) {
-            e.printStackTrace();
-        } catch (SAXException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (XPathExpressionException e1) {
+            e1.printStackTrace();
         }
-        
     }
     
 }

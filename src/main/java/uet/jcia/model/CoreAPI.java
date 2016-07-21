@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.w3c.dom.Document;
+
 import uet.jcia.entities.Column;
 import uet.jcia.entities.Table;
 
@@ -57,19 +59,28 @@ public class CoreAPI {
         if (mapper.get(tempPath) == null) {
             return null;
         } else {
+            HashMap<String, Document> tagMapper = parser.getTagMapper();
+            for (String xmlPath : tagMapper.keySet()) {
+                Document doc = tagMapper.get(xmlPath);
+                inverser.saveXml(xmlPath, doc);
+            }
+            
             return zm.compress(mapper.get(tempPath));
         }
     }
     
     public void updateTable(Table tbl) {
-        inverser.updateHbmClass(tbl);
+        Document doc = parser.getTagMapper().get(tbl.getRefXml());
+        inverser.updateHbmClass(tbl, doc);
     }
     
     public void updateColumn(Column col) {
+        Document doc = parser.getTagMapper().get(col.getRefXml());
+        
         if (col.isPrimaryKey()) {
-            inverser.updateHbmId(col);
+            inverser.updateHbmId(col, doc);
         } else {
-            inverser.updateHbmProperty(col);
+            inverser.updateHbmProperty(col, doc);
         }
     }
 
