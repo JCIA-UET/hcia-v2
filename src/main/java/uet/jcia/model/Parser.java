@@ -22,6 +22,7 @@ import org.w3c.dom.NodeList;
 import uet.jcia.entities.Column;
 import uet.jcia.entities.Relationship;
 import uet.jcia.entities.Table;
+import uet.jcia.utils.Mappers;
 
 public class Parser {
     
@@ -42,49 +43,15 @@ public class Parser {
         }
     }
     
-	private HashMap<String,String> mappingType;
 	private HashMap<String, String> classTableMapper;
 	private HashMap<String, Document> tagMapper;
 	
 	private HashMap<String, Column> cachedColumns;
 	
 	public Parser(){
-		mappingType = new HashMap<>();
 		classTableMapper = new HashMap<>();
 		tagMapper = new HashMap<>();
 		cachedColumns = new HashMap<>();
-		
-		mappingType.put("java.lang.Integer", "INTEGER");
-		mappingType.put("int", "INTEGER");
-		mappingType.put("java.lang.Long", "BIGINT");
-		mappingType.put("long", "BIGINT");
-		mappingType.put("java.lang.Short", "SMALLINT");
-		mappingType.put("short", "SMALLINT");
-		mappingType.put("java.lang.Float", "FLOAT");
-		mappingType.put("float", "FLOAT");
-		mappingType.put("java.lang.Double", "DOUBLE");
-		mappingType.put("double", "DOUBLE");
-		mappingType.put("java.math.BigDecimal", "NUMERIC");
-		mappingType.put("java.lang.String", "VARCHAR");
-		mappingType.put("string", "VARCHAR");
-		mappingType.put("java.lang.Byte", "TINYINT");
-		mappingType.put("byte", "TINYINT");
-		mappingType.put("java.lang.Boolean", "BIT");
-		mappingType.put("boolean", "BIT");
-		mappingType.put("java.sql.Date", "DATE");
-		mappingType.put("date", "DATE");
-		mappingType.put("java.util.Date", "DATE");
-		mappingType.put("java.sql.Time", "TIME");
-		mappingType.put("java.sql.Timestamp", "TIMESTAMP");
-		mappingType.put("java.util.Calendar", "TIMESTAMP");
-		mappingType.put("byte[]", "VARBINARY()");
-		mappingType.put("java.io.Serializable", "BLOB()");
-		mappingType.put("java.sql.Clob", "CLOB()");
-		mappingType.put("java.sql.Blob", "BLOB()");
-		mappingType.put("java.lang.Class", "VARCHAR");
-		mappingType.put("java.util.Locale", "VARCHAR");
-		mappingType.put("java.util.TimeZone", "VARCHAR");
-		mappingType.put("java.util.Currency", "VARCHAR");	
 	}
 	
 	
@@ -245,7 +212,7 @@ public class Parser {
 		result.setName(col.getAttribute("name").toUpperCase());
 		result.setLength(col.getAttribute("length"));
 		
-		result.setType(mappingType.get(element.getAttribute("type")));
+		result.setType(Mappers.getHbmtosql(element.getAttribute("type")));
 		result.setPrimaryKey(true);
 		result.setNotNull(true);
 		
@@ -273,7 +240,7 @@ public class Parser {
 		result.setName(col.getAttribute("name").toUpperCase());
 		result.setLength(col.getAttribute("length"));
 
-		result.setType(mappingType.get(element.getAttribute("type")));
+		result.setType(Mappers.getHbmtosql(element.getAttribute("type")));
 		result.setPrimaryKey(false);
 		result.setAutoIncrement(false);
 		
@@ -349,7 +316,7 @@ public class Parser {
 	        e.setAttribute("temp_id", tempId);
 			
 			// set type, default not-null , default PK , default AI
-			column.setType(mappingType.get(e.getAttribute("type")));
+			column.setType(Mappers.getHbmtosql(e.getAttribute("type")));
 			column.setNotNull(true);
 			column.setPrimaryKey(true);
 			column.setAutoIncrement(false);

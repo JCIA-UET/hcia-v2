@@ -22,6 +22,7 @@ import org.xml.sax.SAXException;
 
 import uet.jcia.entities.Column;
 import uet.jcia.entities.Table;
+import uet.jcia.utils.Mappers;
 
 public class Inverser {
     
@@ -66,7 +67,7 @@ public class Inverser {
             Element e = (Element) columnNodes.item(count);
             if (e.getAttribute("temp_id").equals(tbl.getTempId())) {
                 if (tbl.getType() != null) {
-                    e.setAttribute("type", tbl.getType());
+                    e.setAttribute("type", Mappers.getSqltohbm(tbl.getType()));
                 }
                 if (tbl.getLength() != null) {
                     e.setAttribute("length", tbl.getLength());
@@ -98,7 +99,7 @@ public class Inverser {
         System.out.println("[Inverser] modifying [" + col.getRefXml() + "]");
         if (idNode.getAttribute("temp_id").equals(col.getTempId())) {
             if (col.getType() != null) {
-                idNode.setAttribute("type", col.getType());
+                idNode.setAttribute("type", Mappers.getSqltohbm(col.getType()));
             }
             if (col.getLength() != null) {
                 idNode.setAttribute("length", col.getLength());
