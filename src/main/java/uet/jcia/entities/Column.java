@@ -14,6 +14,8 @@ public class Column implements Serializable {
 	private String length;
 	
 	private String hbmTag;
+	private String refXml;
+	private String className;
 	private String mappingName;
 	
 	public Column(){
@@ -82,6 +84,22 @@ public class Column implements Serializable {
 
     public void setMappingName(String mappingName) {
         this.mappingName = mappingName;
+    }
+
+    public String getRefXml() {
+        return refXml;
+    }
+
+    public void setRefXml(String refXml) {
+        this.refXml = refXml;
+    }
+
+    public String getClassName() {
+        return className;
+    }
+
+    public void setClassName(String className) {
+        this.className = className;
     }
 
     @Override

@@ -12,6 +12,7 @@ import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -27,6 +28,17 @@ public class Parser {
     private static final String ONE_TO_ONE = "one-to-one";
     private static final String ONE_TO_MANY = "one-to-many";
     private static final String MANY_TO_ONE = "many-to-one";
+    
+    private static DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+    
+    static {
+        try {
+            dbFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false);
+            dbFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+        } catch (ParserConfigurationException e) {
+            e.printStackTrace();
+        }
+    }
     
 	private HashMap<String,String> mappingType;
 	private HashMap<String, String> classTableMapper;
@@ -117,7 +129,6 @@ public class Parser {
 		List<Table> result = new ArrayList<>();
 		try {
 			File fXmlFile = new File(xmlLink);
-			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 			
 			System.out.println("[Parser] parsing [" + xmlLink + "]....");
