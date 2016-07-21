@@ -1,6 +1,9 @@
 package uet.jcia.model;
 
+import java.io.File;
+import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -8,6 +11,8 @@ import org.w3c.dom.Document;
 
 import uet.jcia.entities.Column;
 import uet.jcia.entities.Table;
+import uet.jcia.utils.Constants;
+import uet.jcia.utils.Helper;
 
 public class CoreAPI {
     
@@ -21,22 +26,38 @@ public class CoreAPI {
     
     /**
      * gửi path zip vào, nó sẽ gửi path temp lưu table
-     * @param zipPath absolute path của file zip
+     * @param uploadPath absolute path của file zip
      * @return trả path file temp
      */
-    public String parse(String zipPath) {
-        // extract
-        String extractedFolder = zm.unzip(zipPath);
-        // scan
-        List<String> xmlList = new ArrayList<>();
-        fm.findFiles(
-                extractedFolder, ".*\\.xml", xmlList);
-        // parse
-        List<Table> tableList = parser.parseXmlList(xmlList);
-        // save
-        String resultPath = fm.saveTables(tableList);
+    public String parse(String uploadPath) {
+        List<Table> tableList;
+        String resultPath = null;
         
-        mapper.put(resultPath, extractedFolder);
+        // user upload xml file
+        if (uploadPath.matches(".*\\.xml")) {
+            Date date = new Date();
+            String dstDir =  Constants.TEMP_SOURCE_FOLDER + File.separator
+                    + "upload-src-" + Helper.DATE_FORMATER.format(date);
+            File xmlFile = new File(uploadPath);
+            String dstPath = dstDir + File.separator + xmlFile.getName();
+            // copy file to generated folder
+            Helper.copyFile(uploadPath, dstPath);
+            
+            
+            tableList = parser.parseXml(dstPath);
+            resultPath = fm.saveTables(tableList);
+            mapper.put(resultPath, dstDir);
+            
+        } else if (uploadPath.matches(".*\\.zip")) {
+            String extractedFolder = zm.unzip(uploadPath);
+            List<String> xmlList = new ArrayList<>();
+            fm.findFiles(
+                    extractedFolder, ".*\\.xml", xmlList);
+
+            tableList = parser.parseXmlList(xmlList);
+            resultPath = fm.saveTables(tableList);
+            mapper.put(resultPath, extractedFolder);
+        }
         
         return resultPath;
     }

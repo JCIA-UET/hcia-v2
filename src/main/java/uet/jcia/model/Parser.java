@@ -54,8 +54,6 @@ public class Parser {
 		cachedColumns = new HashMap<>();
 	}
 	
-	
-	// key API for controller layer 
 	public List<Table> parseXmlList(List<String> xmlList){
 	    System.out.println("[Parser] starting....");
 
@@ -93,9 +91,44 @@ public class Parser {
         System.out.println("[Parser] done!");
 		return result;
 	}
+
+	public List<Table> parseXml(String xmlPath){
+	    System.out.println("[Parser] starting....");
+	    
+	    List<Table> result = new ArrayList<Table>();
+	    result.addAll(parseOneXmlToListTable(xmlPath));
+	    
+	    System.out.println("[Parser] add relationships....");
+	    // get information of reference tables 
+	    for (Table t : result) {
+	        List<Relationship> relationshipList = t.getListRelationship();
+	        for (Relationship r : relationshipList) {
+	            String refTableName = classTableMapper.get(r.getReferClass());
+	            String refColumnName = r.getReferColumn();
+	            r.setReferTable(refTableName);
+	            
+	            if (r.getType().equals(MANY_TO_ONE)) {
+	                Column refColumn = cachedColumns.get(refTableName.toUpperCase() 
+	                        + "." 
+	                        + refColumnName.toUpperCase());
+	                // clone reference column to own table
+	                if (refColumn != null) {
+	                    refColumn.setPrimaryKey(false);
+	                    refColumn.setAutoIncrement(false);
+	                    refColumn.setForeignKey(true);
+	                    refColumn.setTempId("" + tempIdGenerator++);
+	                }
+	                t.getListColumn().add(refColumn);
+	            }
+	        }
+	    }
+	    
+	    System.out.println("[Parser] done!");
+	    return result;
+	}
 	
 	
-	public List<Table> parseOneXmlToListTable(String xmlLink){
+	private List<Table> parseOneXmlToListTable(String xmlLink){
 		List<Table> result = new ArrayList<>();
 		try {
 			File fXmlFile = new File(xmlLink);
