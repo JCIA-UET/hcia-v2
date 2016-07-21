@@ -262,16 +262,21 @@
 				</div>
 				<div class="modal-body">
 					<h4>Select file from your computer</h4>
-					<form action="" method="post" enctype="multipart/form-data"
-						id="js-upload-form">
-						<div class="form-inline">
-							<div class="form-group">
-								<input type="file" name="files[]" id="js-upload-files" />
-							</div>
-							<button type="submit" class="btn btn-sm btn-primary"
-								id="js-upload-submit">Upload files</button>
-						</div>
-					</form>
+					<h:form id="xml-form" enctype="multipart/form-data">
+						<h:inputFile id="input-file" value="#{fileUploadBean.file}"
+							validator="#{fileUploadBean.validateXmlFile}" />
+						<h:message style="color:red" for="input-file" />
+						<br></br>
+						<h:commandButton value="Upload" action="#{fileUploadBean.upload}">
+							<f:ajax execute="xml-form" render="xml-form"/>
+						</h:commandButton>
+					</h:form>
+					<h:panelGroup layout="block" id="xml-pane"
+						rendered="#{fileUploadBean.validPass == 'true'}">
+						<script type="text/javascript">
+							$('#xmlModal').modal('hide');
+						</script>
+					</h:panelGroup>
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -289,31 +294,21 @@
 				</div>
 				<div class="modal-body">
 					<h4>Select file from your computer</h4>
-					<form action="" method="post" enctype="multipart/form-data"
-						id="js-upload-form">
-						<div class="form-inline">
-							<div class="form-group">
-								<input type="file" name="files[]" id="js-upload-files" />
-							</div>
-							<button type="submit" class="btn btn-sm btn-primary"
-								id="js-upload-submit">Upload files</button>
-						</div>
-					</form>
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-				</div>
-			</div>
-		</div>
-	</div>
-	<div class="modal fade" id="zipModal" role="dialog">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h4 class="modal-title">Upload File</h4>
-				</div>
-				<div class="modal-body">
-					<p>Some text in the modal.</p>
+					<h:form id="zip-form" enctype="multipart/form-data">
+						<h:inputFile id="input-file" value="#{fileUploadBean.file}"
+							validator="#{fileUploadBean.validateZipFile}" />
+						<h:message style="color:red" for="input-file" />
+						<br></br>
+						<h:commandButton value="Upload" action="#{fileUploadBean.upload}">
+							<f:ajax execute="zip-form" render="zip-form"/>
+						</h:commandButton>
+					</h:form>
+					<h:panelGroup layout="block" id="zip-pane"
+						rendered="#{fileUploadBean.validPass == 'true'}">
+						<script type="text/javascript">
+							$('#zipModal').modal('hide');
+						</script>
+					</h:panelGroup>
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
