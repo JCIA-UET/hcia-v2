@@ -1,0 +1,325 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+
+	<meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+	<title>JSF Integrate Bootstrap</title>
+
+	<h:outputStylesheet library="webjars"
+		name="bootstrap/3.3.6/css/bootstrap.min-jsf.css" />
+	<h:outputStylesheet library="webjars"
+		name="bootstrap/3.3.6/css/bootstrap-theme.min-jsf.css" />
+	<h:outputStylesheet library="webjars"
+		name="font-awesome/4.5.0/css/font-awesome.min-jsf.css" />
+	<h:outputScript library="webjars" name="jquery/2.1.4/jquery.min.js" />
+	<h:outputScript library="webjars"
+		name="bootstrap/3.3.6/js/bootstrap.min.js" />
+	<h:outputStylesheet name="css/cj.css"></h:outputStylesheet>
+	<h:outputScript name="js/z.js"></h:outputScript>
+
+</h:head>
+<h:body>
+	<div class="container-fluid">
+		<div class="row">
+			<nav class="navbar">
+				<div class="container-fluid">
+					<ul class="nav navbar-nav">
+						<li class="dropdown"><a href="#" class="dropdown-toggle"
+							data-toggle="dropdown"> <span
+								class="glyphicon glyphicon-upload"></span>Upload File
+						</a>
+							<ul class="dropdown-menu">
+								<li style="border-top: 1px solid rgba(0, 0, 0, 0.1);"><a
+									href="#" id="xml-trigger">Xml File</a></li>
+								<li><a href="#" id="zip-trigger">Zip File</a></li>
+							</ul></li>
+						<li><a href="#"><span
+								class="glyphicon glyphicon-download"></span>Download</a></li>
+						<li><a href="#"><span class="glyphicon glyphicon-refresh"></span>
+								Reset All</a></li>
+						<li><a href="#"><span class="glyphicon glyphicon-repeat"></span>
+								Undo</a></li>
+						<li><a href="#"><span
+								class="glyphicon glyphicon-floppy-disk"></span> Save</a></li>
+					</ul>
+					<ul class="nav navbar-nav navbar-right">
+						<li><h:link href="#">
+								<span class="glyphicon glyphicon-envelope"></span> Contact</h:link></li>
+						<li><a href="#"><span
+								class="glyphicon glyphicon-question-sign"></span> Help</a></li>
+					</ul>
+				</div>
+			</nav>
+		</div>
+		<div class="row">
+			<div class="col-lg-3">
+				<h:form style="height:602px;" id="tree-form">
+							<p:tree id="tree" style="border:0 none;width: 250px;height:100%"
+								value="#{treeBean.root}" var="node" dynamic="true"
+								selectionMode="single" selection="#{treeBean.selectedNode}"
+								scrollable="true">
+								<p:treeNode type="table" icon="ui-icon ui-icon-calculator">
+									<h:outputText value="#{node.tableName}"  />
+								</p:treeNode>
+								<p:treeNode type="column" icon="ui-icon-grip-dotted-vertical">
+									<h:outputText value="#{node.name}" />
+								</p:treeNode>
+								<p:ajax event="select" listener="#{treeBean.onSelectNode}"
+									update="main-tab" />
+							</p:tree>
+						</h:form>
+			</div>
+			<h:form id="main-tab">
+			<div class="col-lg-9">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#dttable">Columns</a></li>
+					<li><a data-toggle="tab" href="#dttabler">Foreign Keys</a></li>
+				</ul>
+				<div class="tab-content">
+					<div class="tab-pane fade in active"  id="dttable">
+						<div class="row table-wrap" style="height:250px;overflow-x:auto;overflow-y:scroll;">
+							<h:dataTable id="example" scrollable="true" value="#{tableBean.table.listColumn}"
+							 var="column" class="table table-striped table-bordered " >
+								<h:column >
+									<f:facet name="header">Name Column</f:facet>    				
+							     	<h:outputText value="#{column.name}"></h:outputText>
+							   </h:column >
+								<h:column >
+									<f:facet name="header">Type Date</f:facet>
+							        <h:outputText value="#{column.type}"></h:outputText>
+							   </h:column>
+								<h:column >
+									<f:facet name="header">PK</f:facet>
+							      	<h:selectBooleanCheckbox value="#{column.primaryKey}"></h:selectBooleanCheckbox>
+							   </h:column>
+								<h:column >
+									<f:facet name="header">FK</f:facet>
+							      <h:selectBooleanCheckbox value="false"></h:selectBooleanCheckbox>
+							   </h:column>
+								<h:column >
+									<f:facet name="header">NN</f:facet>
+							     <h:selectBooleanCheckbox value="#{column.notNull}"></h:selectBooleanCheckbox>
+							   </h:column>
+								<h:column >
+									<f:facet name="header">AI</f:facet>
+							     <h:selectBooleanCheckbox value="#{column.autoIncrement}"></h:selectBooleanCheckbox>
+							   </h:column>
+							</h:dataTable>	
+						</div>
+						<div class="row detail-wrap">
+							<div class="heading">
+								<h2 style="border-bottom: 5px solid #03a9f4;">Detail</h2>
+							</div>
+							<div>
+								<h:form>
+									<div class="col-md-6">
+										<div class="form-group">
+											<label for="usr">Name Column</label>
+											<h:inputText type="text" class="form-control input-form"
+												value="#{columnBean.column.name}" id="usr" />
+										</div>
+										<div class="form-group">
+											<label for="sel1">Type Data</label> 
+											<select
+												class="form-control input-form" id="sel1">
+												<option selected="selected">#{columnBean.column.type}</option>
+												<option>VARCHAR()</option>
+												<option>INTEGER</option>
+												<option>DOUBLE</option>
+												<option>DATE</option>
+												<option>FLOAT</option>
+											</select>
+										</div>
+										<div class="form-group">
+											<label for="pwd">Length</label>
+											<h:inputText type="text" class="form-control input-from"
+												id="pwd" style="width:50%" value="#{columnBean.column.length}" />
+										</div>
+									</div>
+
+									<div class="col-md-6">
+										<br></br> <br></br>
+										<div class="row">
+											<div class="form-group">
+												<label for="pwd1" class="col-sm-2">NN</label>
+												<div class="col-sm-2">
+													<h:selectBooleanCheckbox value="#{columnBean.column.notNull}" id="pwd1" />
+												</div>
+											</div>
+										</div>
+										<br></br>
+										<div class="row">
+											<div class="form-group">
+
+												<label for="pwd2" class="col-sm-2">PK:</label>
+												<div class="col-sm-2">
+													<h:selectBooleanCheckbox value="#{columnBean.column.primaryKey}" id="pwd2" />
+												</div>
+											</div>
+										</div>
+										<br></br>
+										<div class="row ">
+											<div class="form-group">
+
+												<label for="pwd3" class="col-sm-2">FK:</label>
+												<div class="col-sm-2">
+													<h:selectBooleanCheckbox value="false" id="pwd3" />
+												</div>
+											</div>
+										</div>
+										<br></br>
+										<div class="row">
+											<div class="form-group">
+												<label for="pwd4" class="col-sm-2">AI:</label>
+												<div class="col-sm-2">
+													<h:selectBooleanCheckbox value="true" id="pwd4" />
+												</div>
+											</div>
+										</div>
+									</div>
+								</h:form>
+							</div>
+						</div>
+					</div>
+					<div id="dttabler" class="tab-pane fade">
+						<div class="row table-wrap">
+							<h:dataTable scrollable="true" value="#{tableBean.table.listRelationship}"
+							 var="foreignkey" class="table table-striped table-bordered" >
+								<h:column >
+									<f:facet name="header">Table</f:facet>    				
+							     	<h:outputText value="#{tableBean.table.tableName}"></h:outputText>
+							   </h:column >
+								<h:column >
+									<f:facet name="header">Column</f:facet>
+							        <h:outputText value="#{foreignkey.referColumn}"></h:outputText>
+							   </h:column>
+								<h:column >
+									<f:facet name="header">type</f:facet>
+							        <h:outputText value="#{foreignkey.type}"></h:outputText>
+							   </h:column>
+								<h:column >
+									<f:facet name="header">Refer Table</f:facet>
+							      	<h:outputText value="#{foreignkey.referTable}"></h:outputText>
+							   </h:column>
+								<h:column >
+									<f:facet name="header"> Refer Column</f:facet>
+							      <h:outputText value="#{foreignkey.referColumn}"></h:outputText>
+							   </h:column>
+							</h:dataTable>	
+						</div>
+						<div class="row detail-wrap">
+							<div class="heading">
+								<h2 style="border-bottom: 5px solid #03a9f4;">Detail</h2>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label for="usr3">Table</label>
+									<h:inputText type="text" class="form-control input-form"
+										value="#{tableBean.table.tableName}" id="usr3" />
+								</div>
+								<br></br>
+								<div class="form-group">
+									<label for="usr4">Column</label>
+									<h:inputText type="text" class="form-control input-form"
+									   	id="usr4" />
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label for="usr1">Refer Table</label>
+									<h:inputText type="text" class="form-control input-form"
+										id="usr1" />
+								</div>
+								<br></br>
+								<div class="form-group">
+									<label for="usr2">Refer Column</label>
+									<h:inputText type="text" class="form-control input-form"
+										id="usr2" />
+								</div>
+							</div>
+
+						</div>
+					</div>
+				</div>
+			</div>
+			</h:form>
+		</div>
+	</div>
+	<div class="modal fade" id="xmlModal" role="dialog">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title">
+						<strong>Upload File</strong>
+					</h4>
+				</div>
+				<div class="modal-body">
+					<h4>Select file from your computer</h4>
+					<form action="" method="post" enctype="multipart/form-data"
+						id="js-upload-form">
+						<div class="form-inline">
+							<div class="form-group">
+								<input type="file" name="files[]" id="js-upload-files" />
+							</div>
+							<button type="submit" class="btn btn-sm btn-primary"
+								id="js-upload-submit">Upload files</button>
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="modal fade" id="zipModal" role="dialog">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title">
+						<strong>Upload File</strong>
+					</h4>
+				</div>
+				<div class="modal-body">
+					<h4>Select file from your computer</h4>
+					<form action="" method="post" enctype="multipart/form-data"
+						id="js-upload-form">
+						<div class="form-inline">
+							<div class="form-group">
+								<input type="file" name="files[]" id="js-upload-files" />
+							</div>
+							<button type="submit" class="btn btn-sm btn-primary"
+								id="js-upload-submit">Upload files</button>
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="modal fade" id="zipModal" role="dialog">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title">Upload File</h4>
+				</div>
+				<div class="modal-body">
+					<p>Some text in the modal.</p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</h:body>
+</html>
