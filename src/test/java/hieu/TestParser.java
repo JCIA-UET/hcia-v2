@@ -13,7 +13,7 @@ public class TestParser {
 		List<String> list = new ArrayList<>();
 		list.add("src/main/resources/Sinhvien.hbm.xml");
 		list.add("src/main/resources/Customer.hbm.xml");
-		System.out.println(test.parseAllToListTable(list));
+		System.out.println(test.parseXmlList(list));
 	}
 
 }
