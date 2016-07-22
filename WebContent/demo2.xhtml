@@ -21,7 +21,7 @@
 	<h:outputScript library="webjars" name="jquery/2.1.4/jquery.min.js" />
 	<h:outputScript library="webjars"
 		name="bootstrap/3.3.6/js/bootstrap.min.js" />
-	<h:outputStylesheet name="css/cj.css"></h:outputStylesheet>
+	<h:outputStylesheet name="css/ij.css"></h:outputStylesheet>
 	<h:outputScript name="js/z.js"></h:outputScript>
 
 </h:head>
@@ -59,9 +59,9 @@
 			</nav>
 		</div>
 		<div class="row">
-			<div class="col-lg-3">
-				<h:form style="height:602px;" id="tree-form">
-							<p:tree id="tree" style="border:0 none;width: 250px;height:100%"
+			<div class="col-lg-3" style="width: 25%;">
+				<h:form id="tree-form">
+							<p:tree id="tree"
 								value="#{treeBean.root}" var="node" dynamic="true"
 								selectionMode="single" selection="#{treeBean.selectedNode}"
 								scrollable="true">
@@ -83,7 +83,7 @@
 					<li><a data-toggle="tab" href="#dttabler">Foreign Keys</a></li>
 				</ul>
 				<div class="tab-content">
-					<div class="tab-pane fade in active"  id="dttable">
+					<div class="tab-pane fade in active">
 						<div class="row table-wrap" style="height:250px;overflow-x:auto;overflow-y:scroll;">
 							<h:dataTable id="example" scrollable="true" value="#{tableBean.table.listColumn}"
 							 var="column" class="table table-striped table-bordered " >
@@ -111,7 +111,7 @@
 									<f:facet name="header">AI</f:facet>
 							     <h:selectBooleanCheckbox value="#{column.autoIncrement}"></h:selectBooleanCheckbox>
 							   </h:column>
-							</h:dataTable>	
+							</h:dataTable>
 						</div>
 						<div class="row detail-wrap">
 							<div class="heading">
@@ -148,7 +148,7 @@
 										<br></br> <br></br>
 										<div class="row">
 											<div class="form-group">
-												<label for="pwd1" class="col-sm-2">NN</label>
+												<label style="width:180px;text-align:right;" for="pwd1" class="col-sm-2">Not Null:</label>
 												<div class="col-sm-2">
 													<h:selectBooleanCheckbox value="#{columnBean.column.notNull}" id="pwd1" />
 												</div>
@@ -158,7 +158,7 @@
 										<div class="row">
 											<div class="form-group">
 
-												<label for="pwd2" class="col-sm-2">PK:</label>
+												<label style="width:180px;text-align:right;" for="pwd2" class="col-sm-2">Primary Key:</label>
 												<div class="col-sm-2">
 													<h:selectBooleanCheckbox value="#{columnBean.column.primaryKey}" id="pwd2" />
 												</div>
@@ -168,7 +168,7 @@
 										<div class="row ">
 											<div class="form-group">
 
-												<label for="pwd3" class="col-sm-2">FK:</label>
+												<label style="width:180px;text-align:right;" for="pwd3" class="col-sm-2">Foreign Key:</label>
 												<div class="col-sm-2">
 													<h:selectBooleanCheckbox value="false" id="pwd3" />
 												</div>
@@ -177,16 +177,20 @@
 										<br></br>
 										<div class="row">
 											<div class="form-group">
-												<label for="pwd4" class="col-sm-2">AI:</label>
+												<label style="width:180px;text-align:right;" for="pwd4" class="col-sm-2">Auto Increament:</label>
 												<div class="col-sm-2">
 													<h:selectBooleanCheckbox value="true" id="pwd4" />
 												</div>
 											</div>
 										</div>
+										<div class="row" style="padding: 20px 150px 0px 0px;">
+											<h:commandButton style="width:100px;float:right;" styleClass="btn btn-info" value="Save" action="#{columnBean.save(columnBean.column)}"/>
+										</div>
 									</div>
 								</h:form>
 							</div>
 						</div>
+					
 					</div>
 					<div id="dttabler" class="tab-pane fade">
 						<div class="row table-wrap">
