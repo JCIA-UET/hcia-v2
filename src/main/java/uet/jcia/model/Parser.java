@@ -86,6 +86,7 @@ public class Parser {
                         fkColumn.setPrimaryKey(false);
                         fkColumn.setAutoIncrement(false);
                         fkColumn.setForeignKey(true);
+                        fkColumn.setTable(t);
                         fkColumn.setTempId("" + tempIdGenerator++);
                         t.getListColumn().add(fkColumn);
                     }

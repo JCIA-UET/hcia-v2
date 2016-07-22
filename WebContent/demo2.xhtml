@@ -21,7 +21,7 @@
 	<h:outputScript library="webjars" name="jquery/2.1.4/jquery.min.js" />
 	<h:outputScript library="webjars"
 		name="bootstrap/3.3.6/js/bootstrap.min.js" />
-	<h:outputStylesheet name="css/ij.css"></h:outputStylesheet>
+	<h:outputStylesheet name="css/kj.css"></h:outputStylesheet>
 	<h:outputScript name="js/z.js"></h:outputScript>
 
 </h:head>
@@ -40,8 +40,12 @@
 									href="#" id="xml-trigger">Xml File</a></li>
 								<li><a href="#" id="zip-trigger">Zip File</a></li>
 							</ul></li>
-						<li><a href="#"><span
-								class="glyphicon glyphicon-download"></span>Download</a></li>
+						<li>
+							<h:form>
+								<h:commandLink action="#{downloadBean.download}"><span
+								class="glyphicon glyphicon-download"></span>Download</h:commandLink>
+							</h:form>
+						</li>
 						<li><a href="#"><span class="glyphicon glyphicon-refresh"></span>
 								Reset All</a></li>
 						<li><a href="#"><span class="glyphicon glyphicon-repeat"></span>

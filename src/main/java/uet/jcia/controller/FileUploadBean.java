@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.util.List;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
@@ -17,6 +18,7 @@ import javax.faces.validator.ValidatorException;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
 
+import uet.jcia.entities.Table;
 import uet.jcia.model.CoreAPI;
 import uet.jcia.utils.Constants;
 
@@ -65,7 +67,11 @@ public class FileUploadBean implements Serializable {
 			
 			if(parseResultDir != null) {
 				String sessionid = session.getId();
+				List<Table> list = core.getTableList(parseResultDir);
+				String ssTableKey = sessionid + "table";
+				
 				exContext.getSessionMap().put(sessionid, parseResultDir);
+				exContext.getSessionMap().put(ssTableKey, list);
 			}
 			
 			exContext.redirect("demo2.xhtml");

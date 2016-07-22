@@ -19,37 +19,33 @@ import uet.jcia.model.CoreAPI;
 @ManagedBean(name = "treeService")
 @SessionScoped
 public class TreeService {
+	@SuppressWarnings("unchecked")
 	public TreeNode createTable(){
-		CoreAPI core = new CoreAPI();
-
 		FacesContext facesContext = FacesContext.getCurrentInstance();
 		ExternalContext exContext = facesContext.getExternalContext();
 		
 	    HttpSession session = (HttpSession) exContext.getSession(false);
 	    String sessionid = session.getId();
-		
-	    String resultDir = (String) session.getAttribute(sessionid);
-	    
-	    if(resultDir != null) {
-			List<Table> list = core.getTableList(resultDir);
-			//System.out.println("Table List:" + list);
-			TreeNode root = new DefaultTreeNode("root",null) ;
+	
+	    String ssTableKey = sessionid + "table";
+	   
+		List<Table> list = (List<Table>) session.getAttribute(ssTableKey);
+		//System.out.println("Table List:" + list);
+		TreeNode root = new DefaultTreeNode("root",null) ;
 			
-			if(list == null) {
-				return root;
-			}
-			else {
-				for(Table table : list){
-					TreeNode tableNode = new DefaultTreeNode("table",table,root);
-					List<Column> listColumn = table.getListColumn();
-					for(Column column:listColumn){
-						tableNode.getChildren().add(new DefaultTreeNode("column",column,tableNode));
-					}
+		if(list == null) {
+			return root;
+		}
+		else {
+			for(Table table : list){
+				TreeNode tableNode = new DefaultTreeNode("table",table,root);
+				List<Column> listColumn = table.getListColumn();
+				for(Column column:listColumn){
+					tableNode.getChildren().add(new DefaultTreeNode("column",column,tableNode));
 				}
 			}
-			
-			return root;
-	    }
-	    return null;
+		}
+		
+		return root;
 	}
 }

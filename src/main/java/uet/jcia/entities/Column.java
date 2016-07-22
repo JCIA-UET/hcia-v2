@@ -14,6 +14,8 @@ public class Column implements Serializable {
 	private boolean foreignKey; 
 	private String length;
 	
+	private Table table;
+	
 	private String refXml;
 	private String tempId;
 	
@@ -90,7 +92,15 @@ public class Column implements Serializable {
         this.refXml = refXml;
     }
     
-    public String getTempId() {
+    public Table getTable() {
+		return table;
+	}
+
+	public void setTable(Table table) {
+		this.table = table;
+	}
+
+	public String getTempId() {
         return tempId;
     }
     
