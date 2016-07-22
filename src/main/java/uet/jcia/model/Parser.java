@@ -22,6 +22,7 @@ import org.w3c.dom.NodeList;
 import uet.jcia.entities.Column;
 import uet.jcia.entities.Relationship;
 import uet.jcia.entities.Table;
+import uet.jcia.utils.Helper;
 import uet.jcia.utils.Mappers;
 
 public class Parser {
@@ -68,22 +69,26 @@ public class Parser {
         for (Table t : result) {
             List<Relationship> relationshipList = t.getListRelationship();
             for (Relationship r : relationshipList) {
+                
+                // get references table by class name (class-table mapper)
                 String refTableName = classTableMapper.get(r.getReferClass());
                 String refColumnName = r.getReferColumn();
                 r.setReferTable(refTableName);
                 
-                if (r.getType().equals(MANY_TO_ONE)) {
+                // add foreign key columns
+                if (r.getType().equals(MANY_TO_ONE) && refTableName != null &&refColumnName != null) {
                     Column refColumn = cachedColumns.get(refTableName.toUpperCase() 
                             + "." 
                             + refColumnName.toUpperCase());
-                    // clone reference column to own table
+
                     if (refColumn != null) {
-                        refColumn.setPrimaryKey(false);
-                        refColumn.setAutoIncrement(false);
-                        refColumn.setForeignKey(true);
-                        refColumn.setTempId("" + tempIdGenerator++);
+                        Column fkColumn = (Column) Helper.deepClone(refColumn);
+                        fkColumn.setPrimaryKey(false);
+                        fkColumn.setAutoIncrement(false);
+                        fkColumn.setForeignKey(true);
+                        fkColumn.setTempId("" + tempIdGenerator++);
+                        t.getListColumn().add(fkColumn);
                     }
-                    t.getListColumn().add(refColumn);
                 }
             }
         }
@@ -93,38 +98,9 @@ public class Parser {
 	}
 
 	public List<Table> parseXml(String xmlPath){
-	    System.out.println("[Parser] starting....");
-	    
-	    List<Table> result = new ArrayList<Table>();
-	    result.addAll(parseOneXmlToListTable(xmlPath));
-	    
-	    System.out.println("[Parser] add relationships....");
-	    // get information of reference tables 
-	    for (Table t : result) {
-	        List<Relationship> relationshipList = t.getListRelationship();
-	        for (Relationship r : relationshipList) {
-	            String refTableName = classTableMapper.get(r.getReferClass());
-	            String refColumnName = r.getReferColumn();
-	            r.setReferTable(refTableName);
-	            
-	            if (r.getType().equals(MANY_TO_ONE)) {
-	                Column refColumn = cachedColumns.get(refTableName.toUpperCase() 
-	                        + "." 
-	                        + refColumnName.toUpperCase());
-	                // clone reference column to own table
-	                if (refColumn != null) {
-	                    refColumn.setPrimaryKey(false);
-	                    refColumn.setAutoIncrement(false);
-	                    refColumn.setForeignKey(true);
-	                    refColumn.setTempId("" + tempIdGenerator++);
-	                }
-	                t.getListColumn().add(refColumn);
-	            }
-	        }
-	    }
-	    
-	    System.out.println("[Parser] done!");
-	    return result;
+	    List<String> xmlList = new ArrayList<>();
+	    xmlList.add(xmlPath);
+	    return parseXmlList(xmlList);
 	}
 	
 	

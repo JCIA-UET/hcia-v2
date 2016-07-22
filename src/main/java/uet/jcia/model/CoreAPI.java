@@ -43,7 +43,6 @@ public class CoreAPI {
             // copy file to generated folder
             Helper.copyFile(uploadPath, dstPath);
             
-            
             tableList = parser.parseXml(dstPath);
             resultPath = fm.saveTables(tableList);
             mapper.put(resultPath, dstDir);
@@ -68,7 +67,9 @@ public class CoreAPI {
      * @return danh sách table
      */
     public List<Table> getTableList(String tempPath) {
-        return fm.readTables(tempPath);
+        List<Table> list = fm.readTables(tempPath);
+        System.out.println(list);
+        return list;
     }
     
     /**

@@ -42,14 +42,14 @@ public class TestCoreAPI {
     }
 
     public static void testXml() {
-        String resultPath = api.parse("I:\\Workspace\\hcia-v2\\temp\\upload\\Category.hbm.xml");
+        String resultPath = api.parse("I:\\Workspace\\hcia-v2\\temp\\upload\\vnu.zip");
         System.out.println("[temp data] " + resultPath);
         
         List<Table> tableList = api.getTableList(resultPath);
         
         System.out.println(tableList);
         
-        Table tbl = new Table();
+/*        Table tbl = new Table();
         
         Scanner scanner = new Scanner(System.in);
         System.out.println("\n\n\n\tModify table");
@@ -63,7 +63,7 @@ public class TestCoreAPI {
         
         api.updateTable(tbl);
         
-        System.out.println(api.download(resultPath));
+        System.out.println(api.download(resultPath));*/
     }
 }
 
