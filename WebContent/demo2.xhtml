@@ -101,7 +101,7 @@
 							   </h:column>
 								<h:column >
 									<f:facet name="header">FK</f:facet>
-							      <h:selectBooleanCheckbox value="false"></h:selectBooleanCheckbox>
+							      <h:selectBooleanCheckbox value="#{column.foreignKey}"></h:selectBooleanCheckbox>
 							   </h:column>
 								<h:column >
 									<f:facet name="header">NN</f:facet>
@@ -170,7 +170,7 @@
 
 												<label for="pwd3" class="col-sm-2">FK:</label>
 												<div class="col-sm-2">
-													<h:selectBooleanCheckbox value="false" id="pwd3" />
+													<h:selectBooleanCheckbox value="#{columnBean.column.foreignKey}" id="pwd3" />
 												</div>
 											</div>
 										</div>
@@ -179,7 +179,7 @@
 											<div class="form-group">
 												<label for="pwd4" class="col-sm-2">AI:</label>
 												<div class="col-sm-2">
-													<h:selectBooleanCheckbox value="true" id="pwd4" />
+													<h:selectBooleanCheckbox value="#{columnBean.column.autoIncrement}" id="pwd4" />
 												</div>
 											</div>
 										</div>
