@@ -21,6 +21,11 @@ public class Column implements Serializable {
 
 	}
 	
+	@Override
+    public Object clone() throws CloneNotSupportedException {
+	    return super.clone();
+	}
+	
 	public boolean isForeignKey() {
         return foreignKey;
     }
