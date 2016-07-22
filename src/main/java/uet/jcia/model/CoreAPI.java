@@ -68,7 +68,6 @@ public class CoreAPI {
      */
     public List<Table> getTableList(String tempPath) {
         List<Table> list = fm.readTables(tempPath);
-        System.out.println(list);
         return list;
     }
     
@@ -93,10 +92,17 @@ public class CoreAPI {
     
     public void updateTable(Table tbl) {
         Document doc = parser.getTagMapper().get(tbl.getRefXml());
-        inverser.updateHbmClass(tbl, doc);
+        inverser.updateTable(tbl, doc);
     }
     
-    public void updateColumn(Column col) {
+    public void updateData(List<Table> modifiedTables) {
+        for (Table tbl : modifiedTables) {
+            Document doc = parser.getTagMapper().get(tbl.getRefXml());
+            inverser.updateTable(tbl, doc);
+        }
+    }
+    
+    /*public void updateColumn(Column col) {
         Document doc = parser.getTagMapper().get(col.getRefXml());
         
         if (col.isPrimaryKey()) {
@@ -104,6 +110,6 @@ public class CoreAPI {
         } else {
             inverser.updateHbmProperty(col, doc);
         }
-    }
+    }*/
 
 }

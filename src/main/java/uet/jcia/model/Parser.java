@@ -167,6 +167,7 @@ public class Parser {
 		NodeList id = element.getElementsByTagName("id");
 		if(id.getLength()!=0){
 		    Column c = parseIdTagToColumn(id.item(0));
+		    c.setHbmTag("id");
 			columns.add(c);
 			
 			cachedColumns.put(tableName.toUpperCase() + "." + c.getName().toUpperCase(), c);
@@ -182,6 +183,7 @@ public class Parser {
 		NodeList pNodeList = element.getElementsByTagName("property");
 		for(int temp = 0; temp < pNodeList.getLength(); temp++){
 		    Column c = parseOnePropertyTagToColumn(pNodeList.item(temp));
+		    c.setHbmTag("property");
 			columns.add(c);
 			
 			cachedColumns.put(tableName.toUpperCase() + "." + c.getName().toUpperCase(), c);

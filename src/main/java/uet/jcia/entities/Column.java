@@ -18,6 +18,7 @@ public class Column implements Serializable {
 	
 	private String refXml;
 	private String tempId;
+	private String hbmTag;
 	
 	public Column(){
 
@@ -27,6 +28,14 @@ public class Column implements Serializable {
     public Object clone() throws CloneNotSupportedException {
 	    return super.clone();
 	}
+	
+	public String getHbmTag() {
+        return hbmTag;
+    }
+	
+	public void setHbmTag(String hbmTag) {
+        this.hbmTag = hbmTag;
+    }
 	
 	public boolean isForeignKey() {
         return foreignKey;
