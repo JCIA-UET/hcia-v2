@@ -1,12 +1,13 @@
-
-
 $(document).ready(function() {
 	$(".nav>li ul").hide();
 	
-	// Handle click event of ul (tree-root)
+	// Handle click event of label-tag (tree-root)
 	$('.tree-toggle').click(function() {
+		
+		// refresh view
 		$(".nav>li ul").hide();
 		$(".table-info").empty();
+		
 		var childComp = $(this).parent().children('ul');
 		
 		// Toggles tree
@@ -72,23 +73,6 @@ $(document).ready(function() {
 		console.log("After: " + g_tableInfo);
 		
 	});
-	
-	/*$('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
-		var url = new String(e.target);
-		var comp = url.split('#');
-
-		if (comp[1] == 'foreign') {
-			$('#settings').css('bottom','-'+$(window).height()+'px');            
-	        var bottom = $('#settings').offset().bottom;
-	        $("#settings").css({bottom:bottom}).animate({"bottom":"0px"}, "10");
-		}
-
-		if (comp[1] == 'columns') {
-			$('#settings').css('bottom','-'+$(window).height()+'px');            
-	        var bottom = $('#settings').offset().bottom;
-	        $("#settings").css({bottom:bottom}).animate({"bottom":"0px"}, "10");
-		}
-	});*/
 
 	$('#xml-trigger').click(function() {
 		$('#xmlModal').modal('show');

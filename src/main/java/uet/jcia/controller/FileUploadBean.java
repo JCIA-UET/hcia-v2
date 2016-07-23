@@ -74,7 +74,7 @@ public class FileUploadBean implements Serializable {
 				exContext.getSessionMap().put(ssTableKey, list);
 			}
 			
-			exContext.redirect("demo2.xhtml");
+			exContext.redirect("home.xhtml");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

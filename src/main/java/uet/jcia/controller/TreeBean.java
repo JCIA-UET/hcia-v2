@@ -3,16 +3,12 @@ package uet.jcia.controller;
 import java.io.Serializable;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpSession;
 
-import org.primefaces.context.RequestContext;
-import org.primefaces.event.NodeSelectEvent;
-import org.primefaces.model.TreeNode;
-
-import uet.jcia.entities.Column;
 import uet.jcia.entities.Table;
 
 @ManagedBean
@@ -20,7 +16,32 @@ import uet.jcia.entities.Table;
 public class TreeBean implements Serializable{
 	private static final long serialVersionUID = 1L;
 	
-	private TreeNode root;
+	private List<Table> list;
+	
+	@SuppressWarnings("unchecked")
+	public TreeBean() {
+		FacesContext facesContext = FacesContext.getCurrentInstance();
+		ExternalContext exContext = facesContext.getExternalContext();
+		
+	    HttpSession session = (HttpSession) exContext.getSession(false);
+	    String sessionid = session.getId();
+	
+	    String ssTableKey = sessionid + "table";
+	   
+		List<Table> list = (List<Table>) session.getAttribute(ssTableKey);
+		setList(list);
+	}
+
+	public List<Table> getList() {
+		return list;
+	}
+
+	public void setList(List<Table> list) {
+		this.list = list;
+	}
+	
+	
+	/*private TreeNode root;
 	private TreeNode selectedNode;
 	
 	@ManagedProperty("#{treeService}")
@@ -92,5 +113,5 @@ public class TreeBean implements Serializable{
 
 	public void setColumnBean(ColumnBean columnBean) {
 		this.columnBean = columnBean;
-	}
+	}*/
 }
