@@ -120,6 +120,11 @@ body {
 	color:#fff;
 }
 
+/* Tree */
+.tree-toggle {
+	width: 100%;
+	height: 100%;
+}
 
 .input-form{
 	width:50%;
