@@ -16,7 +16,7 @@ public class TableBean implements Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-private Table table;
+	private Table table;
 
 	public Table getTable() {
 		return table;
