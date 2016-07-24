@@ -70,6 +70,8 @@ public class FileUploadBean implements Serializable {
 				List<Table> list = core.getTableList(parseResultDir);
 				String ssTableKey = sessionid + "table";
 				
+				System.out.println(list);
+				
 				exContext.getSessionMap().put(sessionid, parseResultDir);
 				exContext.getSessionMap().put(ssTableKey, list);
 			}

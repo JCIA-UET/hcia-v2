@@ -1,6 +1,7 @@
 package uet.jcia.controller;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.faces.bean.ManagedBean;
@@ -11,7 +12,6 @@ import javax.servlet.http.HttpSession;
 
 import uet.jcia.entities.Column;
 import uet.jcia.entities.Table;
-import uet.jcia.model.CoreAPI;
 
 @ManagedBean
 @SessionScoped
@@ -21,7 +21,10 @@ public class ColumnBean implements Serializable{
 	 */
 	private static final long serialVersionUID = 1L;
 	private Column column;
-
+	
+	public ColumnBean() {
+		column = new Column();
+	}
 	public Column getColumn() {
 		return column;
 	}
@@ -32,23 +35,24 @@ public class ColumnBean implements Serializable{
 	
 	@SuppressWarnings("unchecked")
 	public void save(Column changeCol){
+		System.out.println("Change Col Type:" + changeCol.getType());
+
 		FacesContext facesContext = FacesContext.getCurrentInstance();
 		ExternalContext exContext = facesContext.getExternalContext();
 	    HttpSession session = (HttpSession) exContext.getSession(false);
 	    
 	    String sessionid = session.getId();
 	    String ssTableKey = sessionid + "table";
+	    String ssChgTableKey = sessionid + "chgtable";
 	   
 		List<Table> list = (List<Table>) session.getAttribute(ssTableKey);
 
-		System.out.println("Column Change: " + changeCol);
-		
 		// get table that contains the changed col
-		Table ownTable = changeCol.getTable();
+		String tableId = changeCol.getTableId();
 		
 		// Search for all table saved in session
 		for(Table t : list) {
-			if(t == ownTable) {
+			if(t.getTempId().equals(tableId)) {
 				// Get column list of the matching table
 				List<Column> colsList = t.getListColumn();
 				
@@ -56,12 +60,32 @@ public class ColumnBean implements Serializable{
 				for(Column col : colsList) {
 					
 					// Matching
-					if(changeCol.getTempId().equals(col.getTempId())) {
-						
-						// get index of col in colsList
-						int colPosition = colsList.indexOf(col);
-						colsList.set(colPosition, changeCol);
+					if(col.getTempId().equals(changeCol.getTempId())) {
+	
+						// set properties
+						col.setName(changeCol.getName());
+						col.setType(changeCol.getType());
+						col.setNotNull(changeCol.isNotNull());
+						col.setPrimaryKey(changeCol.isAutoIncrement());
+						col.setForeignKey(changeCol.isForeignKey());
+						col.setAutoIncrement(changeCol.isAutoIncrement());	
 					}
+				}
+				
+				
+				List<Table> changedList = new ArrayList<>();
+				
+				if(session.getAttribute(ssChgTableKey) == null) {
+					changedList.add(t);
+					exContext.getSessionMap().put(ssChgTableKey, changedList);
+					//System.out.println("Has no change");
+				}
+				else {
+					changedList = (List<Table>) session.getAttribute(ssChgTableKey);
+					//System.out.println("Change List: " + changedList);
+					changedList.add(t);
+					session.setAttribute(ssChgTableKey, changedList);
+					
 				}
 			}
 		}
