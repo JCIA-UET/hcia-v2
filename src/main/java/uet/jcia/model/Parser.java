@@ -88,6 +88,7 @@ public class Parser {
                         fkColumn.setForeignKey(true);
                         fkColumn.setTable(t);
                         fkColumn.setTempId("" + tempIdGenerator++);
+                        fkColumn.setTableId(r.getTableId());
                         t.getListColumn().add(fkColumn);
                     }
                 }
@@ -129,13 +130,14 @@ public class Parser {
 			
 			// add one table to result with each class tag
 			for(int temp = 0; temp < listClass.getLength(); temp++){
+			    String tempId = "" + tempIdGenerator++;
 			    Node classNode = listClass.item(temp);
+			    ((Element)classNode).setAttribute("temp_id", tempId);
+			    
 				Table table = parseOneTagClassToTable(classNode);
 				table.setRefXml(xmlLink);
-				
-				String tempId = "" + tempIdGenerator++;
 				table.setTempId(tempId);
-				((Element)classNode).setAttribute("temp_id", tempId);
+				
 				result.add(table);
 			}
 			
@@ -150,10 +152,10 @@ public class Parser {
 	private Table parseOneTagClassToTable(Node classNode){
 		Table result = new Table();
 		//write code here/
-		Element element = (Element)classNode;
+		Element classElement = (Element)classNode;
 		
-		String className = element.getAttribute("name");
-		String tableName = element.getAttribute("table").toUpperCase();
+		String className = classElement.getAttribute("name");
+		String tableName = classElement.getAttribute("table").toUpperCase();
 		result.setClassName(className);
 		result.setTableName(tableName);
 		
@@ -164,26 +166,28 @@ public class Parser {
 		List<Column> columns = new ArrayList<>();
 		
 		// Add column Id if have tag
-		NodeList id = element.getElementsByTagName("id");
+		NodeList id = classElement.getElementsByTagName("id");
 		if(id.getLength()!=0){
 		    Column c = parseIdTagToColumn(id.item(0));
 		    c.setHbmTag("id");
+		    c.setTableId(classElement.getAttribute("temp_id"));
 			columns.add(c);
 			
 			cachedColumns.put(tableName.toUpperCase() + "." + c.getName().toUpperCase(), c);
 		}
 		
 		//add list column PK if have tag composite-id
-		NodeList composite = element.getElementsByTagName("composite-id");
+		NodeList composite = classElement.getElementsByTagName("composite-id");
 		if(composite.getLength() != 0){
 			columns.addAll(parserOneCompositeIdTagToListColumn(composite.item(0)));
 		}
 		
 		//add list column by property tags
-		NodeList pNodeList = element.getElementsByTagName("property");
+		NodeList pNodeList = classElement.getElementsByTagName("property");
 		for(int temp = 0; temp < pNodeList.getLength(); temp++){
 		    Column c = parseOnePropertyTagToColumn(pNodeList.item(temp));
 		    c.setHbmTag("property");
+		    c.setTableId(classElement.getAttribute("temp_id"));
 			columns.add(c);
 			
 			cachedColumns.put(tableName.toUpperCase() + "." + c.getName().toUpperCase(), c);
@@ -191,19 +195,23 @@ public class Parser {
 		
 		// add list relationship
 		List<Relationship> relationships = new ArrayList<>();
-		NodeList r1NodeList = element.getElementsByTagName("many-to-one");
+		NodeList r1NodeList = classElement.getElementsByTagName("many-to-one");
 		for(int temp = 0; temp < r1NodeList.getLength(); temp++){
-			relationships.add(parseOneTagManyToOne(r1NodeList.item(temp)));
+		    Relationship relationship = parseOneTagManyToOne(r1NodeList.item(temp));
+		    relationship.setTableId(classElement.getAttribute("temp_id"));
+			relationships.add(relationship);
 		
 		}
 		
 		// actually, this is 1-n relationship
-		NodeList r2NodeList = element.getElementsByTagName("set");
+		NodeList r2NodeList = classElement.getElementsByTagName("set");
 		for(int temp = 0; temp < r2NodeList.getLength(); temp++){
-			relationships.add(parseSet(r2NodeList.item(temp)));
+		    Relationship set = parseSet(r2NodeList.item(temp));
+		    set.setTableId(classElement.getAttribute("temp_id"));
+			relationships.add(set);
 		}
 		
-		//set column and relation to table result
+		//set columns and relationships to table
 		result.setListRelationship(relationships);
 		result.setListColumn(columns);
 		return result;

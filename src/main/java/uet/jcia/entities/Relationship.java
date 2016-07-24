@@ -18,6 +18,15 @@ public class Relationship implements Serializable {
 	
 	private String refXml;
 	private String tempId;
+	private String tableId;
+	
+	public String getTableId() {
+        return tableId;
+    }
+	
+	public void setTableId(String tableId) {
+        this.tableId = tableId;
+    }
 	
     public String getReferColumn() {
         return referColumn;

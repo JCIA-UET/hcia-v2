@@ -18,6 +18,7 @@ public class Column implements Serializable {
 	
 	private String refXml;
 	private String tempId;
+	private String tableId;
 	private String hbmTag;
 	
 	public Column(){
@@ -116,12 +117,20 @@ public class Column implements Serializable {
     public void setTempId(String tempId) {
         this.tempId = tempId;
     }
+    
+    public String getTableId() {
+        return tableId;
+    }
+    
+    public void setTableId(String tableId) {
+        this.tableId = tableId;
+    }
 
     @Override
     public String toString() {
         return "\n    Column ["
                 + "name=" + name + ", type=" + type + ", primaryKey=" + primaryKey + ", autoIncrement=" + autoIncrement
-                + ",\n           foreignKey= " + foreignKey + ", notNull=" + notNull + ", length=" + length + ", tempId=" + tempId + "]";
+                + ",\n           foreignKey= " + foreignKey + ", notNull=" + notNull + ", length=" + length + ", tempId=" + tempId + ", tableId=" + tableId + "]";
     }
 
 }
