@@ -24,11 +24,6 @@ public class CoreAPI {
     // mapping between temp file and extracted folder
     private static HashMap<String, String> mapper = new HashMap<>(); 
     
-    /**
-     * gửi path zip vào, nó sẽ gửi path temp lưu table
-     * @param uploadPath absolute path của file zip
-     * @return trả path file temp
-     */
     public String parse(String uploadPath) {
         List<Table> tableList;
         String resultPath = null;
@@ -61,26 +56,16 @@ public class CoreAPI {
         return resultPath;
     }
     
-    /**
-     * lấy danh sách table đã được lưu
-     * @param tempPath nhận vào path file đã nhận từ lúc parse
-     * @return danh sách table
-     */
     public List<Table> getTableList(String tempPath) {
         List<Table> list = fm.readTables(tempPath);
         return list;
     }
     
-    /**
-     * download các file xml
-     * @param tempPath nhận vào path file đã nhận từ lúc parse
-     * @return path tới file đã được zip
-     */
     public String download(String tempPath) {
         if (mapper.get(tempPath) == null) {
             return null;
         } else {
-            HashMap<String, Document> tagMapper = parser.getTagMapper();
+            HashMap<String, Document> tagMapper = parser.getCachedDocument();
             for (String xmlPath : tagMapper.keySet()) {
                 Document doc = tagMapper.get(xmlPath);
                 inverser.saveXml(xmlPath, doc);
@@ -91,25 +76,15 @@ public class CoreAPI {
     }
     
     public void updateTable(Table tbl) {
-        Document doc = parser.getTagMapper().get(tbl.getRefXml());
+        Document doc = parser.getCachedDocument().get(tbl.getRefXml());
         inverser.updateTable(tbl, doc);
     }
     
     public void updateData(List<Table> modifiedTables) {
         for (Table tbl : modifiedTables) {
-            Document doc = parser.getTagMapper().get(tbl.getRefXml());
+            Document doc = parser.getCachedDocument().get(tbl.getRefXml());
             inverser.updateTable(tbl, doc);
         }
     }
     
-    /*public void updateColumn(Column col) {
-        Document doc = parser.getTagMapper().get(col.getRefXml());
-        
-        if (col.isPrimaryKey()) {
-            inverser.updateHbmId(col, doc);
-        } else {
-            inverser.updateHbmProperty(col, doc);
-        }
-    }*/
-
 }

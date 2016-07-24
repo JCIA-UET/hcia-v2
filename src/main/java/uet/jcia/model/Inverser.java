@@ -23,6 +23,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import uet.jcia.entities.Column;
+import uet.jcia.entities.Relationship;
 import uet.jcia.entities.Table;
 import uet.jcia.utils.Mappers;
 
@@ -50,8 +51,10 @@ public class Inverser {
             Element classElement = (Element) classNodes.item(i);
             
             // update table name
-            if (classElement.getAttribute("temp_id").equals(tbl.getTempId())) {
-                classElement.setAttribute("table", tbl.getTableName());
+            if (classElement.getAttribute(Parser.HBM_ATT_TEMP_ID).equals(tbl.getTempId())) {
+                if (tbl.getTableName() != null) {
+                    classElement.setAttribute("table", tbl.getTableName());
+                }
             }
             
             // update columns
@@ -60,7 +63,6 @@ public class Inverser {
                 for (Column c : columnList) {
                     Element colElement = getElementByTempId(
                             classElement, c.getTempId());
-                    
                     if (colElement.getTagName().equals("id")) {
                         updateHbmId(c, colElement);
                         
@@ -70,30 +72,37 @@ public class Inverser {
                 }
             }
             
+            List<Relationship> relationshipList = tbl.getListRelationship();
+            if (relationshipList != null) {
+                for (Relationship r : relationshipList) {
+                    Element relElement = getElementByTempId(
+                            classElement, r.getTempId());
+                    
+                    if (r.getType().equals(Parser.ONE_TO_MANY)) {
+                        
+                    } else if (r.getType().equals(Parser.MANY_TO_ONE)) {
+                        
+                    }
+                }
+            }
         }
         
         System.out.println("[Inverser] done!");
         
     }
     
-    private Element getElementByTempId(Element rootElement, String tempId) {
-        NodeList nodeList = rootElement.getChildNodes();
-        for (int count = 0; count < nodeList.getLength(); count++) {
-            Node childNode = nodeList.item(count);
-            if (childNode.getNodeType() == Node.ELEMENT_NODE) {
-                Element childElement = (Element) childNode;
-                if (childElement.getAttribute("temp_id") != null &&
-                    childElement.getAttribute("temp_id").equals(tempId)) {
-                    return childElement;
-                }
-            }
-        }
-        return null;
+    public void updateHbmSet(Relationship relationship, Element setElement) {
+        
     }
+    
+    public void updateHbmManyToOne(Relationship relationship, Element mtoElement) {
+        
+    }
+    
     
     public void updateHbmProperty(Column col, Element propertyElement) {
         if (col.getType() != null) {
-            propertyElement.setAttribute("type", Mappers.getSqltohbm(col.getType()));
+            propertyElement.setAttribute("type", Mappers.getSqltoHbm(col.getType()));
         }
         if (col.getLength() != null) {
             propertyElement.setAttribute("length", col.getLength());
@@ -112,7 +121,7 @@ public class Inverser {
     
     public void updateHbmId(Column col, Element idElement) {
         if (col.getType() != null) {
-            idElement.setAttribute("type", Mappers.getSqltohbm(col.getType()));
+            idElement.setAttribute("type", Mappers.getSqltoHbm(col.getType()));
         }
         if (col.getLength() != null) {
             idElement.setAttribute("length", col.getLength());
@@ -140,12 +149,12 @@ public class Inverser {
         try {
             XPathFactory xFactory = XPathFactory.newInstance();
             XPath xPath = xFactory.newXPath();
-            XPathExpression exprs = xPath.compile("//*[@temp_id]");
+            XPathExpression exprs = xPath.compile("//*[@" + Parser.HBM_ATT_TEMP_ID + "]");
             
             NodeList nodeList = (NodeList) exprs.evaluate(doc, XPathConstants.NODESET);
             for (int count = 0; count < nodeList.getLength(); count++) {
                 Element e = (Element) nodeList.item(count);
-                e.removeAttribute("temp_id");
+                e.removeAttribute(Parser.HBM_ATT_TEMP_ID);
             }
             
             XMLSerializer serializer = new XMLSerializer();
@@ -162,4 +171,18 @@ public class Inverser {
         }
     }
     
+    private Element getElementByTempId(Element rootElement, String tempId) {
+        NodeList nodeList = rootElement.getChildNodes();
+        for (int count = 0; count < nodeList.getLength(); count++) {
+            Node childNode = nodeList.item(count);
+            if (childNode.getNodeType() == Node.ELEMENT_NODE) {
+                Element childElement = (Element) childNode;
+                if (childElement.getAttribute(Parser.HBM_ATT_TEMP_ID) != null &&
+                        childElement.getAttribute(Parser.HBM_ATT_TEMP_ID).equals(tempId)) {
+                    return childElement;
+                }
+            }
+        }
+        return null;
+    }
 }

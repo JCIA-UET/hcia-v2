@@ -12,7 +12,7 @@
             <column name="NAME" />
         </property>
         <property name="model" type="java.lang.String">
-            <column name="MODEL" />
+            <column name="MODEL"/>
         </property>
         <property name="quantity" type="java.lang.Integer">
             <column name="QUANTITY" />

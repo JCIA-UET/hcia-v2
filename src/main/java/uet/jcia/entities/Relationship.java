@@ -79,7 +79,7 @@ public class Relationship implements Serializable {
     public String toString() {
         return "\n    Relationship ["
                 + "referColumn=" + referColumn + ", referTable=" + referTable + ", referClass=" + referClass
-                + ", type=" + type + ", tempId=" + tempId + "]";
+                + ", type=" + type + ", tempId=" + tempId + ", tableId=" + tableId + "]";
     }
 	
 }

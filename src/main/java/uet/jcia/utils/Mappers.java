@@ -65,11 +65,11 @@ public class Mappers {
         
     }
     
-    public static String getHbmtosql(String hbmType) {
+    public static String getHbmtoSql(String hbmType) {
         return hbmToSql.get(hbmType);
     }
     
-    public static String getSqltohbm(String sqlType) {
+    public static String getSqltoHbm(String sqlType) {
         return sqlToHbm.get(sqlType);
     }
 }

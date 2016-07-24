@@ -50,7 +50,7 @@ public class TestCoreAPI {
         List<Table> tableList = api.getTableList(resultPath);
         
         Table modifiedTable = tableList.get(0);
-        Column modifiedCol = modifiedTable.getListColumn().get(2);
+        Column modifiedCol = modifiedTable.getListColumn().get(1);
         
         System.out.println(tableList);
         
