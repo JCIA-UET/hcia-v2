@@ -91,21 +91,30 @@ public class Inverser {
         
     }
     
+    public void removeNode(String xmlPath, String tempId) {
+        Document document = parser.getDocumentByXmlPath(xmlPath);
+        Element rootElement = document.getDocumentElement();
+        Element removedNode = getElementByTempId(rootElement, tempId);
+        removedNode.getParentNode().removeChild(removedNode);
+    }
+    
     public void updateHbmSet(Relationship relationship, Element setElement) {
         
     }
     
     public void updateHbmManyToOne(Relationship rela, Element mtoElement) {
         if (rela.getReferColumn() != null && rela.getReferTable() != null) {
-            Table refTable = parser.getTableByName(rela.getReferTable());
+            Table refTable = rela.getReferTable();
+            Column refColumn = rela.getReferColumn();
             mtoElement.setAttribute("class", refTable.getClassName());
             
             Element columnElement = (Element) mtoElement
                     .getElementsByTagName("column").item(0);
-            columnElement.setAttribute("name", rela.getReferColumn());
+            columnElement.setAttribute("name", refColumn.getName());
+            
+            
         }
     }
-    
     
     public void updateHbmProperty(Column col, Element propertyElement) {
         if (col.getType() != null) {
@@ -184,12 +193,21 @@ public class Inverser {
             Node childNode = nodeList.item(count);
             if (childNode.getNodeType() == Node.ELEMENT_NODE) {
                 Element childElement = (Element) childNode;
+                
                 if (childElement.getAttribute(Parser.HBM_ATT_TEMP_ID) != null &&
                         childElement.getAttribute(Parser.HBM_ATT_TEMP_ID).equals(tempId)) {
                     return childElement;
+                    
+                } else {
+                    Element recursiveResult = getElementByTempId(childElement, tempId);
+                    if (recursiveResult != null) return recursiveResult;
                 }
             }
         }
         return null;
+    }
+    
+    public void setParser(Parser parser) {
+        this.parser = parser;
     }
 }

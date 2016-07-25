@@ -1,36 +1,24 @@
 package cuong;
 
-import uet.jcia.entities.Column;
+import java.util.List;
+
 import uet.jcia.entities.Table;
 import uet.jcia.model.Inverser;
+import uet.jcia.model.Parser;
 
 public class TestInverser {
     
     public static void main(String argv[]) {
+        Parser parser = new Parser();
         Inverser inverser = new Inverser();
+        inverser.setParser(parser);
+        String xmlPath = "I:/Workspace/hcia-v2/src/main/resources/sample-data/Address.hbm.xml";
+        List<Table> tableList = parser.parseXml(xmlPath);
         
-        /*Table tbl = new Table();
-        tbl.setRefXml("src/main/resources/sample-data/Address.hbm.xml");
-        tbl.setTempId("5");
-        tbl.setTableName("ADDDRRRESS");
-        inverser.updateHbmClass(tbl);
+        System.out.println(tableList);
         
-        /*Column col = new Column();
-        col.setRefXml("src/main/resources/sample-data/Address.hbm.xml");
-        col.setClassName("cuong.data.sample.Address");
-        col.setMappingName("lastName");
-        col.setLength("10");
-        col.setName("last_name");
-        col.setType("string");
-        col.setNotNull(true);
-        inverser.updateHbmProperty(col);*/
+        inverser.removeNode("I:/Workspace/hcia-v2/src/main/resources/sample-data/Address.hbm.xml", "4");
         
-        /*col.setMappingName("addressId");
-        col.setNotNull(true);
-        col.setAutoIncrement(true);
-        col.setName("address____id");
-        col.setType("string123");
-        col.setLength("100");
-        inverser.updateHbmId(col);*/
+        inverser.saveXml(xmlPath, parser.getDocumentByXmlPath(xmlPath));
     }
 }

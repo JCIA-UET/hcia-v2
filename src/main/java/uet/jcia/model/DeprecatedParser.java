@@ -1,7 +1,7 @@
 /* File : Parser.class 
  * Author : hieusonson9x@gmail.com
  * Details: to  parser XML to List<Table> . Key API parserAllToListTable 
- * */
+ * 
 
 package uet.jcia.model;
 
@@ -359,3 +359,4 @@ public class DeprecatedParser {
     }
 	
 }
+*/

@@ -95,18 +95,18 @@ public class Parser {
         for (Table tbl : tableList) {
             for (Relationship r : tbl.getListRelationship()) {
                 if (MANY_TO_ONE.equals(r.getType())) {
-                    Column referentialColumn = cachedColumn.get(
-                            columnNameIdMapper.get(r.getReferColumn()));
-                    Table referentialTable = cachedTable.get(
-                            classNameIdMapper.get(r.getReferClass()));
+                    Column referColumn = cachedColumn.get(
+                            columnNameIdMapper.get(r.getReferColumn().getName()));
+                    Table referTable = cachedTable.get(
+                            classNameIdMapper.get(r.getReferTable().getClassName()));
                     
-                    if (referentialTable != null) {
-                        r.setReferTable(referentialTable.getTableName());
+                    if (referTable != null) {
+                        r.setReferTable(referTable);
                     }
                     
                     // add foreign keys
-                    if (referentialColumn != null) {
-                        Column foreignKey = (Column) Helper.deepClone(referentialColumn);
+                    if (referColumn != null) {
+                        Column foreignKey = (Column) Helper.deepClone(referColumn);
                         foreignKey.setPrimaryKey(false);
                         foreignKey.setForeignKey(true);
                         foreignKey.setTableId(r.getTableId());
@@ -294,11 +294,18 @@ public class Parser {
         mtoElement.setAttribute(HBM_ATT_TEMP_ID, tempId);
         
         // get attributes
-        relationship.setReferClass(mtoElement.getAttribute("class"));
+        String referClass = mtoElement.getAttribute("class");
+        Table referTable = new Table();
+        referTable.setClassName(referClass);
         // true unique attribute makes relationship become an 1-1 relationship 
         String unique = mtoElement.getAttribute("unique");
         Element columnElement = (Element) mtoElement.getElementsByTagName("column").item(0);
-        relationship.setReferColumn(columnElement.getAttribute("name"));
+        String referColumName = columnElement.getAttribute("name");
+        Column referColumn = new Column();
+        referColumn.setName(referColumName);
+        
+        relationship.setReferTable(referTable);
+        relationship.setReferColumn(referColumn);
 
         if (unique != null && unique.equalsIgnoreCase("true")) {
             relationship.setType(ONE_TO_ONE);
@@ -320,14 +327,18 @@ public class Parser {
         setElement.setAttribute(HBM_ATT_TEMP_ID, tempId);
         
         // get attributes
-        relationship.setReferTable(setElement.getAttribute("table"));
+        Table referTable = new Table();
+        Column referColumn = new Column();
+        referTable.setTableName(setElement.getAttribute("table"));
         Element keyElement = (Element) setElement.getElementsByTagName("key").item(0);
         Element columnElement = (Element) keyElement.getElementsByTagName("column").item(0);
-        relationship.setReferColumn(columnElement.getAttribute("name").toUpperCase());
+        referColumn.setName(columnElement.getAttribute("name"));
         
         Element otmElement = (Element)setElement.getElementsByTagName("one-to-many").item(0);
-        relationship.setReferClass(otmElement.getAttribute("class"));
+        referTable.setClassName(otmElement.getAttribute("class"));
         
+        relationship.setReferTable(referTable);
+        relationship.setReferColumn(referColumn);
         // set type
         relationship.setType(ONE_TO_MANY);
         
@@ -345,5 +356,9 @@ public class Parser {
     
     public Table getTableByName(String tableName) {
         return cachedTable.get(tableNameIdMapper.get(tableName));
+    }
+    
+    public Document getDocumentByXmlPath(String xmlPath) {
+        return cachedDocument.get(xmlPath);
     }
 }
