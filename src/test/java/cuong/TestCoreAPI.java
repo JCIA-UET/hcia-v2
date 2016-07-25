@@ -19,7 +19,7 @@ public class TestCoreAPI {
     }
     
     public static void testZip() {
-        String resultPath = api.parse("I:\\Workspace\\hcia-v2\\temp\\upload\\vnu.zip");
+        String resultPath = api.parse("C:\\Users\\dinht_000\\workspace\\hcia-v2\\temp\\vnu.zip");
         System.out.println("[temp data] " + resultPath);
         
         List<Table> tableList = api.getTableList(resultPath);
@@ -44,7 +44,7 @@ public class TestCoreAPI {
     }
 
     public static void testXml() {
-        String resultPath = api.parse("I:\\Workspace\\hcia-v2\\temp\\upload\\OrderItem.hbm.xml");
+        String resultPath = api.parse("C:\\Users\\dinht_000\\workspace\\hcia-v2\\temp\\Address.hbm.xml");
         System.out.println("[temp data] " + resultPath);
         
         List<Table> tableList = api.getTableList(resultPath);
@@ -57,48 +57,48 @@ public class TestCoreAPI {
         // update data 
         Table tbl = new Table();
         
-        // sửa thông tin table
+        // sá»­a thÃ´ng tin table
         System.out.println("\n\n\n\tModify table");
-        // cần lấy được refXml của table
+        // cáº§n láº¥y Ä‘Æ°á»£c refXml cá»§a table
         System.out.println("RefXml: " + modifiedTable.getRefXml());
         tbl.setRefXml(modifiedTable.getRefXml());
-        // cũng cần lấy đc temp_id của nó
+        // cÅ©ng cáº§n láº¥y Ä‘c temp_id cá»§a nÃ³
         System.out.println("TempId: " + modifiedTable.getTempId());
         tbl.setTempId(modifiedTable.getTempId());
         
-        // sửa tên table thành NEW_ORDERITEM
-        System.out.println("New table name: NEW_ORDERITEM");
-        tbl.setTableName("NEW_ORDERITEM");
+        // sá»­a tÃªn table thÃ nh NEW_ORDERITEM
+        //System.out.println("New table name: NEW_ORDERITEM");
+        //tbl.setTableName("NEW_ORDERITEM");
         
-        // sửa column
+        // sá»­a column
         Column col = new Column();
         System.out.println("\tModify column");
-        // cần lấy được temp_id của column
+        // cáº§n láº¥y Ä‘Æ°á»£c temp_id cá»§a column
         System.out.println("TempId: " + modifiedCol.getTempId());
         col.setTempId(modifiedCol.getTempId());
         
-        // sửa tên
+        // sá»­a tÃªn
         System.out.println("New name: NEW_NAME");
         col.setName("NEW_NAME");
         
-        // sửa kiểu
+        // sá»­a kiá»ƒu
         System.out.println("New type: VARCHAR");
         col.setType("VARCHAR");
         
-        // sửa độ dài
+        // sá»­a Ä‘á»™ dÃ i
         System.out.println("New length: 15");
         col.setLength("15");
         
-        // tạo List<Column> rồi add vào table
+        // táº¡o List<Column> rá»“i add vÃ o table
         List<Column> colList = new ArrayList<>();
         colList.add(col);
         tbl.setListColumn(colList);
         
-        // tạo List<Table> để truyền cho CoreAPI.updateData()
+        // táº¡o List<Table> Ä‘á»ƒ truyá»�n cho CoreAPI.updateData()
         List<Table> tblList = new ArrayList<>();
         tblList.add(tbl);
         
-        // gọi hàm updateData()
+        // gá»�i hÃ m updateData()
         api.updateData(tblList);
         
         System.out.println(api.download(resultPath));
