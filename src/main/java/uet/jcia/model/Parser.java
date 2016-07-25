@@ -342,4 +342,8 @@ public class Parser {
     public HashMap<String, Document> getCachedDocument() {
         return cachedDocument;
     }
+    
+    public Table getTableByName(String tableName) {
+        return cachedTable.get(tableNameIdMapper.get(tableName));
+    }
 }

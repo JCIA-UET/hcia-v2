@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Scanner;
 
 import uet.jcia.entities.Column;
+import uet.jcia.entities.Relationship;
 import uet.jcia.entities.Table;
 import uet.jcia.model.CoreAPI;
 
@@ -13,8 +14,8 @@ public class TestCoreAPI {
     static CoreAPI api = new CoreAPI();
     
     public static void main(String[] args) {
-//        testZip();
-        testXml();
+        testZip();
+//        testXml();
         
     }
     
@@ -26,19 +27,38 @@ public class TestCoreAPI {
         
         System.out.println(tableList);
         
+        Table modifiedTable = tableList.get(0);
+        
+        //Relationship [referColumn=CUSTOMER_ID, referTable=CUSTOMER,
+        //referClass=cuong.data.sample.Customer, type=many-to-one, tempId=5, tableId=0]
+        Relationship modifiedRela = modifiedTable.getListRelationship().get(0);
+        
         Table tbl = new Table();
+        Relationship rela = new Relationship();
         
-        Scanner scanner = new Scanner(System.in);
         System.out.println("\n\n\n\tModify table");
-        System.out.println("RefXml: ");
-        tbl.setRefXml(scanner.nextLine());
-        System.out.println("TempId: ");
-        tbl.setTempId(scanner.nextLine());
-        System.out.println("Table name: ");
-        tbl.setTableName(scanner.nextLine());
-        scanner.close();
+        System.out.println("RefXml: " + modifiedTable.getRefXml());
+        tbl.setRefXml(modifiedTable.getRefXml());
+        System.out.println("TempId: " + modifiedTable.getTempId());
+        tbl.setTempId(modifiedTable.getTempId());
         
-        api.updateTable(tbl);
+        System.out.println("\n\n\n\tModify relationship");
+        System.out.println("TempId: " + modifiedRela.getTempId());
+        rela.setTempId(modifiedRela.getTempId());
+        System.out.println("Refer table name: " + "PRODUCT");
+        rela.setReferTable("PRODUCT");
+        System.out.println("Refer column name: " + "PRODUCT_ID");
+        rela.setReferColumn("PRODUCT_ID");
+        System.out.println("Type: " + modifiedRela.getType());
+        rela.setType(modifiedRela.getType());
+        
+        List<Relationship> relaList = new ArrayList<>();
+        relaList.add(rela);
+        tbl.setListRelationship(relaList);
+        
+        List<Table> updatedTableList = new ArrayList<>();
+        updatedTableList.add(tbl);
+        api.updateData(updatedTableList);
         
         System.out.println(api.download(resultPath));
     }
@@ -51,6 +71,7 @@ public class TestCoreAPI {
         
         Table modifiedTable = tableList.get(0);
         Column modifiedCol = modifiedTable.getListColumn().get(1);
+        Relationship modifiedRel = modifiedTable.getListRelationship().get(0);
         
         System.out.println(tableList);
         
@@ -93,6 +114,26 @@ public class TestCoreAPI {
         List<Column> colList = new ArrayList<>();
         colList.add(col);
         tbl.setListColumn(colList);
+        
+        // sửa relationship
+        Relationship rel = new Relationship();
+        System.out.println("\tModify relationship");
+        // cần lấy được temp_id của relationship
+        System.out.println("TempId: " + modifiedRel.getTempId());
+        rel.setTempId(modifiedRel.getTempId());
+        
+        // sửa tên bảng tham chiếu
+        System.out.println("New name: CUSTOMER");
+        rel.setReferTable("CUSTOMER");
+        
+        // sửa tên cột tham chiếu
+        System.out.println("New refer column: CUSTOMER");
+        rel.setReferColumn("CUSTOMER_ID");
+        
+        // tạo List<Column> rồi add vào table
+        List<Relationship> relList = new ArrayList<>();
+        relList.add(rel);
+        tbl.setListRelationship(relList);
         
         // tạo List<Table> để truyền cho CoreAPI.updateData()
         List<Table> tblList = new ArrayList<>();

@@ -1,10 +1,8 @@
 package uet.jcia.model;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPath;
@@ -13,14 +11,12 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
-import org.apache.catalina.filters.RemoteIpFilter.XForwardedRequest;
 import org.apache.xml.serialize.OutputFormat;
 import org.apache.xml.serialize.XMLSerializer;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 import uet.jcia.entities.Column;
 import uet.jcia.entities.Relationship;
@@ -30,7 +26,8 @@ import uet.jcia.utils.Mappers;
 public class Inverser {
     
     private static DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-
+    private Parser parser;
+    
     public Inverser() {
         try {
             dbFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false);
@@ -40,9 +37,12 @@ public class Inverser {
         }
     }
     
-    public void updateTable(Table tbl, Document doc) {
-        if (tbl == null || doc == null) return;
+    public void updateTable(Table tbl, Parser parser) {
+        if (tbl == null || parser == null) return;
         
+        this.parser = parser;
+        
+        Document doc = parser.getCachedDocument().get(tbl.getRefXml());
         Element rootNode = doc.getDocumentElement();
         NodeList classNodes = rootNode.getElementsByTagName("class");
         
@@ -81,7 +81,7 @@ public class Inverser {
                     if (r.getType().equals(Parser.ONE_TO_MANY)) {
                         
                     } else if (r.getType().equals(Parser.MANY_TO_ONE)) {
-                        
+                        updateHbmManyToOne(r, relElement);
                     }
                 }
             }
@@ -95,8 +95,15 @@ public class Inverser {
         
     }
     
-    public void updateHbmManyToOne(Relationship relationship, Element mtoElement) {
-        
+    public void updateHbmManyToOne(Relationship rela, Element mtoElement) {
+        if (rela.getReferColumn() != null && rela.getReferTable() != null) {
+            Table refTable = parser.getTableByName(rela.getReferTable());
+            mtoElement.setAttribute("class", refTable.getClassName());
+            
+            Element columnElement = (Element) mtoElement
+                    .getElementsByTagName("column").item(0);
+            columnElement.setAttribute("name", rela.getReferColumn());
+        }
     }
     
     

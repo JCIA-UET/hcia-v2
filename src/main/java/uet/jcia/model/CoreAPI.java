@@ -76,14 +76,12 @@ public class CoreAPI {
     }
     
     public void updateTable(Table tbl) {
-        Document doc = parser.getCachedDocument().get(tbl.getRefXml());
-        inverser.updateTable(tbl, doc);
+        inverser.updateTable(tbl, parser);
     }
     
     public void updateData(List<Table> modifiedTables) {
         for (Table tbl : modifiedTables) {
-            Document doc = parser.getCachedDocument().get(tbl.getRefXml());
-            inverser.updateTable(tbl, doc);
+            inverser.updateTable(tbl, parser);
         }
     }
     
