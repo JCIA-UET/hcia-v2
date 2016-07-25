@@ -1,15 +1,15 @@
-package hieu;
+/*package hieu;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import uet.jcia.model.Parser;
+import uet.jcia.model.DeprecatedParser;
 
 public class TestParser {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		Parser test = new Parser();
+		DeprecatedParser test = new DeprecatedParser();
 		List<String> list = new ArrayList<>();
 		list.add("src/main/resources/Sinhvien.hbm.xml");
 		list.add("src/main/resources/Customer.hbm.xml");
@@ -17,3 +17,4 @@ public class TestParser {
 	}
 
 }
+*/

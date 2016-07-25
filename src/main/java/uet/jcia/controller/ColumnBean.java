@@ -53,6 +53,10 @@ public class ColumnBean implements Serializable{
 		// Search for all table saved in session
 		for(Table t : list) {
 			if(t.getTempId().equals(tableId)) {
+				
+				Table tempTable = new Table();
+				tempTable.setRefXml(t.getRefXml());
+				tempTable.setTempId(t.getTempId());
 				// Get column list of the matching table
 				List<Column> colsList = t.getListColumn();
 				
@@ -63,6 +67,7 @@ public class ColumnBean implements Serializable{
 					if(col.getTempId().equals(changeCol.getTempId())) {
 	
 						// set properties
+						if(changeCol.getName() != null && !changeCol.getName().isEmpty())
 						col.setName(changeCol.getName());
 						col.setType(changeCol.getType());
 						col.setNotNull(changeCol.isNotNull());
@@ -72,6 +77,7 @@ public class ColumnBean implements Serializable{
 					}
 				}
 				
+				tempTable.setListColumn(colsList);
 				
 				List<Table> changedList = new ArrayList<>();
 				
@@ -80,6 +86,7 @@ public class ColumnBean implements Serializable{
 					exContext.getSessionMap().put(ssChgTableKey, changedList);
 					//System.out.println("Has no change");
 				}
+				
 				else {
 					changedList = (List<Table>) session.getAttribute(ssChgTableKey);
 					//System.out.println("Change List: " + changedList);

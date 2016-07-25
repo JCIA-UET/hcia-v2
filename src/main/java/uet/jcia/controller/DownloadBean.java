@@ -31,6 +31,8 @@ public class DownloadBean {
 
 		String resultDir = (String) session.getAttribute(sessionid);
 		List<Table> list = (List<Table>) session.getAttribute(ssChgTableKey);
+		
+		System.out.println("Changed Table:" + list);
 
 		CoreAPI api = new CoreAPI();
 		

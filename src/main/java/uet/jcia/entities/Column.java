@@ -129,8 +129,8 @@ public class Column implements Serializable {
     @Override
     public String toString() {
         return "\n    Column ["
-                + "name=" + name + ", type=" + type + ", primaryKey=" + primaryKey + ", autoIncrement=" + autoIncrement
-                + ",\n           foreignKey= " + foreignKey + ", notNull=" + notNull + ", length=" + length + ", tempId=" + tempId + ", tableId=" + tableId + "]";
+                + "name=" + name + ", type=" + type + ", length=" + length + ", primaryKey=" + primaryKey + ", autoIncrement=" + autoIncrement
+                + ", foreignKey= " + foreignKey + ", notNull=" + notNull + ", tempId=" + tempId + ", tableId=" + tableId + "]";
     }
 
 }
