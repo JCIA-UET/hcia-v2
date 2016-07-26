@@ -1,6 +1,7 @@
 package uet.jcia.model;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -36,7 +37,8 @@ public class Inverser {
         }
     }
     
-    public void updateTable(Table tbl, Document doc) {
+    public void updateTable(Table tbl, HashMap<String, Document> tagMapper) {
+        Document doc = tagMapper.get(tbl.getRefXml());
         Element rootNode = doc.getDocumentElement();
         NodeList classNodes = rootNode.getElementsByTagName("class");
         
@@ -45,7 +47,7 @@ public class Inverser {
             Element classElement = (Element) classNodes.item(i);
             
             // update table name
-            if (classElement.getAttribute(Parser.HBM_ATT_TEMP_ID).equals(tbl.getTempId())) {
+            if (classElement.getAttribute(DeprecatedParser2.HBM_ATT_TEMP_ID).equals(tbl.getTempId())) {
                 if (tbl.getTableName() != null) {
                     classElement.setAttribute("table", tbl.getTableName());
                 }
@@ -73,9 +75,9 @@ public class Inverser {
                     Element relElement = getElementByTempId(
                             classElement, r.getTempId());
                     
-                    if (r.getType().equals(Parser.ONE_TO_MANY)) {
+                    if (r.getType().equals(DeprecatedParser2.ONE_TO_MANY)) {
                         
-                    } else if (r.getType().equals(Parser.MANY_TO_ONE)) {
+                    } else if (r.getType().equals(DeprecatedParser2.MANY_TO_ONE)) {
                         updateHbmManyToOne(r, relElement);
                     }
                 }
@@ -86,12 +88,10 @@ public class Inverser {
         
     }
     
-//    public void removeNode(String xmlPath, String tempId) {
-//        Document document = parser.getDocumentByXmlPath(xmlPath);
-//        Element rootElement = document.getDocumentElement();
-//        Element removedNode = getElementByTempId(rootElement, tempId);
-//        removedNode.getParentNode().removeChild(removedNode);
-//    }
+    public void removeNode(Element rootElement, String tempId) {
+        Element removedNode = getElementByTempId(rootElement, tempId);
+        removedNode.getParentNode().removeChild(removedNode);
+    }
     
     public void updateHbmSet(Relationship relationship, Element setElement) {
         
@@ -106,7 +106,6 @@ public class Inverser {
             Element columnElement = (Element) mtoElement
                     .getElementsByTagName("column").item(0);
             columnElement.setAttribute("name", refColumn.getName());
-            
         }
     }
     
@@ -159,12 +158,12 @@ public class Inverser {
         try {
             XPathFactory xFactory = XPathFactory.newInstance();
             XPath xPath = xFactory.newXPath();
-            XPathExpression exprs = xPath.compile("//*[@" + Parser.HBM_ATT_TEMP_ID + "]");
+            XPathExpression exprs = xPath.compile("//*[@" + DeprecatedParser2.HBM_ATT_TEMP_ID + "]");
             
             NodeList nodeList = (NodeList) exprs.evaluate(doc, XPathConstants.NODESET);
             for (int count = 0; count < nodeList.getLength(); count++) {
                 Element e = (Element) nodeList.item(count);
-                e.removeAttribute(Parser.HBM_ATT_TEMP_ID);
+                e.removeAttribute(DeprecatedParser2.HBM_ATT_TEMP_ID);
             }
             
             XMLSerializer serializer = new XMLSerializer();
@@ -188,8 +187,8 @@ public class Inverser {
             if (childNode.getNodeType() == Node.ELEMENT_NODE) {
                 Element childElement = (Element) childNode;
                 
-                if (childElement.getAttribute(Parser.HBM_ATT_TEMP_ID) != null &&
-                        childElement.getAttribute(Parser.HBM_ATT_TEMP_ID).equals(tempId)) {
+                if (childElement.getAttribute(DeprecatedParser2.HBM_ATT_TEMP_ID) != null &&
+                        childElement.getAttribute(DeprecatedParser2.HBM_ATT_TEMP_ID).equals(tempId)) {
                     return childElement;
                     
                 } else {

@@ -15,20 +15,12 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import uet.jcia.entities.Column;
-import uet.jcia.entities.ColumnNode;
-import uet.jcia.entities.MTORelationshipNode;
-import uet.jcia.entities.OTMRelationshipNode;
-import uet.jcia.entities.PrimaryKeyNode;
 import uet.jcia.entities.Relationship;
-import uet.jcia.entities.RootNode;
 import uet.jcia.entities.Table;
-import uet.jcia.entities.TableNode;
-import uet.jcia.entities.TreeNode;
 import uet.jcia.utils.Helper;
 import uet.jcia.utils.Mappers;
-import uet.jcia.utils.TreeDataHelper;
 
-public class Parser {
+public class DeprecatedParser2 {
     
     private long tempIdGenerator = 0;
     
@@ -64,72 +56,80 @@ public class Parser {
     
     // refxml - Document
     private HashMap<String, Document> cachedDocument;
-    // table name - table node
-    private HashMap<String, TableNode> tableNameMapper;
-    // class name - table node
-    private HashMap<String, TableNode> classNameMapper;
-    // primary key name - primary key node
-    private HashMap<String, PrimaryKeyNode> pkNameMapper;
+    // temporary id - table
+    private HashMap<String, Table> cachedTable;
+    // temporary id - column
+    private HashMap<String, Column> cachedColumn;
+    // temporary id - relationship
+    private HashMap<String, Relationship> cachedRelationship;
     
+    // table name - temporary id
+    private HashMap<String, String> tableNameIdMapper;
+    // class name - temporary id
+    private HashMap<String, String> classNameIdMapper;
+    // column name - temporary id
+    private HashMap<String, String> columnNameIdMapper;
     
-    public Parser(){
+    public DeprecatedParser2(){
         cachedDocument = new HashMap<>();
-        tableNameMapper = new HashMap<>();
-        classNameMapper = new HashMap<>();
-        pkNameMapper = new HashMap<>();
+        cachedTable = new HashMap<>();
+        cachedColumn = new HashMap<>();
+        cachedRelationship = new HashMap<>();
+        
+        tableNameIdMapper = new HashMap<>();
+        classNameIdMapper = new HashMap<>();
+        columnNameIdMapper = new HashMap<>();
     }
     
-    public TreeNode parseXmlList(List<String> xmlList){
+    public List<Table> parseXmlList(List<String> xmlList){
         
-//        System.out.println("[Parser] starting...");
+        System.out.println("[Parser] starting...");
 
-        TreeNode root = new RootNode();
-        List<TreeNode> tableNodes = new ArrayList<>();
+        List<Table> tableList = new ArrayList<Table>();
         
         for(String xml : xmlList){
-            TableNode tableNode = parseXmlFile(xml);
-            tableNode.setParent(root);
-            tableNodes.add(tableNode);
+            tableList.addAll(parseXmlFile(xml));
         }
         
-//        System.out.println("[Parser] add relationships...");
-        for (TreeNode tblNode : tableNodes) {
-            List<TreeNode> childNodes = tblNode.getChilds();
-            for (int j = 0; j < childNodes.size(); j++) {
-                TreeNode childNode = childNodes.get(j);
-                if (childNode instanceof MTORelationshipNode) {
-                    MTORelationshipNode mtoNode = (MTORelationshipNode) childNode;
-                    String referClass = mtoNode.getReferTable().getClassName();
-                    String referColumnName = mtoNode.getReferColumn().getColumnName();
+        System.out.println("[Parser] add relationships...");
+        for (Table tbl : tableList) {
+            for (Relationship r : tbl.getListRelationship()) {
+                if (MANY_TO_ONE.equals(r.getType())) {
+                    Column referColumn = cachedColumn.get(
+                            columnNameIdMapper.get(r.getReferColumn().getName()));
+                    Table referTable = cachedTable.get(
+                            classNameIdMapper.get(r.getReferTable().getClassName()));
                     
-                    TableNode referTable = classNameMapper.get(referClass);
-                    PrimaryKeyNode referColumn = pkNameMapper.get(referTable.getTableName() + "." + referColumnName);
-                    mtoNode.setReferTable(referTable);
-                    mtoNode.setReferColumn(referColumn);
+                    if (referTable != null) {
+                        r.setReferTable(referTable);
+                    }
                     
-                    // add foreign key for relationship
-                    ColumnNode foreignKey = TreeDataHelper.generateForeignKey(referColumn);
-                    foreignKey.setParent(tblNode);
-                    childNodes.add(foreignKey);
+                    // add foreign keys
+                    if (referColumn != null) {
+                        Column foreignKey = (Column) Helper.deepClone(referColumn);
+                        foreignKey.setPrimaryKey(false);
+                        foreignKey.setForeignKey(true);
+                        foreignKey.setTableId(r.getTableId());
+                        
+                        tbl.getListColumn().add(foreignKey);
+                    }
                 }
             }
         }
         
-//        System.out.println("[Parser] done!");
-        root.setChilds(tableNodes);
-        root.setTempId(-1);
-        return root;
+        System.out.println("[Parser] done!");
+        return tableList;
     }
 
-    public TreeNode parseXml(String xmlPath){
+    public List<Table> parseXml(String xmlPath){
         List<String> xmlList = new ArrayList<>();
         xmlList.add(xmlPath);
         return parseXmlList(xmlList);
     }
     
     
-    private TableNode parseXmlFile(String xmlPath){
-        TableNode result = new TableNode();
+    private List<Table> parseXmlFile(String xmlPath){
+        List<Table> result = new ArrayList<>();
         try {
             File xmlFile = new File(xmlPath);
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
@@ -152,13 +152,18 @@ public class Parser {
             
             // parse class tag
             for(int temp = 0; temp < listClass.getLength(); temp++){
-                long tempId = generateId();
+                String tempId = generateId();
                 Node classNode = listClass.item(temp);
-                ((Element)classNode).setAttribute(HBM_ATT_TEMP_ID, Long.toString(tempId));
+                ((Element)classNode).setAttribute(HBM_ATT_TEMP_ID, tempId);
                 
-                result = parseClassTag(classNode);
-                result.setTempId(tempId);
-                result.setLinkedElement((Element)classNode);
+                Table table = parseClassTag(classNode);
+                table.setRefXml(xmlPath);
+                table.setTempId(tempId);
+                
+                result.add(table);
+                tableNameIdMapper.put(table.getTableName(), tempId);
+                classNameIdMapper.put(table.getClassName(), tempId);
+                cachedTable.put(tempId, table);
             }
             
             System.out.println("[Parser] analylised....");
@@ -170,88 +175,74 @@ public class Parser {
         }
     }
     
-    private TableNode parseClassTag(Node classNode){
-        TableNode tableNode = new TableNode();
+    private Table parseClassTag(Node classNode){
+        Table result = new Table();
         Element classElement = (Element)classNode;
         
         // attribute for class tag
         String className = classElement.getAttribute("name");
         String tableName = classElement.getAttribute("table");
-        tableNode.setClassName(className);
-        tableNode.setTableName(tableName);
+        result.setClassName(className);
+        result.setTableName(tableName);
         
-        // add to cache
-        classNameMapper.put(className, tableNode);
-        tableNameMapper.put(tableName, tableNode);
-        
-        // child elements of the table
-        List<TreeNode> childElements = new ArrayList<>();
+        // get columns of the table
+        List<Column> columns = new ArrayList<>();
         
         // get primary key
         Node idNode = classElement.getElementsByTagName("id").item(0);
         if (idNode != null){
-            PrimaryKeyNode primaryKey = parseIdTag(idNode);
-            primaryKey.setLinkedElement((Element)idNode);
-            primaryKey.setParent(tableNode);
-            
-            // add to cache
-            pkNameMapper.put(tableName + "." + primaryKey.getColumnName(), primaryKey);
-            
-            childElements.add(primaryKey);
+            Column primaryKey = parseIdTag(idNode);
+            primaryKey.setTableId(classElement.getAttribute(HBM_ATT_TEMP_ID));
+            columns.add(primaryKey);
         }
         
         // get normal columns
         NodeList propertyNodes = classElement.getElementsByTagName("property");
         for (int temp = 0; temp < propertyNodes.getLength(); temp++){
-            Node propertyNode = propertyNodes.item(temp);
-            ColumnNode columnNode = parsePropertyTag(propertyNode);
-            columnNode.setLinkedElement((Element)propertyNode);
-            columnNode.setParent(tableNode);
-            childElements.add(columnNode);
+            Column column = parsePropertyTag(propertyNodes.item(temp));
+            column.setTableId(classElement.getAttribute(HBM_ATT_TEMP_ID));
+            columns.add(column);
         }
+        
+        // get relationships for table
+        List<Relationship> relationships = new ArrayList<>();
         
         // get n-1 relationships
         NodeList mtoNodes = classElement.getElementsByTagName("many-to-one");
         for(int temp = 0; temp < mtoNodes.getLength(); temp++){
-            Node mtoNode = mtoNodes.item(temp);
-            MTORelationshipNode relationship = parseManyToOneTag(mtoNode);
-            relationship.setLinkedElement((Element)mtoNode);
-            relationship.setParent(tableNode);
-            childElements.add(relationship);
+            Relationship relationship = parseManyToOneTag(mtoNodes.item(temp));
+            relationship.setTableId(classElement.getAttribute(HBM_ATT_TEMP_ID));
+            relationships.add(relationship);
         }
         
         // get 1-n relationships
         NodeList setNodes = classElement.getElementsByTagName("set");
         for(int temp = 0; temp < setNodes.getLength(); temp++){
-            Node setNode = setNodes.item(temp);
-            OTMRelationshipNode set = parseSet(setNode);
-            set.setLinkedElement((Element)setNode);
-            set.setParent(tableNode);
-            childElements.add(set);
+            Relationship set = parseSet(setNodes.item(temp));
+            set.setTableId(classElement.getAttribute(HBM_ATT_TEMP_ID));
+            relationships.add(set);
         }
         
         // add columns, relationships to table
-        tableNode.setChilds(childElements);
-        return tableNode;
+        result.setListRelationship(relationships);
+        result.setListColumn(columns);
+        return result;
     }
     
-    private PrimaryKeyNode parseIdTag(Node idNode){
-        PrimaryKeyNode primaryKey = new PrimaryKeyNode();
+    private Column parseIdTag(Node idNode){
+        Column primaryKey = new Column();
         Element idElement = (Element) idNode;
         
         // add temp id
-        long tempId = generateId();
+        String tempId = generateId();
         primaryKey.setTempId(tempId);
-        idElement.setAttribute(HBM_ATT_TEMP_ID, Long.toString(tempId));
+        idElement.setAttribute(HBM_ATT_TEMP_ID, tempId);
         
         // get attributes
         Element columnElement = (Element) idElement.getElementsByTagName("column").item(0);
-        primaryKey.setColumnName(columnElement.getAttribute("name"));
-        String lengthStr = columnElement.getAttribute("length");
-        if (!lengthStr.isEmpty()) {
-            primaryKey.setLength(Integer.parseInt(lengthStr));
-        }
-        primaryKey.setDataType(Mappers.getHbmtoSql(idElement.getAttribute("type")));
+        primaryKey.setName(columnElement.getAttribute("name"));
+        primaryKey.setLength(columnElement.getAttribute("length"));
+        primaryKey.setType(Mappers.getHbmtoSql(idElement.getAttribute("type")));
         
         primaryKey.setPrimaryKey(true);
         primaryKey.setNotNull(true);
@@ -262,93 +253,109 @@ public class Parser {
             primaryKey.setAutoIncrement(true);
         }
         
+        columnNameIdMapper.put(primaryKey.getName(), tempId);
+        cachedColumn.put(tempId, primaryKey);
+        
         return primaryKey;
     }
     
-    private ColumnNode parsePropertyTag(Node propertyNode){
-        ColumnNode field = new ColumnNode();
+    private Column parsePropertyTag(Node propertyNode){
+        Column field = new Column();
         Element propertyElement = (Element) propertyNode;
         
         // set temp id
-        long tempId = generateId();
+        String tempId = generateId();
         field.setTempId(tempId);
-        propertyElement.setAttribute(HBM_ATT_TEMP_ID, Long.toString(tempId));
+        propertyElement.setAttribute(HBM_ATT_TEMP_ID, tempId);
 
         // get attributes
         Element columnElement = (Element) propertyElement.getElementsByTagName("column").item(0);
-        field.setColumnName(columnElement.getAttribute("name"));
-        String lengthStr = columnElement.getAttribute("length");
-        if (!lengthStr.isEmpty()) {
-            field.setLength(Integer.parseInt(lengthStr));
-        }
-        field.setDataType(Mappers.getHbmtoSql(propertyElement.getAttribute("type")));
+        field.setName(columnElement.getAttribute("name"));
+        field.setLength(columnElement.getAttribute("length"));
+        field.setType(Mappers.getHbmtoSql(propertyElement.getAttribute("type")));
 
-        String notNull = columnElement.getAttribute("not-null");
-        if ("true".equals(notNull)) {
+        if ("true".equals(columnElement.getAttribute("not-null"))) {
             field.setNotNull(true);
         }
+        
+        columnNameIdMapper.put(field.getName(), tempId);
+        cachedColumn.put(tempId, field);
         
         return field;
     }
     
-    private MTORelationshipNode parseManyToOneTag(Node mtoNode){
-        MTORelationshipNode relationship = new MTORelationshipNode();
+    private Relationship parseManyToOneTag(Node mtoNode){
+        Relationship relationship = new Relationship();
         Element mtoElement = (Element)mtoNode;
         
         // set temp id
-        long tempId = generateId();
+        String tempId = generateId();
         relationship.setTempId(tempId);
-        mtoElement.setAttribute(HBM_ATT_TEMP_ID, Long.toString(tempId));
+        mtoElement.setAttribute(HBM_ATT_TEMP_ID, tempId);
         
         // get attributes
-        TableNode referTable = new TableNode();
-        PrimaryKeyNode referColumn = new PrimaryKeyNode();
-
         String referClass = mtoElement.getAttribute("class");
+        Table referTable = new Table();
         referTable.setClassName(referClass);
-
+        // true unique attribute makes relationship become an 1-1 relationship 
+        String unique = mtoElement.getAttribute("unique");
         Element columnElement = (Element) mtoElement.getElementsByTagName("column").item(0);
         String referColumName = columnElement.getAttribute("name");
-        referColumn.setColumnName(referColumName);
+        Column referColumn = new Column();
+        referColumn.setName(referColumName);
         
         relationship.setReferTable(referTable);
         relationship.setReferColumn(referColumn);
 
+        if (unique != null && unique.equalsIgnoreCase("true")) {
+            relationship.setType(ONE_TO_ONE);
+        } else {
+            relationship.setType(MANY_TO_ONE);
+        }
+        
+        cachedRelationship.put(tempId, relationship);
         return relationship; 
     }
     
-    private OTMRelationshipNode parseSet(Node setNode){
-        OTMRelationshipNode relationship = new OTMRelationshipNode(); 
+    private Relationship parseSet(Node setNode){
+        Relationship relationship = new Relationship(); 
         Element setElement = (Element)setNode;
         
         // get temp id
-        long tempId = generateId();
+        String tempId = generateId();
         relationship.setTempId(tempId);
-        setElement.setAttribute(HBM_ATT_TEMP_ID, Long.toString(tempId));
+        setElement.setAttribute(HBM_ATT_TEMP_ID, tempId);
         
         // get attributes
-        TableNode referTable = new TableNode();
-        ColumnNode foreignKey = new ColumnNode();
-        
+        Table referTable = new Table();
+        Column referColumn = new Column();
+        referTable.setTableName(setElement.getAttribute("table"));
         Element keyElement = (Element) setElement.getElementsByTagName("key").item(0);
         Element columnElement = (Element) keyElement.getElementsByTagName("column").item(0);
-        Element otmElement = (Element)setElement.getElementsByTagName("one-to-many").item(0);
+        referColumn.setName(columnElement.getAttribute("name"));
         
-        foreignKey.setColumnName(columnElement.getAttribute("name"));
-        referTable.setTableName(setElement.getAttribute("table"));
+        Element otmElement = (Element)setElement.getElementsByTagName("one-to-many").item(0);
         referTable.setClassName(otmElement.getAttribute("class"));
         
         relationship.setReferTable(referTable);
+        relationship.setReferColumn(referColumn);
+        // set type
+        relationship.setType(ONE_TO_MANY);
         
+        cachedRelationship.put(tempId, relationship);
         return relationship;
     }
 
-    private long generateId() {
-        return tempIdGenerator++;
+    private String generateId() {
+        return "" + tempIdGenerator++;
     }
     
     public HashMap<String, Document> getCachedDocument() {
         return cachedDocument;
+    }
+    
+    public Table getTableByName(String tableName) {
+        return cachedTable.get(tableNameIdMapper.get(tableName));
     }
     
     public Document getDocumentByXmlPath(String xmlPath) {

@@ -12,6 +12,7 @@ import org.w3c.dom.Element;
 
 import uet.jcia.entities.Column;
 import uet.jcia.entities.Table;
+import uet.jcia.entities.TreeNode;
 import uet.jcia.utils.Constants;
 import uet.jcia.utils.Helper;
 
@@ -30,7 +31,7 @@ public class CoreAPI {
     private static HashMap<String, String> tempDocumentMapper = new HashMap<>();
     
     public String parse(String uploadPath) {
-        List<Table> tableList;
+        TreeNode rootNode;
         String resultPath = null;
         
         // user upload xml file
@@ -43,8 +44,8 @@ public class CoreAPI {
             // copy file to generated folder
             Helper.copyFile(uploadPath, dstPath);
             
-            tableList = parser.parseXml(dstPath);
-            resultPath = fm.saveTables(tableList);
+            rootNode = parser.parseXml(dstPath);
+            resultPath = fm.saveTempData(rootNode);
             mapper.put(resultPath, dstDir);
             
         } else if (uploadPath.matches(".*\\.zip")) {
@@ -53,8 +54,8 @@ public class CoreAPI {
             fm.findFiles(
                     extractedFolder, ".*\\.xml", xmlList);
 
-            tableList = parser.parseXmlList(xmlList);
-            resultPath = fm.saveTables(tableList);
+            rootNode = parser.parseXmlList(xmlList);
+            resultPath = fm.saveTempData(rootNode);
             String documentPath = fm.saveDocumentsHash(parser.getCachedDocument());
             
             mapper.put(resultPath, extractedFolder);
@@ -65,9 +66,9 @@ public class CoreAPI {
         return resultPath;
     }
     
-    public List<Table> getTableList(String tempPath) {
-        List<Table> list = fm.readTables(tempPath);
-        return list;
+    public TreeNode getParsedData(String tempPath) {
+        TreeNode rootNode = fm.readTempData(tempPath);
+        return rootNode;
     }
     
     public String download(String tempPath) {
@@ -89,8 +90,7 @@ public class CoreAPI {
         HashMap<String, Document> tagMapper = 
                 fm.readDocumentsHash(tempDocumentMapper.get(tempPath));
         for (Table tbl : modifiedTables) {
-            Document doc = tagMapper.get(tbl.getRefXml());
-            inverser.updateTable(tbl, doc);
+            inverser.updateTable(tbl, tagMapper);
             fm.saveDocumentsHash(tagMapper);
         }
     }
