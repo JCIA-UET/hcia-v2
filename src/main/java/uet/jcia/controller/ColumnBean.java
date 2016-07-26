@@ -98,4 +98,8 @@ public class ColumnBean implements Serializable{
 		}
 		session.setAttribute(ssTableKey, list);
 	}
+	
+	public void restore(String tempId) {
+		System.out.println(tempId);
+	}
 }

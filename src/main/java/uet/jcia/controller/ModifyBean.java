@@ -37,7 +37,7 @@ public class ModifyBean implements Serializable {
 
 			} else {
 				System.out.println("Not Null");
-				list = core.getTableList(resultDir);
+				//list = core.getTableList(resultDir);
 				System.out.println(list);
 				session.setAttribute(ssTableKey, list);
 				exContext.redirect("home.xhtml");

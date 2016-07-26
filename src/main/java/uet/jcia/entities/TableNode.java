@@ -1,8 +1,14 @@
 package uet.jcia.entities;
 
-public class TableNode extends TreeNode {
+import java.io.Serializable;
+
+public class TableNode extends TreeNode  implements Serializable {
     
-    protected String className;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 5729963936298175858L;
+	protected String className;
     protected String tableName;
     
     public String getClassName() {

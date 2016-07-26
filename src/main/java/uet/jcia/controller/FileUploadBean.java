@@ -6,7 +6,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.util.List;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
@@ -18,7 +17,7 @@ import javax.faces.validator.ValidatorException;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
 
-import uet.jcia.entities.Table;
+import uet.jcia.entities.TreeNode;
 import uet.jcia.model.CoreAPI;
 import uet.jcia.utils.Constants;
 
@@ -51,7 +50,6 @@ public class FileUploadBean implements Serializable {
 		FacesContext facesContext = FacesContext.getCurrentInstance();
 		ExternalContext exContext = facesContext.getExternalContext();
 	    HttpSession session = (HttpSession) exContext.getSession(true);
-		
 
 		CoreAPI core = new CoreAPI();
 
@@ -62,18 +60,24 @@ public class FileUploadBean implements Serializable {
 			
 			String fileDir = saveFile(is, fileName);
 			System.out.println("Saved file's directory: " + fileDir);
-			String parseResultDir = core.parse(fileDir);
-			System.out.println("Parse file's directory: " + parseResultDir);
+			String parsedResultDir = core.parse(fileDir);
+			System.out.println("Parse file's directory: " + parsedResultDir);
 			
-			if(parseResultDir != null) {
+			if(parsedResultDir != null) {
 				String sessionid = session.getId();
-				List<Table> list = core.getTableList(parseResultDir);
-				String ssTableKey = sessionid + "table";
+				TreeNode root = core.getParsedData(parsedResultDir);
+				//System.out.println(root);
+				//String ssTableKey = sessionid + "table";
+				String dirKey = sessionid + "dir";
 				
-				System.out.println(list);
+				//System.out.println(list);
 				
-				exContext.getSessionMap().put(sessionid, parseResultDir);
-				exContext.getSessionMap().put(ssTableKey, list);
+				//Gson gson = new Gson();
+				//String jsonList = gson.toJson(list);
+				
+				//System.out.println(jsonList);
+				exContext.getSessionMap().put(dirKey, parsedResultDir);
+				//exContext.getSessionMap().put(ssTableKey, list);
 			}
 			
 			exContext.redirect("home.xhtml");

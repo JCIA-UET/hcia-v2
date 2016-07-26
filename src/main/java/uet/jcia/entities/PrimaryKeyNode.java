@@ -1,8 +1,14 @@
 package uet.jcia.entities;
 
-public class PrimaryKeyNode extends ColumnNode {
+import java.io.Serializable;
+
+public class PrimaryKeyNode extends ColumnNode implements Serializable {
     
-    private boolean autoIncrement;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 4385971629550030932L;
+	private boolean autoIncrement;
     
     public boolean isAutoIncrement() {
         return autoIncrement;

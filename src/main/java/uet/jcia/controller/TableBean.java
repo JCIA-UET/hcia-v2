@@ -50,6 +50,7 @@ public class TableBean implements Serializable{
 	    
 	    List<Table> list = (List<Table>) session.getAttribute(ssTableKey);
 	    setList(list);
+	    System.out.println("Table bean: " + list);
 	}
 
 	public void save() {

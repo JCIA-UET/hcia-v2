@@ -1,8 +1,14 @@
 package uet.jcia.entities;
 
-public class RelationshipNode extends TreeNode {
+import java.io.Serializable;
 
-    protected TableNode referTable;
+public class RelationshipNode extends TreeNode implements Serializable {
+
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 3795945845604632682L;
+	protected TableNode referTable;
     
     public TableNode getReferTable() {
         return referTable;

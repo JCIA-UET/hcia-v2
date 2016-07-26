@@ -43,19 +43,6 @@
 	  <artifactId>jsp-api</artifactId>
 	  <version>2.1</version>
 	</dependency>
-	
-	<!-- https://mvnrepository.com/artifact/org.primefaces/primefaces -->
-	<dependency>
-	  <groupId>org.primefaces</groupId>
-	  <artifactId>primefaces</artifactId>
-	  <version>6.0</version>
-	</dependency>
-	
-	<dependency>
-	  <groupId>org.primefaces.themes</groupId>
-	  <artifactId>bootstrap</artifactId>
-	  <version>1.0.10</version>
-	</dependency>
   
       <!-- https://mvnrepository.com/artifact/xerces/xercesImpl -->
     <dependency>
@@ -79,6 +66,13 @@
             <artifactId>font-awesome</artifactId>
             <version>4.5.0</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
+        <dependency>
+          <groupId>com.google.code.gson</groupId>
+          <artifactId>gson</artifactId>
+          <version>2.3.1</version>
+        </dependency>
+        
 	
   </dependencies>
   <build>

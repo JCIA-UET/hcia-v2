@@ -1,8 +1,14 @@
 package uet.jcia.entities;
 
-public class ColumnNode extends TreeNode {
+import java.io.Serializable;
+
+public class ColumnNode extends TreeNode implements Serializable {
     
-    protected String columnName;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 3175171924945900577L;
+	protected String columnName;
     protected String dataType;
     protected int length;
     

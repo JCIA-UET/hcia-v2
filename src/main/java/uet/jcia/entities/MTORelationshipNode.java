@@ -1,8 +1,14 @@
 package uet.jcia.entities;
 
-public class MTORelationshipNode extends RelationshipNode {
+import java.io.Serializable;
+
+public class MTORelationshipNode extends RelationshipNode implements Serializable {
     
-    private ColumnNode foreignKey;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -639214173809042259L;
+	private ColumnNode foreignKey;
     private PrimaryKeyNode referColumn;
     
     public ColumnNode getForeignKey() {

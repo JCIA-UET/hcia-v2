@@ -1,12 +1,17 @@
 package uet.jcia.entities;
 
+import java.io.Serializable;
 import java.util.List;
 
 import org.w3c.dom.Element;
 
-public abstract class TreeNode {
+public abstract class TreeNode  implements Serializable {
 
-    protected List<TreeNode> childs;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1318575025108283976L;
+	protected List<TreeNode> childs;
     protected TreeNode parent;
     protected Element linkedElement;
 

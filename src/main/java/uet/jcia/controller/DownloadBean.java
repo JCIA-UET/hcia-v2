@@ -36,12 +36,12 @@ public class DownloadBean {
 
 		CoreAPI api = new CoreAPI();
 		
-		if(list != null)
-			api.updateData(list);
+		//if(list != null)
+			//api.updateData(list);
 
-		String downloadDir = api.download(resultDir);
+		//String downloadDir = api.download(resultDir);
 		
-		return downloadDir;
+		return null;
 	}
 
 	public void download() {

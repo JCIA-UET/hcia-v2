@@ -1,6 +1,11 @@
 var g_tableInfo = new Object();
 
 $(document).ready(function() {
+//	var rawData = $(".raw-data").val();
+//	//console.log(rawData);
+//	var g_data = JSON.parse(rawData);
+//	console.log(g_data[0].listColumn[0]);
+	
 	$(".nav>li ul").hide();
 	
 	// Handle click event of label-tag (tree-root)
@@ -74,7 +79,7 @@ $(document).ready(function() {
 				colInfo.name = $(this).val();
 			}
 			else if(className == "col-type") {
-				console.log("Type: " + $(this).val());
+				//console.log("Type: " + $(this).val());
 				colInfo.type = $(this).val();
 			}
 			else if(className == "col-pk") {
@@ -90,7 +95,7 @@ $(document).ready(function() {
 				colInfo.nn = $(this).val();
 			}
 			else if(className == "col-fk") {
-				//console.log($(this).val());
+				console.log($(this).val());
 				colInfo.fk = $(this).val();
 			}
 			else if(className == "col-length") {
@@ -113,21 +118,25 @@ $(document).ready(function() {
 		for(var i = 0; i < colsList.length; i++) {
 			//console.log(g_tableInfo.length);
 			var col = colsList[i];
-			$(".table-info").append("<tr class='col-info'>" +
+			$(".table-info").append("<tr>" +
 					"<td>" + col.name + "</td>" +
 					"<td>" + col.type + "</td>" +
-					"<td>" + "<input id='nn' type='checkbox'/></td>" +
-					"<td>" + "<input id='pk' type='checkbox'/></td>" +
-					"<td>" + "<input id='fk' type='checkbox'/></td>" +
-					"<td>" + "<input id='ai' type='checkbox'/></td>" +
+					"<td>" + "<input id='nn-" + i + "' type='checkbox' disabled='disabled'/></td>" +
+					"<td>" + "<input id='pk-" + i + "' type='checkbox' disabled='disabled'/></td>" +
+					"<td>" + "<input id='fk-" + i + "' type='checkbox' disabled='disabled'/></td>" +
+					"<td>" + "<input id='ai-" + i + "' type='checkbox' disabled='disabled'/></td>" +
 					"</tr>"
 					);
 			
 			// Checked a checkbox if attribute of col is true
-			if(col.nn == "true") $("#nn").prop('checked', true);
-			if(col.pk == "true") $("#pk").prop('checked', true);
-			if(col.fk == "true") $("#fk").prop('checked', true);
-			if(col.ai == "true") $("#ai").prop('checked', true);
+			if(col.nn == "true") $("#nn-" + i).prop('checked', true);
+			else $("#nn-" + i).prop('checked', false);
+			if(col.pk == "true") $("#pk-" + i).prop('checked', true);
+			else $("#pk-" + i).prop('checked', false);
+			if(col.fk == "true") $("#fk-" + i).prop('checked', true);
+			else $("#fk-" + i).prop('checked', false);
+			if(col.ai == "true") $("#ai-" + i).prop('checked', true);
+			else $("#ai-" + i).prop('checked', false);
 		};
 		
 		var relasList = g_tableInfo.rela;
@@ -173,7 +182,11 @@ $(document).ready(function() {
 		$('#xmlModal').modal('show');
 		return false;
 	});
-
+	
+	$('#upload-trigger').click(function() {
+		$('#uploadModal').modal("show")
+	});
+	
 	$('#zip-trigger').click(function() {
 		$('#zipModal').modal('show');
 		return false;

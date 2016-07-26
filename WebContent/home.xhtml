@@ -4,14 +4,11 @@
 	xmlns:h="http://java.sun.com/jsf/html"
 	xmlns:f="http://java.sun.com/jsf/core"
 	xmlns:ui="http://java.sun.com/jsf/facelets"
-	xmlns:p="http://primefaces.org/ui">
+	xmlns:c="http://java.sun.com/jstl/core">
 <h:head>
-
 	<meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
-
 	<title>JSF Integrate Bootstrap</title>
-
 	<h:outputStylesheet library="webjars"
 		name="bootstrap/3.3.6/css/bootstrap.min-jsf.css" />
 	<h:outputStylesheet library="webjars"
@@ -21,9 +18,8 @@
 	<h:outputScript library="webjars" name="jquery/2.1.4/jquery.min.js" />
 	<h:outputScript library="webjars"
 		name="bootstrap/3.3.6/js/bootstrap.min.js" />
-	<h:outputStylesheet name="css/lj.css"></h:outputStylesheet>
-	<h:outputScript name="js/aq.js"></h:outputScript>
-
+	<h:outputStylesheet name="css/rj.css"></h:outputStylesheet>
+	<h:outputScript name="js/bq.js"></h:outputScript>
 </h:head>
 <h:body>
 	<div class="container-fluid">
@@ -32,7 +28,7 @@
 				<div class="container-fluid">
 					<ul class="nav navbar-nav">
 						<li class="dropdown"><a href="#" class="dropdown-toggle"
-							data-toggle="dropdown"> <span
+							data-toggle="dropdown" id="upload-trigger"> <span
 								class="glyphicon glyphicon-upload"></span>Upload File
 						</a>
 							<ul class="dropdown-menu">
@@ -42,17 +38,14 @@
 							</ul></li>
 						<li><h:form>
 								<h:commandLink action="#{downloadBean.download}">
-									<span class="glyphicon glyphicon-download"></span>Download</h:commandLink>
+									<span class="glyphicon glyphicon-download"></span>Download
+                  </h:commandLink>
 							</h:form></li>
 						<li><h:form>
 								<h:commandLink id="reset-data-trigger"
 									action="#{modifyBean.resetdata}">
-									<span class="glyphicon glyphicon-refresh"></span>Reset All</h:commandLink>
-							</h:form></li>
-						<li><h:form>
-								<h:commandLink id="reset-data-trigger"
-									action="#{modifyBean.save}">
-									<span class="glyphicon glyphicon-refresh"></span>Save</h:commandLink>
+									<span class="glyphicon glyphicon-refresh"></span>Reset All
+                  </h:commandLink>
 							</h:form></li>
 					</ul>
 					<ul class="nav navbar-nav navbar-right">
@@ -67,37 +60,22 @@
 		</div>
 		<div class="row">
 			<div class="col-lg-3" style="width: 25%;">
-				<div class="well">
+				<div>
+					<input type="hidden" class="raw-data" value="#{treeBean.jsonTree}" />
 					<ul class="nav">
-						<ui:repeat var="table" value="#{treeBean.list}"
+						<ui:repeat var="table" value="#{treeBean.root.childs}"
 							varStatus="tbStatus">
 							<li class="tree-root nav-header"><label class="tree-toggle">#{table.tableName}</label>
 								<ul class="nav">
-									<ui:repeat var="fkey" value="#{table.listRelationship}">
-										<input type="hidden" class="rela-table"
-											value="#{table.tableName}" />
-										<input type="hidden" class="rela-col"
-											value="#{fkey.referColumn}" />
-										<input type="hidden" class="rela-type" value="#{fkey.type}" />
-										<input type="hidden" class="rela-rftable"
-											value="#{fkey.referTable}" />
-										<input type="hidden" class="rela-rfcol"
-											value="#{fkey.referColumn}" />
-									</ui:repeat>
-									<ui:repeat var="col" value="#{table.listColumn}"
-										varStatus="colStatus">
-										<input type="hidden" class="col-id" value="#{col.tempId}" />
-										<input type="hidden" class="col-tableid"
-											value="#{col.tableId}" />
-										<input type="hidden" class="col-name" value="#{col.name}" />
-										<input type="hidden" class="col-type" value="#{col.type}" />
-										<input type="hidden" class="col-pk" value="#{col.primaryKey}" />
-										<input type="hidden" class="col-ai"
-											value="#{col.autoIncrement}" />
-										<input type="hidden" class="col-nn" value="#{col.notNull}" />
-										<input type="hidden" class="col-fk" value="#{col.foreignKey}" />
-										<input type="hidden" class="col-length" value="#{col.length}" />
-										<li><a class="tree-node" href="#" contenteditable="false">#{col.name}</a></li>
+									<ui:repeat var="col" value="#{table.childs}">
+									<c:choose>
+										<c:when test="${col.columnName == null}">
+										<li><a class="tree-node" href="#" contenteditable="false">true</a></li>
+										</c:when>
+										<c:when test="${col.columnName != null}">
+										<li><a class="tree-node" href="#" contenteditable="false">false</a></li>
+										</c:when>
+									</c:choose>
 									</ui:repeat>
 								</ul></li>
 						</ui:repeat>
@@ -144,24 +122,14 @@
 											</h:panelGroup>
 											<div class="form-group">
 												<label for="usr">Name Column</label>
-
 												<h:inputText type="text"
 													class="col-name-detail form-control"
 													value="#{columnBean.column.name}" />
 												<!-- <input type="text"
-													class="col-name-detail form-control" name="name" /> -->
+                            class="col-name-detail form-control" name="name" /> -->
 											</div>
 											<div class="form-group">
 												<label for="sel1">Type Data</label>
-												<!-- <select
-													class="col-type-detail form-control input-form" id="sel1">
-													<option selected="selected">#{columnBean.column.type}</option>
-													<option value="VARCHAR">VARCHAR()</option>
-													<option value="INTEGER">INTEGER</option>
-													<option value="DOUBLE">DOUBLE</option>
-													<option value="DATE">DATE</option>
-													<option value="FLOAT">FLOAT</option>
-												</select> -->
 												<h:selectOneMenu
 													class="col-type-detail form-control input-form"
 													value="#{columnBean.column.type}">
@@ -174,14 +142,13 @@
 											</div>
 											<div class="form-group">
 												<label for="pwd">Length</label>
-												<!-- <input type="text"
-													class="col-length-detail form-control" name="length" /> -->
+												<!-- <input type="text
+                            class="col-length-detail form-control" name="length" /> -->
 												<h:inputText type="text"
 													class="col-length-detail form-control input-from"
 													value="#{columnBean.column.length}" />
 											</div>
 										</div>
-
 										<div class="col-md-6">
 											<br></br> <br></br>
 											<div class="row">
@@ -198,7 +165,6 @@
 											<br></br>
 											<div class="row">
 												<div class="form-group">
-
 													<label style="width: 180px; text-align: right;" for="pwd2"
 														class="col-sm-2">Primary Key:</label>
 													<div class="col-sm-2">
@@ -211,7 +177,6 @@
 											<br></br>
 											<div class="row">
 												<div class="form-group">
-
 													<label style="width: 180px; text-align: right;" for="pwd3"
 														class="col-sm-2">Foreign Key:</label>
 													<div class="col-sm-2">
@@ -225,24 +190,25 @@
 											<div class="row">
 												<div class="form-group">
 													<label style="width: 180px; text-align: right;" for="pwd4"
-														class="col-sm-2">Auto Increament:</label>
+														class="col-sm-2">Auto Increment:</label>
 													<div class="col-sm-2">
 														<h:selectBooleanCheckbox class="col-ai-detail"
 															value="#{columnBean.column.autoIncrement}" />
-														<!-- <input type="checkbox" class="col-ai-detail" name="bAI" /> -->
 													</div>
 												</div>
 											</div>
-											<div class="row" style="padding: 20px 150px 0px 0px;">
+											<div class="row" style="padding: 20px 0px 0px 0px;">
 												<h:commandButton style="width:100px;float:right;"
-													styleClass="btn btn-info" value="Save"
+													styleClass="btn btn-success" value="Save"
 													action="#{columnBean.save(columnBean.column)}" />
+												<h:commandButton style="width:100px;float:right;"
+													styleClass="btn btn-info" value="Restore"
+													action="#{columnBean.restore(columnBean.column.tempId)}" />
 											</div>
 										</div>
 									</h:form>
 								</div>
 							</div>
-
 						</div>
 						<div id="dttabler" class="tab-pane fade">
 							<div class="row table-wrap"
@@ -283,9 +249,8 @@
 											<div class="form-group">
 												<label for="usr1">Refer Table</label>
 												<!-- <input type="text"
-											class="rela-rftable-detail form-control" name="relaRfTable" /> -->
-												<h:selectOneMenu class="rela-rftable-detail form-control"
-													value="#{columnBean.column.type}">
+                            class="rela-rftable-detail form-control" name="relaRfTable" /> -->
+												<h:selectOneMenu class="rela-rftable-detail form-control">
 													<ui:repeat var="table" value="#{tableBean.list}">
 														<f:selectItem itemValue="#{table.tableName}"
 															itemLabel="#{table.tableName}" />
