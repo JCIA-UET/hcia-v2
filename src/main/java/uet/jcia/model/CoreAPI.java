@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import uet.jcia.entities.Column;
 import uet.jcia.entities.Table;
@@ -21,8 +22,12 @@ public class CoreAPI {
     private Parser parser = new Parser();
     private Inverser inverser = new Inverser();
     
+    
     // mapping between temp file and extracted folder
     private static HashMap<String, String> mapper = new HashMap<>(); 
+    
+    // mapping between temp file and document file
+    private static HashMap<String, String> tempDocumentMapper = new HashMap<>();
     
     public String parse(String uploadPath) {
         List<Table> tableList;
@@ -50,7 +55,11 @@ public class CoreAPI {
 
             tableList = parser.parseXmlList(xmlList);
             resultPath = fm.saveTables(tableList);
+            String documentPath = fm.saveDocumentsHash(parser.getCachedDocument());
+            
             mapper.put(resultPath, extractedFolder);
+            tempDocumentMapper.put(resultPath, documentPath);
+            
         }
         
         return resultPath;
@@ -65,7 +74,8 @@ public class CoreAPI {
         if (mapper.get(tempPath) == null) {
             return null;
         } else {
-            HashMap<String, Document> tagMapper = parser.getCachedDocument();
+            HashMap<String, Document> tagMapper = 
+                    fm.readDocumentsHash(tempDocumentMapper.get(tempPath));
             for (String xmlPath : tagMapper.keySet()) {
                 Document doc = tagMapper.get(xmlPath);
                 inverser.saveXml(xmlPath, doc);
@@ -75,13 +85,13 @@ public class CoreAPI {
         }
     }
     
-    public void updateTable(Table tbl) {
-        inverser.updateTable(tbl, parser);
-    }
-    
-    public void updateData(List<Table> modifiedTables) {
+    public void updateData(List<Table> modifiedTables, String tempPath) {
+        HashMap<String, Document> tagMapper = 
+                fm.readDocumentsHash(tempDocumentMapper.get(tempPath));
         for (Table tbl : modifiedTables) {
-            inverser.updateTable(tbl, parser);
+            Document doc = tagMapper.get(tbl.getRefXml());
+            inverser.updateTable(tbl, doc);
+            fm.saveDocumentsHash(tagMapper);
         }
     }
     

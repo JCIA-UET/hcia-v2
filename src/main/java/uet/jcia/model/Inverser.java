@@ -26,7 +26,6 @@ import uet.jcia.utils.Mappers;
 public class Inverser {
     
     private static DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-    private Parser parser;
     
     public Inverser() {
         try {
@@ -37,12 +36,7 @@ public class Inverser {
         }
     }
     
-    public void updateTable(Table tbl, Parser parser) {
-        if (tbl == null || parser == null) return;
-        
-        this.parser = parser;
-        
-        Document doc = parser.getCachedDocument().get(tbl.getRefXml());
+    public void updateTable(Table tbl, Document doc) {
         Element rootNode = doc.getDocumentElement();
         NodeList classNodes = rootNode.getElementsByTagName("class");
         
@@ -72,6 +66,7 @@ public class Inverser {
                 }
             }
             
+            // update relationships
             List<Relationship> relationshipList = tbl.getListRelationship();
             if (relationshipList != null) {
                 for (Relationship r : relationshipList) {
@@ -91,12 +86,12 @@ public class Inverser {
         
     }
     
-    public void removeNode(String xmlPath, String tempId) {
-        Document document = parser.getDocumentByXmlPath(xmlPath);
-        Element rootElement = document.getDocumentElement();
-        Element removedNode = getElementByTempId(rootElement, tempId);
-        removedNode.getParentNode().removeChild(removedNode);
-    }
+//    public void removeNode(String xmlPath, String tempId) {
+//        Document document = parser.getDocumentByXmlPath(xmlPath);
+//        Element rootElement = document.getDocumentElement();
+//        Element removedNode = getElementByTempId(rootElement, tempId);
+//        removedNode.getParentNode().removeChild(removedNode);
+//    }
     
     public void updateHbmSet(Relationship relationship, Element setElement) {
         
@@ -111,7 +106,6 @@ public class Inverser {
             Element columnElement = (Element) mtoElement
                     .getElementsByTagName("column").item(0);
             columnElement.setAttribute("name", refColumn.getName());
-            
             
         }
     }
@@ -207,7 +201,4 @@ public class Inverser {
         return null;
     }
     
-    public void setParser(Parser parser) {
-        this.parser = parser;
-    }
 }
