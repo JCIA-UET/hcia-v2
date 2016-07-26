@@ -1,6 +1,6 @@
 body {
 	overflow-y: hidden;
-	background-color: #efefef
+	background-color: #efefef;
 }
 
 /* Navbar */
@@ -66,13 +66,11 @@ body {
 
 /* Page layout */
 .col-lg-3 {
-	min-height: 662px;
+
+	height:662px;
 }
 
-.col-lg-3 > form {
-	height: 1000px;
-}
-.col-lg-3 > form > div {
+.col-lg-3 > div {
 	border: 0 none;
 	height: 100%;
 	width: 100%;
@@ -82,7 +80,7 @@ body {
 }
 
 .col-lg-9 {
-	min-height: 660px;
+	height:662px;
 	background-color: #ffffff;
 	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
