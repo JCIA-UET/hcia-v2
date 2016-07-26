@@ -17,6 +17,7 @@ import java.util.List;
 import org.w3c.dom.Document;
 
 import uet.jcia.entities.Table;
+import uet.jcia.entities.TreeNode;
 import uet.jcia.utils.Constants;
 import uet.jcia.utils.Helper;
 
@@ -113,6 +114,45 @@ public class FileManager {
                 findFiles(child.getAbsolutePath(), pattern, resultList);
             }
         }
+    }
+    
+    public String saveTempData(TreeNode rootNode) {
+        Date d = new Date();
+        String filePath = Constants.TEMP_SOURCE_FOLDER + File.separator
+                + "temp-data-" + Helper.DATE_FORMATER.format(d);
+        
+        try {
+            FileOutputStream fos = new FileOutputStream(filePath);
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+            oos.writeObject(rootNode);
+            
+            return filePath;
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return null;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+    
+    public TreeNode readTempData(String filePath) {
+        try {
+            FileInputStream fis = new FileInputStream(filePath);
+            ObjectInputStream ois = new ObjectInputStream(fis);
+            
+            TreeNode result = (TreeNode) ois.readObject();
+            
+            return result;
+            
+        } catch (IOException e) {
+            e.printStackTrace();
+            
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        
+        return null;
     }
     
 }

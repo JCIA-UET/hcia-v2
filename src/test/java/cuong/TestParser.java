@@ -9,20 +9,20 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 
 import uet.jcia.entities.Table;
-import uet.jcia.model.Parser;
+import uet.jcia.model.DeprecatedParser2;
 
 public class TestParser {
 
     public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException {
         List<String> xmlList = new ArrayList<>();
         xmlList.add("src/main/resources/sample-data/Address.hbm.xml");
-        xmlList.add("src/main/resources/sample-data/Category.hbm.xml");
-        xmlList.add("src/main/resources/sample-data/Customer.hbm.xml");
-        xmlList.add("src/main/resources/sample-data/Order.hbm.xml");
-        xmlList.add("src/main/resources/sample-data/OrderItem.hbm.xml");
-        xmlList.add("src/main/resources/sample-data/Product.hbm.xml");
+//        xmlList.add("src/main/resources/sample-data/Category.hbm.xml");
+//        xmlList.add("src/main/resources/sample-data/Customer.hbm.xml");
+//        xmlList.add("src/main/resources/sample-data/Order.hbm.xml");
+//        xmlList.add("src/main/resources/sample-data/OrderItem.hbm.xml");
+//        xmlList.add("src/main/resources/sample-data/Product.hbm.xml");
         
-        Parser p = new Parser();
+        DeprecatedParser2 p = new DeprecatedParser2();
         List<Table> resultList = p.parseXmlList(xmlList);
         
         for (Table t : resultList) {
