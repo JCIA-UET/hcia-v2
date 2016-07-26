@@ -89,6 +89,7 @@ public class Parser {
         for(String xml : xmlList){
             TableNode tableNode = parseXmlFile(xml);
             tableNode.setParent(root);
+            tableNode.setXmlPath(xml);
             tableNodes.add(tableNode);
         }
         
@@ -102,7 +103,8 @@ public class Parser {
                     String referClass = mtoNode.getReferTable().getClassName();
                     String referColumnName = mtoNode.getReferColumn().getColumnName();
                     
-                    TableNode referTable = classNameMapper.get(referClass);
+                    TableNode referTable = (TableNode) Helper.deepClone(classNameMapper.get(referClass));
+                    referTable.setChilds(null);
                     PrimaryKeyNode referColumn = pkNameMapper.get(referTable.getTableName() + "." + referColumnName);
                     mtoNode.setReferTable(referTable);
                     mtoNode.setReferColumn(referColumn);
