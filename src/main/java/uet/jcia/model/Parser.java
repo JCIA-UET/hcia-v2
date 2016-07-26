@@ -104,15 +104,20 @@ public class Parser {
                     String referColumnName = mtoNode.getReferColumn().getColumnName();
                     
                     TableNode referTable = (TableNode) Helper.deepClone(classNameMapper.get(referClass));
-                    referTable.setChilds(null);
-                    PrimaryKeyNode referColumn = pkNameMapper.get(referTable.getTableName() + "." + referColumnName);
-                    mtoNode.setReferTable(referTable);
-                    mtoNode.setReferColumn(referColumn);
+                    if (referTable != null) {
+                        referTable.setChilds(null);
+                        mtoNode.setReferTable(referTable);
+                        
+                        PrimaryKeyNode referColumn = pkNameMapper.get(referTable.getTableName() + "." + referColumnName);
+                        if (referColumn != null) {
+                            mtoNode.setReferColumn(referColumn);
+                            // add foreign key for relationship
+                            ColumnNode foreignKey = TreeDataHelper.generateForeignKey(referColumn);
+                            foreignKey.setParent(tblNode);
+                            childNodes.add(foreignKey);
+                        }
+                    }
                     
-                    // add foreign key for relationship
-                    ColumnNode foreignKey = TreeDataHelper.generateForeignKey(referColumn);
-                    foreignKey.setParent(tblNode);
-                    childNodes.add(foreignKey);
                 }
             }
         }
@@ -248,13 +253,14 @@ public class Parser {
         
         // get attributes
         Element columnElement = (Element) idElement.getElementsByTagName("column").item(0);
-        primaryKey.setColumnName(columnElement.getAttribute("name"));
         String lengthStr = columnElement.getAttribute("length");
         if (!lengthStr.isEmpty()) {
             primaryKey.setLength(Integer.parseInt(lengthStr));
         }
-        primaryKey.setDataType(Mappers.getHbmtoSql(idElement.getAttribute("type")));
         
+        primaryKey.setJavaName(idElement.getAttribute("name"));
+        primaryKey.setColumnName(columnElement.getAttribute("name"));
+        primaryKey.setDataType(Mappers.getHbmtoSql(idElement.getAttribute("type")));
         primaryKey.setPrimaryKey(true);
         primaryKey.setNotNull(true);
         
@@ -278,11 +284,13 @@ public class Parser {
 
         // get attributes
         Element columnElement = (Element) propertyElement.getElementsByTagName("column").item(0);
-        field.setColumnName(columnElement.getAttribute("name"));
         String lengthStr = columnElement.getAttribute("length");
         if (!lengthStr.isEmpty()) {
             field.setLength(Integer.parseInt(lengthStr));
         }
+
+        field.setJavaName(propertyElement.getAttribute("name"));
+        field.setColumnName(columnElement.getAttribute("name"));
         field.setDataType(Mappers.getHbmtoSql(propertyElement.getAttribute("type")));
 
         String notNull = columnElement.getAttribute("not-null");
@@ -313,6 +321,7 @@ public class Parser {
         String referColumName = columnElement.getAttribute("name");
         referColumn.setColumnName(referColumName);
         
+        relationship.setJavaName(mtoElement.getAttribute("name"));
         relationship.setReferTable(referTable);
         relationship.setReferColumn(referColumn);
 
@@ -340,7 +349,9 @@ public class Parser {
         referTable.setTableName(setElement.getAttribute("table"));
         referTable.setClassName(otmElement.getAttribute("class"));
         
+        relationship.setJavaName(setElement.getAttribute("name"));
         relationship.setReferTable(referTable);
+        relationship.setForeignKey(foreignKey);
         
         return relationship;
     }

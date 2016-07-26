@@ -72,27 +72,11 @@ public class CoreAPI {
     }
     
     public String download(String tempPath) {
-        if (mapper.get(tempPath) == null) {
-            return null;
-        } else {
-            HashMap<String, Document> tagMapper = 
-                    fm.readDocumentsHash(tempDocumentMapper.get(tempPath));
-            for (String xmlPath : tagMapper.keySet()) {
-                Document doc = tagMapper.get(xmlPath);
-                inverser.saveXml(xmlPath, doc);
-            }
-            
-            return zm.compress(mapper.get(tempPath));
-        }
+        return zm.compress(mapper.get(tempPath));
     }
     
-    public void updateData(List<Table> modifiedTables, String tempPath) {
-        HashMap<String, Document> tagMapper = 
-                fm.readDocumentsHash(tempDocumentMapper.get(tempPath));
-        for (Table tbl : modifiedTables) {
-            inverser.updateTable(tbl, tagMapper);
-            fm.saveDocumentsHash(tagMapper);
-        }
+    public void updateData(TreeNode tableNode) {
+        inverser.updateTable(tableNode);
     }
     
 }

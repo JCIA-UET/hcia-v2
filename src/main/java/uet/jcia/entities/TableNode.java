@@ -11,6 +11,16 @@ public class TableNode extends TreeNode  implements Serializable {
 	protected String className;
     protected String tableName;
     
+    protected String xmlPath;
+    
+    public String getXmlPath() {
+        return xmlPath;
+    }
+    
+    public void setXmlPath(String xmlPath) {
+        this.xmlPath = xmlPath;
+    }
+    
     public String getClassName() {
         return className;
     }

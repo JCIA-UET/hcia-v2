@@ -16,6 +16,16 @@ public abstract class TreeNode  implements Serializable {
     protected Element linkedElement;
 
     protected long tempId;
+    
+    protected String javaName;
+    
+    public String getJavaName() {
+        return javaName;
+    }
+    
+    public void setJavaName(String javaName) {
+        this.javaName = javaName;
+    }
 
     public long getTempId() {
         return tempId;

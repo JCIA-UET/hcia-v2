@@ -23,6 +23,7 @@ public class OTMRelationshipNode extends RelationshipNode implements Serializabl
         return "\n             OTMRelationshipNode ["
              + "\n                 tempId=" + tempId + ","
              + "\n                 foreignKey=" + foreignKey + ","
+             + "\n                 javaName=" + javaName + ","
              + "\n                 referTable=" + ((referTable == null) ? null : referTable.getTableName()) + "]";
     }
 }

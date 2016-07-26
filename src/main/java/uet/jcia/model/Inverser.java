@@ -1,11 +1,19 @@
 package uet.jcia.model;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
@@ -14,14 +22,21 @@ import javax.xml.xpath.XPathFactory;
 
 import org.apache.xml.serialize.OutputFormat;
 import org.apache.xml.serialize.XMLSerializer;
+import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import uet.jcia.entities.Column;
+import uet.jcia.entities.ColumnNode;
+import uet.jcia.entities.MTORelationshipNode;
+import uet.jcia.entities.OTMRelationshipNode;
+import uet.jcia.entities.PrimaryKeyNode;
 import uet.jcia.entities.Relationship;
 import uet.jcia.entities.Table;
+import uet.jcia.entities.TableNode;
+import uet.jcia.entities.TreeNode;
 import uet.jcia.utils.Mappers;
 
 public class Inverser {
@@ -37,167 +52,129 @@ public class Inverser {
         }
     }
     
-    public void updateTable(Table tbl, HashMap<String, Document> tagMapper) {
-        Document doc = tagMapper.get(tbl.getRefXml());
-        Element rootNode = doc.getDocumentElement();
-        NodeList classNodes = rootNode.getElementsByTagName("class");
+    public void updateTable(TreeNode tableNode) {
+        if (!(tableNode instanceof TableNode)) {
+            return ;
+        }
         
-        System.out.println("[Inverser] modifying...");
-        for (int i = 0; i < classNodes.getLength(); i++) {
-            Element classElement = (Element) classNodes.item(i);
+        try {
+            DocumentBuilder builder = dbFactory.newDocumentBuilder();
+            Document doc = builder.newDocument();
+            Element rootElement = inverseHbmRoot((TableNode)tableNode, doc);
+            doc.appendChild(rootElement);
             
-            // update table name
-            if (classElement.getAttribute(DeprecatedParser2.HBM_ATT_TEMP_ID).equals(tbl.getTempId())) {
-                if (tbl.getTableName() != null) {
-                    classElement.setAttribute("table", tbl.getTableName());
+            saveXml(((TableNode) tableNode).getXmlPath(), doc);
+            
+        } catch (ParserConfigurationException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public Element inverseHbmRoot(TableNode tableNode, Document doc) {
+        Element hibernateMapping = doc.createElement("hibernate-mapping");
+
+        Element clazz = doc.createElement("class");
+        clazz.setAttribute("name", tableNode.getClassName());
+        clazz.setAttribute("table", tableNode.getTableName());
+        hibernateMapping.appendChild(clazz);
+        
+        for (TreeNode child : tableNode.getChilds()) {
+            if (child instanceof PrimaryKeyNode) {
+                PrimaryKeyNode pk = (PrimaryKeyNode) child;
+                Element id = doc.createElement("id");
+                id.setAttribute("name", pk.getJavaName());
+                id.setAttribute("type", Mappers.getSqltoHbm(pk.getDataType()));
+                clazz.appendChild(id);
+                
+                Element column = doc.createElement("column");
+                column.setAttribute("name", pk.getColumnName());
+                id.appendChild(column);
+                
+                Element generator = doc.createElement("generator");
+                String generatorClass = "assigned";
+                if (pk.isAutoIncrement()) {
+                    generatorClass = "increment"; 
                 }
-            }
-            
-            // update columns
-            List<Column> columnList = tbl.getListColumn();
-            if (columnList != null) {
-                for (Column c : columnList) {
-                    Element colElement = getElementByTempId(
-                            classElement, c.getTempId());
-                    if (colElement.getTagName().equals("id")) {
-                        updateHbmId(c, colElement);
-                        
-                    } else if (colElement.getTagName().equals("property")) {
-                        updateHbmProperty(c, colElement);
-                    }
-                }
-            }
-            
-            // update relationships
-            List<Relationship> relationshipList = tbl.getListRelationship();
-            if (relationshipList != null) {
-                for (Relationship r : relationshipList) {
-                    Element relElement = getElementByTempId(
-                            classElement, r.getTempId());
+                generator.setAttribute("class", generatorClass);
+                id.appendChild(generator);
+                
+            } else if (child instanceof ColumnNode) {
+                ColumnNode field = (ColumnNode) child;
+                if (!field.isForeignKey()) {
+                    Element property = doc.createElement("property");
+                    property.setAttribute("name", field.getJavaName());
+                    property.setAttribute("type", Mappers.getSqltoHbm(field.getDataType()));
+                    clazz.appendChild(property);
                     
-                    if (r.getType().equals(DeprecatedParser2.ONE_TO_MANY)) {
-                        
-                    } else if (r.getType().equals(DeprecatedParser2.MANY_TO_ONE)) {
-                        updateHbmManyToOne(r, relElement);
-                    }
+                    Element column = doc.createElement("column");
+                    column.setAttribute("name", field.getColumnName());
+                    property.appendChild(column);
                 }
+            } else if (child instanceof MTORelationshipNode) {
+                MTORelationshipNode relationship = (MTORelationshipNode) child;
+                Element manyToOne = doc.createElement("many-to-one");
+                manyToOne.setAttribute("name", relationship.getJavaName());
+                manyToOne.setAttribute("class", relationship.getReferTable().getClassName());
+                clazz.appendChild(manyToOne);
+                
+                Element column = doc.createElement("column");
+                column.setAttribute("name", relationship.getReferColumn().getColumnName());
+                manyToOne.appendChild(column);
+            } else if (child instanceof OTMRelationshipNode) {
+                OTMRelationshipNode relationship = (OTMRelationshipNode) child;
+                Element set = doc.createElement("set");
+                set.setAttribute("name", relationship.getJavaName());
+                set.setAttribute("table", relationship.getReferTable().getTableName());
+                clazz.appendChild(set);
+                
+                Element key = doc.createElement("key");
+                set.appendChild(key);
+                Element column = doc.createElement("column");
+                column.setAttribute("name", relationship.getForeignKey().getColumnName());
+                key.appendChild(column);
+                
+                Element oneToMany = doc.createElement("one-to-many");
+                oneToMany.setAttribute("class", relationship.getReferTable().getClassName());
+                set.appendChild(oneToMany);
             }
         }
         
-        System.out.println("[Inverser] done!");
-        
-    }
-    
-    public void removeNode(Element rootElement, String tempId) {
-        Element removedNode = getElementByTempId(rootElement, tempId);
-        removedNode.getParentNode().removeChild(removedNode);
-    }
-    
-    public void updateHbmSet(Relationship relationship, Element setElement) {
-        
-    }
-    
-    public void updateHbmManyToOne(Relationship rela, Element mtoElement) {
-        if (rela.getReferColumn() != null && rela.getReferTable() != null) {
-            Table refTable = rela.getReferTable();
-            Column refColumn = rela.getReferColumn();
-            mtoElement.setAttribute("class", refTable.getClassName());
-            
-            Element columnElement = (Element) mtoElement
-                    .getElementsByTagName("column").item(0);
-            columnElement.setAttribute("name", refColumn.getName());
-        }
-    }
-    
-    public void updateHbmProperty(Column col, Element propertyElement) {
-        if (col.getType() != null) {
-            propertyElement.setAttribute("type", Mappers.getSqltoHbm(col.getType()));
-        }
-        if (col.getLength() != null) {
-            propertyElement.setAttribute("length", col.getLength());
-        }
-        
-        Element childCol = (Element) propertyElement.getElementsByTagName("column").item(0);
-        if (col.getName() != null) {
-            childCol.setAttribute("name", col.getName());
-        }
-        if (col.isNotNull()) {
-            childCol.setAttribute("not-null", "true");
-        } else {
-            childCol.setAttribute("not-null", "false");
-        }
-    }
-    
-    public void updateHbmId(Column col, Element idElement) {
-        if (col.getType() != null) {
-            idElement.setAttribute("type", Mappers.getSqltoHbm(col.getType()));
-        }
-        if (col.getLength() != null) {
-            idElement.setAttribute("length", col.getLength());
-        }
-        
-        Element childCol = (Element) idElement.getElementsByTagName("column").item(0);
-        if (col.getName() != null) {
-            childCol.setAttribute("name", col.getName());
-        }
-        if (col.isNotNull()) {
-            childCol.setAttribute("not-null", "true");
-        } else {
-            childCol.setAttribute("not-null", "false");
-        }
-        
-        Element childGen = (Element) idElement.getElementsByTagName("generator").item(0);
-        if (col.isAutoIncrement()) {
-            childGen.setAttribute("class", "increment");
-        } else {
-            childGen.setAttribute("class", "assigned");
-        }
+        return hibernateMapping;
     }
     
     public void saveXml(String xmlPath, Document doc) {
         try {
-            XPathFactory xFactory = XPathFactory.newInstance();
-            XPath xPath = xFactory.newXPath();
-            XPathExpression exprs = xPath.compile("//*[@" + DeprecatedParser2.HBM_ATT_TEMP_ID + "]");
+//            XPathFactory xFactory = XPathFactory.newInstance();
+//            XPath xPath = xFactory.newXPath();
+//            XPathExpression exprs = xPath.compile("//*[@" + DeprecatedParser2.HBM_ATT_TEMP_ID + "]");
+//            
+//            NodeList nodeList = (NodeList) exprs.evaluate(doc, XPathConstants.NODESET);
+//            for (int count = 0; count < nodeList.getLength(); count++) {
+//                Element e = (Element) nodeList.item(count);
+//                e.removeAttribute(DeprecatedParser2.HBM_ATT_TEMP_ID);
+//            }
             
-            NodeList nodeList = (NodeList) exprs.evaluate(doc, XPathConstants.NODESET);
-            for (int count = 0; count < nodeList.getLength(); count++) {
-                Element e = (Element) nodeList.item(count);
-                e.removeAttribute(DeprecatedParser2.HBM_ATT_TEMP_ID);
-            }
+//            XMLSerializer serializer = new XMLSerializer();
+//            serializer.setOutputCharStream(new java.io.FileWriter(xmlPath));
+//            OutputFormat format = new OutputFormat();
+//            format.setStandalone(true);
+//            serializer.setOutputFormat(format);
+//            serializer.serialize(doc);
             
-            XMLSerializer serializer = new XMLSerializer();
-            serializer.setOutputCharStream(new java.io.FileWriter(xmlPath));
-            OutputFormat format = new OutputFormat();
-            format.setStandalone(true);
-            serializer.setOutputFormat(format);
-            serializer.serialize(doc);
+            // write the content into xml file
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+            DOMSource source = new DOMSource(doc);
+            StreamResult result = new StreamResult(new File(xmlPath));
+
+            transformer.transform(source, result);
             
-        } catch (IOException e) {
+        } catch (TransformerException e) {
+            // TODO Auto-generated catch block
             e.printStackTrace();
-        } catch (XPathExpressionException e1) {
-            e1.printStackTrace();
         }
     }
-    
-    private Element getElementByTempId(Element rootElement, String tempId) {
-        NodeList nodeList = rootElement.getChildNodes();
-        for (int count = 0; count < nodeList.getLength(); count++) {
-            Node childNode = nodeList.item(count);
-            if (childNode.getNodeType() == Node.ELEMENT_NODE) {
-                Element childElement = (Element) childNode;
-                
-                if (childElement.getAttribute(DeprecatedParser2.HBM_ATT_TEMP_ID) != null &&
-                        childElement.getAttribute(DeprecatedParser2.HBM_ATT_TEMP_ID).equals(tempId)) {
-                    return childElement;
-                    
-                } else {
-                    Element recursiveResult = getElementByTempId(childElement, tempId);
-                    if (recursiveResult != null) return recursiveResult;
-                }
-            }
-        }
-        return null;
-    }
-    
+
 }
