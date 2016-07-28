@@ -2,6 +2,11 @@ package uet.jcia.entities;
 
 import java.io.Serializable;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+
+@JsonTypeName("column")
+
 public class ColumnNode extends TreeNode implements Serializable {
     
     /**

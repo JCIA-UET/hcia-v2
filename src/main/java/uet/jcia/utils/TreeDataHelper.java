@@ -1,6 +1,5 @@
 package uet.jcia.utils;
 
-import java.io.IOError;
 import java.util.HashMap;
 
 import javax.xml.xpath.XPath;
@@ -13,7 +12,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import uet.jcia.entities.Column;
 import uet.jcia.entities.ColumnNode;
 import uet.jcia.entities.PrimaryKeyNode;
 import uet.jcia.entities.TreeNode;
@@ -30,6 +28,7 @@ public class TreeDataHelper {
         fk.setLength(pk.getLength());
         fk.setPrimaryKey(false);
         fk.setNotNull(true);
+        fk.setForeignKey(true);
         
         return fk;
     }

@@ -2,6 +2,9 @@ package uet.jcia.entities;
 
 import java.io.Serializable;
 
+import com.fasterxml.jackson.annotation.JsonTypeName;
+
+@JsonTypeName("table")
 public class TableNode extends TreeNode  implements Serializable {
     
     /**
@@ -13,6 +16,9 @@ public class TableNode extends TreeNode  implements Serializable {
     
     protected String xmlPath;
     
+    public TableNode(){
+    	
+    }
     public String getXmlPath() {
         return xmlPath;
     }

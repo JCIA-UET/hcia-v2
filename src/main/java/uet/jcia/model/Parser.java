@@ -115,6 +115,7 @@ public class Parser {
                             ColumnNode foreignKey = TreeDataHelper.generateForeignKey(referColumn);
                             foreignKey.setParent(tblNode);
                             childNodes.add(foreignKey);
+                            mtoNode.setForeignKey(foreignKey);
                         }
                     }
                     
@@ -324,6 +325,7 @@ public class Parser {
         relationship.setJavaName(mtoElement.getAttribute("name"));
         relationship.setReferTable(referTable);
         relationship.setReferColumn(referColumn);
+        relationship.setType("Many-to-One");
 
         return relationship; 
     }
@@ -352,6 +354,7 @@ public class Parser {
         relationship.setJavaName(setElement.getAttribute("name"));
         relationship.setReferTable(referTable);
         relationship.setForeignKey(foreignKey);
+        relationship.setType("One-to-Many");
         
         return relationship;
     }

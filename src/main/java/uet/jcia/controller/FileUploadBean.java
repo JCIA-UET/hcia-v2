@@ -61,12 +61,12 @@ public class FileUploadBean implements Serializable {
 			String fileDir = saveFile(is, fileName);
 			System.out.println("Saved file's directory: " + fileDir);
 			String parsedResultDir = core.parse(fileDir);
-			System.out.println("Parse file's directory: " + parsedResultDir);
+			System.out.println("Parsed original file's directory: " + parsedResultDir);
 			
 			if(parsedResultDir != null) {
 				String sessionid = session.getId();
 				TreeNode root = core.getParsedData(parsedResultDir);
-				//System.out.println(root);
+				System.out.println(parsedResultDir);
 				//String ssTableKey = sessionid + "table";
 				String dirKey = sessionid + "dir";
 				

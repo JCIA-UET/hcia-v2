@@ -1,7 +1,6 @@
 package uet.jcia.controller;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.faces.bean.ManagedBean;
@@ -10,95 +9,95 @@ import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpSession;
 
-import uet.jcia.entities.Column;
-import uet.jcia.entities.Table;
+import uet.jcia.entities.ColumnNode;
+import uet.jcia.entities.MTORelationshipNode;
+import uet.jcia.entities.OTMRelationshipNode;
+import uet.jcia.entities.PrimaryKeyNode;
+import uet.jcia.entities.TreeNode;
+import uet.jcia.model.CoreAPI;
 
 @ManagedBean
 @SessionScoped
-public class ColumnBean implements Serializable{
+public class ColumnBean implements Serializable {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private Column column;
-	
+	private ColumnNode columnNode;
+
+	public ColumnNode getColumnNode() {
+		return columnNode;
+	}
+
+	public void setColumnNode(ColumnNode columnNode) {
+		this.columnNode = columnNode;
+	}
+
 	public ColumnBean() {
-		column = new Column();
-	}
-	public Column getColumn() {
-		return column;
+		columnNode = new ColumnNode();
 	}
 
-	public void setColumn(Column column) {
-		this.column = column;
-	}
-	
-	@SuppressWarnings("unchecked")
-	public void save(Column changeCol){
-		System.out.println("Change Col Type:" + changeCol.getType());
+//	public void save(ColumnNode changeColNode) {
+//		System.out.println("Change Col Type:" + changeColNode);
+//
+//		FacesContext facesContext = FacesContext.getCurrentInstance();
+//		ExternalContext exContext = facesContext.getExternalContext();
+//		HttpSession session = (HttpSession) exContext.getSession(false);
+//
+//		String sessionid = session.getId();
+//		String dirKey = sessionid + "dir";
+//		String parsedFileDir = (String) session.getAttribute(dirKey);
+//
+//		CoreAPI api = new CoreAPI();
+//		TreeNode root = api.getParsedData(parsedFileDir);
+//
+//		List<TreeNode> tables = root.getChilds();
+//		for (TreeNode t : tables) {
+//			List<TreeNode> colsList = t.getChilds();
+//			for (TreeNode col : colsList) {
+//				if (!(col instanceof MTORelationshipNode) && !(col instanceof OTMRelationshipNode)) {
+//					if (col instanceof PrimaryKeyNode) {
+//						PrimaryKeyNode tempPKNode = (PrimaryKeyNode) col;
+//
+//						if (tempPKNode.getTempId() != changeColNode.getTempId())
+//							continue;
+//
+//						int colIndex = colsList.indexOf(col);
+//
+//						tempPKNode.setColumnName(changeColNode.getColumnName());
+//						tempPKNode.setDataType(changeColNode.getDataType());
+//						tempPKNode.setForeignKey(changeColNode.isForeignKey());
+//						tempPKNode.setLength(changeColNode.getLength());
+//						tempPKNode.setNotNull(changeColNode.isNotNull());
+//						tempPKNode.setPrimaryKey(changeColNode.isPrimaryKey());
+//						tempPKNode.setAutoIncrement(changedColNode);
+//
+//						colsList.set(colIndex, tempPKNode);
+//					} else if (col instanceof ColumnNode) {
+//						ColumnNode tempColNode = (ColumnNode) col;
+//						
+//						if (tempColNode.getTempId() != changeColNode.getTempId())
+//							continue;
+//
+//						int colIndex = colsList.indexOf(col);
+//
+//						tempColNode.setColumnName(changeColNode.getColumnName());
+//						tempColNode.setDataType(changeColNode.getDataType());
+//						tempColNode.setForeignKey(changeColNode.isForeignKey());
+//						tempColNode.setLength(changeColNode.getLength());
+//						tempColNode.setNotNull(changeColNode.isNotNull());
+//						tempColNode.setPrimaryKey(changeColNode.isPrimaryKey());
+//						
+//						
+//
+//						colsList.set(colIndex, tempColNode);
+//					}
+//
+//				}
+//			}
+//		}
+//	}
 
-		FacesContext facesContext = FacesContext.getCurrentInstance();
-		ExternalContext exContext = facesContext.getExternalContext();
-	    HttpSession session = (HttpSession) exContext.getSession(false);
-	    
-	    String sessionid = session.getId();
-	    String ssTableKey = sessionid + "table";
-	    String ssChgTableKey = sessionid + "chgtable";
-	   
-		List<Table> list = (List<Table>) session.getAttribute(ssTableKey);
-
-		// get table that contains the changed col
-		String tableId = changeCol.getTableId();
-		
-		// Search for all table saved in session
-		for(Table t : list) {
-			if(t.getTempId().equals(tableId)) {
-				
-				Table tempTable = new Table();
-				tempTable.setRefXml(t.getRefXml());
-				tempTable.setTempId(t.getTempId());
-				// Get column list of the matching table
-				List<Column> colsList = t.getListColumn();
-				
-				// Search for all columns in this table
-				for(Column col : colsList) {
-					
-					// Matching
-					if(col.getTempId().equals(changeCol.getTempId())) {
-	
-						// set properties
-						if(changeCol.getName() != null && !changeCol.getName().isEmpty())
-						col.setName(changeCol.getName());
-						col.setType(changeCol.getType());
-						col.setNotNull(changeCol.isNotNull());
-						col.setPrimaryKey(changeCol.isAutoIncrement());
-						col.setForeignKey(changeCol.isForeignKey());
-						col.setAutoIncrement(changeCol.isAutoIncrement());	
-					}
-				}
-				
-				tempTable.setListColumn(colsList);
-				
-				List<Table> changedList = new ArrayList<>();
-				
-				if(session.getAttribute(ssChgTableKey) == null) {
-					changedList.add(t);
-					exContext.getSessionMap().put(ssChgTableKey, changedList);
-					//System.out.println("Has no change");
-				}
-				
-				else {
-					changedList = (List<Table>) session.getAttribute(ssChgTableKey);
-					//System.out.println("Change List: " + changedList);
-					changedList.add(t);
-					session.setAttribute(ssChgTableKey, changedList);
-					
-				}
-			}
-		}
-		session.setAttribute(ssTableKey, list);
-	}
-	
 	public void restore(String tempId) {
 		System.out.println(tempId);
 	}

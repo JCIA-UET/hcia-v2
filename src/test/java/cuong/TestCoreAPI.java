@@ -86,7 +86,7 @@ public class TestCoreAPI {
     
 
     public static void testXml() {
-        String resultPath = api.parse("I:\\Workspace\\hcia-v2\\temp\\upload\\OrderItem.hbm.xml");
+        String resultPath = api.parse("C:\\Users\\dinht_000\\workspace\\hcia-v2\\temp\\upload\\OrderItem.hbm.xml");
         System.out.println("[temp data] " + resultPath);
         
         TreeNode rootNode = api.getParsedData(resultPath);
