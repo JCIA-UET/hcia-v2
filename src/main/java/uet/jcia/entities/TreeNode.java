@@ -5,14 +5,33 @@ import java.util.List;
 
 import org.w3c.dom.Element;
 
-public abstract class TreeNode  implements Serializable {
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.NAME, 
+        include = JsonTypeInfo.As.PROPERTY, 
+        property = "json")
+@JsonSubTypes({
+    @JsonSubTypes.Type(value=TableNode.class, name="table"),
+    @JsonSubTypes.Type(value=ColumnNode.class, name="column"),
+    @JsonSubTypes.Type(value=RelationshipNode.class, name="relationship"),
+    @JsonSubTypes.Type(value=RootNode.class, name="rootnode"),
+    @JsonSubTypes.Type(value=PrimaryKeyNode.class, name="pk"),
+    @JsonSubTypes.Type(value=MTORelationshipNode.class, name="mto"),
+	@JsonSubTypes.Type(value=OTMRelationshipNode.class, name="otm")
+})
+public class TreeNode implements Serializable{
 
     /**
 	 * 
 	 */
 	private static final long serialVersionUID = 1318575025108283976L;
 	protected List<TreeNode> childs;
+	@JsonIgnore
     protected TreeNode parent;
+	@JsonIgnore
     protected Element linkedElement;
 
     protected long tempId;

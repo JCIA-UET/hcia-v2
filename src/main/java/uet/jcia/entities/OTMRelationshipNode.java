@@ -2,6 +2,10 @@ package uet.jcia.entities;
 
 import java.io.Serializable;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+
+@JsonTypeName("otm")
 public class OTMRelationshipNode extends RelationshipNode implements Serializable {
 
     /**

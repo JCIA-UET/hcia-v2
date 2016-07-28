@@ -11,46 +11,38 @@ import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpSession;
 
 import uet.jcia.entities.Table;
+import uet.jcia.entities.TreeNode;
+import uet.jcia.model.CoreAPI;
 
 @ManagedBean(name = "tableBean")
 @SessionScoped
 public class TableBean implements Serializable{
-    
-   /**
+
+	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
-	private Table table;
-	private List<Table> list;
-
-	public Table getTable() {
-		return table;
-	}
+	private static final long serialVersionUID = 5764406161579045239L;
+	private TreeNode root;
 	
-	public void setTable(Table table) {
-		this.table = table;
-	}
-	  
-	public List<Table> getList() {
-		return list;
-	}
-
-	public void setList(List<Table> list) {
-		this.list = list;
-	}
-	
-	@SuppressWarnings("unchecked")
 	public TableBean() {
 		FacesContext facesContext = FacesContext.getCurrentInstance();
 		ExternalContext exContext = facesContext.getExternalContext();
 	    HttpSession session = (HttpSession) exContext.getSession(false);
 	    
+	    CoreAPI api = new CoreAPI();
 	    String sessionid = session.getId();
-	    String ssTableKey = sessionid + "table";
 	    
-	    List<Table> list = (List<Table>) session.getAttribute(ssTableKey);
-	    setList(list);
-	    System.out.println("Table bean: " + list);
+	    String jsonKey = sessionid + "json";
+	    String jsonTree = (String) session.getAttribute(jsonKey);
+	    
+	}
+	
+	public TreeNode getRoot() {
+		return root;
+	}
+
+	public void setRoot(TreeNode root) {
+		this.root = root;
 	}
 
 	public void save() {

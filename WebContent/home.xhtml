@@ -68,14 +68,12 @@
 							<li class="tree-root nav-header"><label class="tree-toggle">#{table.tableName}</label>
 								<ul class="nav">
 									<ui:repeat var="col" value="#{table.childs}">
-									<c:choose>
-										<c:when test="${col.columnName == null}">
-										<li><a class="tree-node" href="#" contenteditable="false">true</a></li>
-										</c:when>
-										<c:when test="${col.columnName != null}">
-										<li><a class="tree-node" href="#" contenteditable="false">false</a></li>
-										</c:when>
-									</c:choose>
+										<h:panelGroup
+											rendered="#{col['class'].simpleName eq 'ColumnNode' || col['class'].simpleName eq 'PrimaryKeyNode'}">
+											<li><a class="tree-node" href="#"
+												contenteditable="false">#{col.columnName}</a></li>
+										</h:panelGroup>
+
 									</ui:repeat>
 								</ul></li>
 						</ui:repeat>
@@ -101,6 +99,7 @@
 											<th class="col-md-2">PK</th>
 											<th class="col-md-2">FK</th>
 											<th class="col-md-2">AI</th>
+											<th class="col-md-2"></th>
 										</tr>
 									</thead>
 									<tbody class="table-info">
@@ -115,38 +114,33 @@
 									<h:form>
 										<div class="col-md-6">
 											<h:panelGroup styleClass="col-id-pane">
-												<h:inputHidden value="#{columnBean.column.tempId}" />
+												<input type="hidden" />
 											</h:panelGroup>
-											<h:panelGroup styleClass="col-tableid-pane">
-												<h:inputHidden value="#{columnBean.column.tableId}" />
+											<h:panelGroup styleClass="json-pane">
+												<h:inputHidden value="#{treeBean.jsonTree}" />
 											</h:panelGroup>
 											<div class="form-group">
-												<label for="usr">Name Column</label>
-												<h:inputText type="text"
-													class="col-name-detail form-control"
-													value="#{columnBean.column.name}" />
+												<label for="usr">Name Column</label> <input type="text"
+													class="col-name-detail form-control input-form" />
 												<!-- <input type="text"
                             class="col-name-detail form-control" name="name" /> -->
 											</div>
 											<div class="form-group">
-												<label for="sel1">Type Data</label>
-												<h:selectOneMenu
-													class="col-type-detail form-control input-form"
-													value="#{columnBean.column.type}">
-													<f:selectItem itemValue="VARCHAR" itemLabel="VARCHAR()" />
-													<f:selectItem itemValue="INTEGER" itemLabel="INTEGER" />
-													<f:selectItem itemValue="DOUBLE" itemLabel="DOUBLE" />
-													<f:selectItem itemValue="DATE" itemLabel="DATE" />
-													<f:selectItem itemValue="FLOAT" itemLabel="FLOAT" />
-												</h:selectOneMenu>
+												<label for="sel1">Type Data</label> <select
+													class="col-type-detail form-control input-form">
+													<option value="VARCHAR">VARCHAR()</option>
+													<option value="INTEGER">INTEGER</option>
+													<option value="DOUBLE">DOUBLE</option>
+													<option value="DATE">DATE</option>
+													<option value="FLOAT">FLOAT</option>
+												</select>
 											</div>
 											<div class="form-group">
 												<label for="pwd">Length</label>
 												<!-- <input type="text
                             class="col-length-detail form-control" name="length" /> -->
-												<h:inputText type="text"
-													class="col-length-detail form-control input-from"
-													value="#{columnBean.column.length}" />
+												<input type="text"
+													class="col-length-detail form-control input-form" />
 											</div>
 										</div>
 										<div class="col-md-6">
@@ -156,8 +150,7 @@
 													<label style="width: 180px; text-align: right;" for="pwd1"
 														class="col-sm-2">Not Null:</label>
 													<div class="col-sm-2">
-														<h:selectBooleanCheckbox class="col-nn-detail"
-															value="#{columnBean.column.notNull}" />
+														<input type="checkbox" class="col-nn-detail" />
 														<!-- <input type="checkbox" class="col-nn-detail" name="bNN" /> -->
 													</div>
 												</div>
@@ -168,8 +161,7 @@
 													<label style="width: 180px; text-align: right;" for="pwd2"
 														class="col-sm-2">Primary Key:</label>
 													<div class="col-sm-2">
-														<h:selectBooleanCheckbox class="col-pk-detail"
-															value="#{columnBean.column.primaryKey}" />
+														<input type="checkbox" class="col-pk-detail" />
 														<!-- <input type="checkbox" class="col-pk-detail" name="bPK" /> -->
 													</div>
 												</div>
@@ -180,8 +172,7 @@
 													<label style="width: 180px; text-align: right;" for="pwd3"
 														class="col-sm-2">Foreign Key:</label>
 													<div class="col-sm-2">
-														<h:selectBooleanCheckbox class="col-fk-detail"
-															value="#{columnBean.column.foreignKey}" />
+														<input type="checkbox" class="col-fk-detail" />
 														<!-- <input type="checkbox" class="col-fk-detail" name="bFK" /> -->
 													</div>
 												</div>
@@ -192,18 +183,22 @@
 													<label style="width: 180px; text-align: right;" for="pwd4"
 														class="col-sm-2">Auto Increment:</label>
 													<div class="col-sm-2">
-														<h:selectBooleanCheckbox class="col-ai-detail"
-															value="#{columnBean.column.autoIncrement}" />
+														<input type="checkbox" class="col-ai-detail" />
 													</div>
 												</div>
 											</div>
 											<div class="row" style="padding: 20px 0px 0px 0px;">
-												<h:commandButton style="width:100px;float:right;"
-													styleClass="btn btn-success" value="Save"
-													action="#{columnBean.save(columnBean.column)}" />
-												<h:commandButton style="width:100px;float:right;"
-													styleClass="btn btn-info" value="Restore"
-													action="#{columnBean.restore(columnBean.column.tempId)}" />
+												<div>
+													<h:commandButton style="width:100px;float:right;"
+														styleClass="btn btn-info" value="Cancel"
+														action="#{columnBean.restore(columnBean.column.tempId)}" />
+												</div>
+												<div style="padding-right: 120px">
+													<!-- <input type="button" class="save-col btn btn-info" style="width:100px;float:right;" value="Save"/> -->
+													<h:commandButton style="width:100px;float:right;"
+														styleClass="save-col btn btn-info" value="Save"
+														action="#{treeBean.save(treeBean.jsonTree)}" />
+												</div>
 											</div>
 										</div>
 									</h:form>
@@ -250,17 +245,27 @@
 												<label for="usr1">Refer Table</label>
 												<!-- <input type="text"
                             class="rela-rftable-detail form-control" name="relaRfTable" /> -->
-												<h:selectOneMenu class="rela-rftable-detail form-control">
-													<ui:repeat var="table" value="#{tableBean.list}">
-														<f:selectItem itemValue="#{table.tableName}"
-															itemLabel="#{table.tableName}" />
-													</ui:repeat>
-												</h:selectOneMenu>
+												<select class="form-control" id="rela-rftable-detail">
+												</select>
 											</div>
 											<br></br>
 											<div class="form-group">
-												<label for="usr2">Refer Column</label> <input type="text"
-													class="rela-rfcol-detail form-control" name="relaRfCol" />
+												<label for="usr2">Refer Column</label>
+												<select class="form-control" id="rela-rfcol-detail">
+												</select>
+											</div>
+											<div class="row" style="padding: 20px 0px 0px 0px;">
+												<div>
+													<h:commandButton style="width:100px;float:right;"
+														styleClass="btn btn-info" value="Cancel"
+														action="#{columnBean.restore(columnBean.column.tempId)}" />
+												</div>
+												<div style="padding-right: 120px">
+													<!-- <input type="button" class="save-col btn btn-info" style="width:100px;float:right;" value="Save"/> -->
+													<h:commandButton style="width:100px;float:right;"
+														styleClass="save-col btn btn-info" value="Save"
+														action="#{treeBean.save(treeBean.jsonTree)}" />
+												</div>
 											</div>
 										</div>
 									</h:form>
