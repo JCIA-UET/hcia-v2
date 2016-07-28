@@ -23,7 +23,9 @@ import javax.xml.xpath.XPathFactory;
 import org.apache.xml.serialize.OutputFormat;
 import org.apache.xml.serialize.XMLSerializer;
 import org.w3c.dom.Attr;
+import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
+import org.w3c.dom.DocumentType;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -88,6 +90,9 @@ public class Inverser {
                 
                 Element column = doc.createElement("column");
                 column.setAttribute("name", pk.getColumnName());
+                if (pk.getLength() != 0) {
+                    column.setAttribute("length", Long.toString(pk.getLength()));
+                }
                 id.appendChild(column);
                 
                 Element generator = doc.createElement("generator");
@@ -108,6 +113,9 @@ public class Inverser {
                     
                     Element column = doc.createElement("column");
                     column.setAttribute("name", field.getColumnName());
+                    if (field.getLength() != 0) {
+                        column.setAttribute("length", Long.toString(field.getLength()));
+                    }
                     property.appendChild(column);
                 }
             } else if (child instanceof MTORelationshipNode) {
@@ -166,6 +174,14 @@ public class Inverser {
             Transformer transformer = transformerFactory.newTransformer();
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
             transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+            
+            DOMImplementation domImpl = doc.getImplementation();
+            DocumentType doctype = domImpl.createDocumentType("doctype",
+                    "-//Hibernate/Hibernate Mapping DTD 3.0//EN",
+                    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd");
+            transformer.setOutputProperty(OutputKeys.DOCTYPE_PUBLIC, doctype.getPublicId());
+            transformer.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM, doctype.getSystemId());
+                
             DOMSource source = new DOMSource(doc);
             StreamResult result = new StreamResult(new File(xmlPath));
 
