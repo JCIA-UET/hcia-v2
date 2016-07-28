@@ -90,12 +90,15 @@ public class TestCoreAPI {
         System.out.println("[temp data] " + resultPath);
         
         TreeNode rootNode = api.getParsedData(resultPath);
-//        System.out.println(rootNode);
+        System.out.println(rootNode);
         
         api.updateData(rootNode.getChilds().get(0));
         
         String updatedPath = api.refresh(resultPath);
         System.out.println("[updated path] " + updatedPath);
+        
+        rootNode = api.getParsedData(updatedPath);
+        System.out.println(rootNode);
         
         System.out.println(api.download(updatedPath));
     }

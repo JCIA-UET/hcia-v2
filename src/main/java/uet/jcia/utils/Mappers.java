@@ -43,19 +43,19 @@ public class Mappers {
         hbmToSql.put("java.util.Currency", "VARCHAR");
         
         // MySQL to Hbm
-        sqlToHbm.put("CHAR", "String");
-        sqlToHbm.put("VARCHAR", "String");
-        sqlToHbm.put("LONGVARCHAR", "String");
+        sqlToHbm.put("CHAR", "java.lang.String");
+        sqlToHbm.put("VARCHAR", "java.lang.String");
+        sqlToHbm.put("LONGVARCHAR", "java.lang.String");
         sqlToHbm.put("NUMERIC", "java.math.BigDecimal");
         sqlToHbm.put("DECIMAL", "java.math.BigDecimal");
-        sqlToHbm.put("BIT", "Boolean");
-        sqlToHbm.put("TINYINT", "Byte");
-        sqlToHbm.put("SMALLINT", "Short");
-        sqlToHbm.put("INTEGER", "Integer");
-        sqlToHbm.put("BIGINT", "Long");
-        sqlToHbm.put("REAL", "Float");
-        sqlToHbm.put("FLOAT", "Double");
-        sqlToHbm.put("DOUBLE", "Double");
+        sqlToHbm.put("BIT", "java.lang.Boolean");
+        sqlToHbm.put("TINYINT", "java.lang.Byte");
+        sqlToHbm.put("SMALLINT", "java.lang.Short");
+        sqlToHbm.put("INTEGER", "java.lang.Integer");
+        sqlToHbm.put("BIGINT", "java.lang.Long");
+        sqlToHbm.put("REAL", "java.lang.Float");
+        sqlToHbm.put("FLOAT", "java.lang.Double");
+        sqlToHbm.put("DOUBLE", "java.lang.Double");
         sqlToHbm.put("BINARY", "byte[]");
         sqlToHbm.put("VARBINARY", "byte[]");
         sqlToHbm.put("LONGVARBINARY", "byte[]");
