@@ -6,12 +6,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 @JsonTypeName("mto")
-public class MTORelationshipNode extends RelationshipNode implements Serializable {
-
-	/**
-	 * 
-	 */
+public class MTORelationshipNode extends RelationshipNode {
 	private static final long serialVersionUID = -639214173809042259L;
+	
 	private ColumnNode foreignKey;
 	private PrimaryKeyNode referColumn;
 

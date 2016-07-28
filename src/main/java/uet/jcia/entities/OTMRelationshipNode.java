@@ -6,12 +6,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 @JsonTypeName("otm")
-public class OTMRelationshipNode extends RelationshipNode implements Serializable {
-
-    /**
-	 * 
-	 */
+public class OTMRelationshipNode extends RelationshipNode {
 	private static final long serialVersionUID = -4119402082533721551L;
+	
 	private ColumnNode foreignKey;
     
     public ColumnNode getForeignKey() {

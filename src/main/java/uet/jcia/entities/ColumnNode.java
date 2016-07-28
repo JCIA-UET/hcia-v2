@@ -7,12 +7,9 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 
 @JsonTypeName("column")
 
-public class ColumnNode extends TreeNode implements Serializable {
-    
-    /**
-	 * 
-	 */
+public class ColumnNode extends TreeNode {
 	private static final long serialVersionUID = 3175171924945900577L;
+	
 	protected String columnName;
     protected String dataType;
     protected int length;

@@ -6,12 +6,9 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 @JsonTypeName("relationship")
-public class RelationshipNode extends TreeNode implements Serializable {
-
-    /**
-	 * 
-	 */
+public class RelationshipNode extends TreeNode {
 	private static final long serialVersionUID = 3795945845604632682L;
+	
 	protected TableNode referTable;
 	protected String type;
 	

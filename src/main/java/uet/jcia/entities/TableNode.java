@@ -5,12 +5,9 @@ import java.io.Serializable;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 @JsonTypeName("table")
-public class TableNode extends TreeNode  implements Serializable {
-    
-    /**
-	 * 
-	 */
+public class TableNode extends TreeNode {
 	private static final long serialVersionUID = 5729963936298175858L;
+	
 	protected String className;
     protected String tableName;
     
