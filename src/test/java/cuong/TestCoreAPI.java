@@ -92,11 +92,12 @@ public class TestCoreAPI {
         TreeNode rootNode = api.getParsedData(resultPath);
 //        System.out.println(rootNode);
         
-        CoreAPI api2 = new CoreAPI();
-        api2.updateData(rootNode.getChilds().get(0));
+        api.updateData(rootNode.getChilds().get(0));
         
-        CoreAPI api3 = new CoreAPI();
-        System.out.println(api3.download(resultPath));
+        String updatedPath = api.refresh(resultPath);
+        System.out.println("[updated path] " + updatedPath);
+        
+        System.out.println(api.download(updatedPath));
     }
     
     public static Table getTableById(List<Table> tables, String tableId) {

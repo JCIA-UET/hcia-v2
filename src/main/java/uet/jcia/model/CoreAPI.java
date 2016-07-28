@@ -66,6 +66,26 @@ public class CoreAPI {
         return resultPath;
     }
     
+    public String refresh(String tempPath) {
+        String sourceFolder = mapper.get(tempPath);
+        
+        TreeNode rootNode;
+        String resultPath = null;
+        
+        List<String> xmlList = new ArrayList<>();
+        fm.findFiles(
+                sourceFolder, ".*\\.xml", xmlList);
+
+        rootNode = parser.parseXmlList(xmlList);
+        resultPath = fm.saveTempData(rootNode);
+        String documentPath = fm.saveDocumentsHash(parser.getCachedDocument());
+        
+        mapper.put(resultPath, sourceFolder);
+        tempDocumentMapper.put(resultPath, documentPath);
+        
+        return resultPath;
+    }
+    
     public TreeNode getParsedData(String tempPath) {
         TreeNode rootNode = fm.readTempData(tempPath);
         return rootNode;
