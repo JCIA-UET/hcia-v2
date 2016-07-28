@@ -17,9 +17,13 @@ import javax.faces.validator.ValidatorException;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import uet.jcia.entities.TreeNode;
 import uet.jcia.model.CoreAPI;
 import uet.jcia.utils.Constants;
+import uet.jcia.utils.Helper;
 
 @ManagedBean
 @SessionScoped
@@ -66,18 +70,28 @@ public class FileUploadBean implements Serializable {
 			if(parsedResultDir != null) {
 				String sessionid = session.getId();
 				TreeNode root = core.getParsedData(parsedResultDir);
-				System.out.println(parsedResultDir);
-				//String ssTableKey = sessionid + "table";
-				String dirKey = sessionid + "dir";
 				
-				//System.out.println(list);
+				String sessionDir = Constants.TEMP_SOURCE_FOLDER + "\\" + sessionid + "\\" + sessionid;
+				Helper.copyFile(parsedResultDir, sessionDir);
+				//System.out.println(parsedResultDir);
 				
-				//Gson gson = new Gson();
-				//String jsonList = gson.toJson(list);
+//				try {
+//					ObjectMapper mapper = new ObjectMapper();
+//					String jsonData = mapper.writeValueAsString(root);
+//					
+//					String jsonKey = sessionid + "json";
+//					exContext.getSessionMap().put(jsonKey, jsonData);
+//					
+//				} catch (JsonProcessingException e) {
+//					// TODO Auto-generated
+//					e.printStackTrace();
+//				}
+
+				String ssDirKey = sessionid + "sesiondir";
+				exContext.getSessionMap().put(ssDirKey, sessionDir);
 				
-				//System.out.println(jsonList);
-				exContext.getSessionMap().put(dirKey, parsedResultDir);
-				//exContext.getSessionMap().put(ssTableKey, list);
+				String originDirKey = sessionid + "origindir";
+				exContext.getSessionMap().put(originDirKey, parsedResultDir);
 			}
 			
 			exContext.redirect("home.xhtml");
