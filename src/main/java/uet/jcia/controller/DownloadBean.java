@@ -6,7 +6,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.List;
 
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
@@ -14,7 +13,6 @@ import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpSession;
 
-import uet.jcia.entities.Table;
 import uet.jcia.model.CoreAPI;
 
 @ManagedBean
@@ -24,24 +22,16 @@ public class DownloadBean {
 	public String getDownloadFile() {
 		FacesContext facesContext = FacesContext.getCurrentInstance();
 		ExternalContext exContext = facesContext.getExternalContext();
+		CoreAPI api = new CoreAPI();
 		HttpSession session = (HttpSession) exContext.getSession(false);
 
 		String sessionid = session.getId();
-		String ssChgTableKey = sessionid + "chgtable";
+		String resultDirKey = sessionid + "origindir";
 
-		String resultDir = (String) session.getAttribute(sessionid);
-		List<Table> list = (List<Table>) session.getAttribute(ssChgTableKey);
+		String resultDir = (String) session.getAttribute(resultDirKey);
 		
-		System.out.println("Changed Table:" + list);
-
-		CoreAPI api = new CoreAPI();
-		
-		//if(list != null)
-			//api.updateData(list);
-
-		//String downloadDir = api.download(resultDir);
-		
-		return null;
+		System.out.println("Parsed dir:" + resultDir);
+		return api.download(resultDir);
 	}
 
 	public void download() {

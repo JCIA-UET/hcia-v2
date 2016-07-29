@@ -86,7 +86,7 @@ body {
 }
 /* Modal  */
 
-#xmlModal, #zipModal {
+#xmlModal, #zipModal, #addColModal, #addTableModal {
 	top:20%;
 }
 

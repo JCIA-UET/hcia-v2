@@ -6,6 +6,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
@@ -16,9 +18,6 @@ import javax.faces.context.FacesContext;
 import javax.faces.validator.ValidatorException;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import uet.jcia.entities.TreeNode;
 import uet.jcia.model.CoreAPI;
@@ -71,8 +70,8 @@ public class FileUploadBean implements Serializable {
 				String sessionid = session.getId();
 				TreeNode root = core.getParsedData(parsedResultDir);
 				
-				String sessionDir = Constants.TEMP_SOURCE_FOLDER + "\\" + sessionid + "\\" + sessionid;
-				Helper.copyFile(parsedResultDir, sessionDir);
+				//String sessionDir = Constants.TEMP_SOURCE_FOLDER + "\\" + sessionid + "\\" + sessionid;
+				//Helper.copyFile(parsedResultDir, sessionDir);
 				//System.out.println(parsedResultDir);
 				
 //				try {
@@ -87,11 +86,17 @@ public class FileUploadBean implements Serializable {
 //					e.printStackTrace();
 //				}
 
-				String ssDirKey = sessionid + "sesiondir";
-				exContext.getSessionMap().put(ssDirKey, sessionDir);
+				String logKey = sessionid + "log";
+				List<String> changeLog = new ArrayList<>();
+				File tempFile = new File(parsedResultDir);
+				changeLog.add(tempFile.getName());
+				System.out.println("First: " + changeLog);
+				exContext.getSessionMap().put(logKey, changeLog);
 				
 				String originDirKey = sessionid + "origindir";
 				exContext.getSessionMap().put(originDirKey, parsedResultDir);
+				
+				
 			}
 			
 			exContext.redirect("home.xhtml");

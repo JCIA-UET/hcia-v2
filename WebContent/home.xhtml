@@ -18,7 +18,7 @@
 	<h:outputScript library="webjars" name="jquery/2.1.4/jquery.min.js" />
 	<h:outputScript library="webjars"
 		name="bootstrap/3.3.6/js/bootstrap.min.js" />
-	<h:outputStylesheet name="css/rj.css"></h:outputStylesheet>
+	<h:outputStylesheet name="css/tj.css"></h:outputStylesheet>
 	<h:outputScript name="js/bq.js"></h:outputScript>
 </h:head>
 <h:body>
@@ -47,6 +47,17 @@
 									<span class="glyphicon glyphicon-refresh"></span>Reset All
                   </h:commandLink>
 							</h:form></li>
+						<li><h:panelGroup rendered="#{treeBean.jsonTree != null}">
+								<a href="#" id="add-table"><span
+									class="glyphicon glyphicon-hospital"></span>Add Table</a>
+							</h:panelGroup></li>
+						<li><h:panelGroup rendered="#{treeBean.jsonTree != null}">
+								<a href="#" id="change-log"><span
+									class="glyphicon glyphicon-hospital"></span>Change Log</a>
+							</h:panelGroup></li>
+						<!-- <li><h:panelGroup rendered="#{treeBean.jsonTree != null}">
+								<a href="#" id="add-table"><span class="glyphicon glyphicon-hospital"></span>Add Column</a>
+							</h:panelGroup></li> -->
 					</ul>
 					<ul class="nav navbar-nav navbar-right">
 						<li><a href="#"> <span
@@ -88,30 +99,36 @@
 					</ul>
 					<div class="tab-content">
 						<div id="dttable" class="tab-pane fade in active">
-							<div class="row table-wrap"
-								style="height: 250px; overflow-x: auto; overflow-y: scroll;">
-								<table class="table table-striped table-bordered">
-									<thead>
-										<tr>
-											<th class="col-md-2">Column</th>
-											<th class="col-md-2">Type</th>
-											<th class="col-md-2">NN</th>
-											<th class="col-md-2">PK</th>
-											<th class="col-md-2">FK</th>
-											<th class="col-md-2">AI</th>
-											<th class="col-md-2"></th>
-										</tr>
-									</thead>
-									<tbody class="table-info">
-									</tbody>
-								</table>
-							</div>
-							<div class="row detail-wrap">
-								<div class="heading">
-									<h2 style="border-bottom: 5px solid #03a9f4;">Detail</h2>
+							<h:form>
+								<div class="row table-wrap"
+									style="height: 220px; overflow-x: auto; overflow-y: scroll;">
+									<table class="table table-striped table-bordered">
+										<thead>
+											<tr>
+												<th class="col-md-2">Column</th>
+												<th class="col-md-2">Type</th>
+												<th class="col-md-2">NN</th>
+												<th class="col-md-2">PK</th>
+												<th class="col-md-2">FK</th>
+												<th class="col-md-2">AI</th>
+												<th class="col-md-2"></th>
+											</tr>
+										</thead>
+										<tbody class="table-info">
+										</tbody>
+									</table>
+
 								</div>
-								<div>
-									<h:form>
+								<div class="row detail-wrap">
+									<br></br>
+									<button type="button" id="add-column" class="btn btn-success">
+										<span class="glyphicon glyphicon-plus"></span> Column
+									</button>
+									<div class="heading">
+										<h2 style="border-bottom: 5px solid #03a9f4;">Detail</h2>
+									</div>
+									<div>
+
 										<div class="col-md-6">
 											<h:panelGroup styleClass="col-id-pane">
 												<input type="hidden" />
@@ -201,9 +218,10 @@
 												</div>
 											</div>
 										</div>
-									</h:form>
+
+									</div>
 								</div>
-							</div>
+							</h:form>
 						</div>
 						<div id="dttabler" class="tab-pane fade">
 							<div class="row table-wrap"
@@ -250,8 +268,8 @@
 											</div>
 											<br></br>
 											<div class="form-group">
-												<label for="usr2">Refer Column</label>
-												<select class="form-control" id="rela-rfcol-detail">
+												<label for="usr2">Refer Column</label> <select
+													class="form-control" id="rela-rfcol-detail">
 												</select>
 											</div>
 											<div class="row" style="padding: 20px 0px 0px 0px;">
@@ -341,14 +359,139 @@
 			</div>
 		</div>
 	</div>
-	<div class="modal fade" id="noticeModal" role="dialog">
+	<div class="modal fade" id="addColModal" role="dialog">
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header">
-					<h4 class="modal-title">Modal Header</h4>
+					<h3 class="modal-title">
+						<strong>Create New Column</strong>
+					</h3>
+				</div>
+				<div class="modal-body" style="height: 290px;">
+					<div>
+						<h:form>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label for="usr">Name Column (*):</label> <input type="text"
+										class="col-name-detail form-control" />
+									<!-- <input type="text"
+                            class="col-name-detail form-control" name="name" /> -->
+								</div>
+								<div class="form-group">
+									<label for="sel1">Type Data (*):</label> <select
+										class="col-type-detail form-control">
+										<option value="VARCHAR">VARCHAR()</option>
+										<option value="INTEGER">INTEGER</option>
+										<option value="DOUBLE">DOUBLE</option>
+										<option value="DATE">DATE</option>
+										<option value="FLOAT">FLOAT</option>
+									</select>
+								</div>
+								<div class="form-group">
+									<label for="pwd">Length</label>
+									<!-- <input type="text
+                            class="col-length-detail form-control" name="length" /> -->
+									<input type="text" class="col-length-detail form-control" />
+								</div>
+							</div>
+							<div class="col-md-6">
+								<br></br> <br></br>
+								<div class="row">
+									<div class="form-group">
+										<label style="width: 180px; text-align: right;" for="pwd1"
+											class="col-sm-2">Not Null:</label>
+										<div class="col-sm-2">
+											<input type="checkbox" class="col-nn-detail" />
+											<!-- <input type="checkbox" class="col-nn-detail" name="bNN" /> -->
+										</div>
+									</div>
+								</div>
+								<br></br>
+								<div class="row">
+									<div class="form-group">
+										<label style="width: 180px; text-align: right;" for="pwd2"
+											class="col-sm-2">Primary Key:</label>
+										<div class="col-sm-2">
+											<input type="checkbox" class="col-pk-detail" />
+											<!-- <input type="checkbox" class="col-pk-detail" name="bPK" /> -->
+										</div>
+									</div>
+								</div>
+								<br></br>
+								<div class="row">
+									<div class="form-group">
+										<label style="width: 180px; text-align: right;" for="pwd3"
+											class="col-sm-2">Foreign Key:</label>
+										<div class="col-sm-2">
+											<input type="checkbox" class="col-fk-detail" />
+											<!-- <input type="checkbox" class="col-fk-detail" name="bFK" /> -->
+										</div>
+									</div>
+								</div>
+								<br></br>
+								<div class="row">
+									<div class="form-group">
+										<label style="width: 180px; text-align: right;" for="pwd4"
+											class="col-sm-2">Auto Increment:</label>
+										<div class="col-sm-2">
+											<input type="checkbox" class="col-ai-detail" />
+										</div>
+									</div>
+								</div>
+								<div class="row" style="padding: 20px 0px 0px 0px;">
+									<div>
+										<h:commandButton style="width:100px;float:right;"
+											styleClass="btn btn-info" value="Cancel"
+											action="#{columnBean.add(columnBean.columnNode)}" />
+									</div>
+									<div style="padding-right: 120px">
+										<button type="button" class="btn btn-info"
+											style="width: 100px; float: right;" data-dismiss="modal">Close</button>
+									</div>
+								</div>
+							</div>
+						</h:form>
+					</div>
+					<h:panelGroup layout="block" id="addcol-pane"
+						rendered="#{columnBean.addSuccess == 'true'}">
+						<script type="text/javascript">
+							$('#addColModal').modal('hide');
+						</script>
+					</h:panelGroup>
+				</div>
+				<div class="modal-footer">(*) Required</div>
+			</div>
+		</div>
+	</div>
+	<div class="modal fade" id="logModal" role="dialog">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title">
+						<strong>Upload File</strong>
+					</h4>
 				</div>
 				<div class="modal-body">
-					<p>Some text in the modal.</p>
+					<h:form>
+						<table class="table table-striped table-bordered">
+							<thead>
+								<tr>
+									<th class="col-md-6">History</th>
+									<th class="col-md-2">Action</th>
+								</tr>
+							</thead>
+							<tbody class="log-info">
+								<ui:repeat var="log" value="#{logBean.showLogs()}">
+								<tr>
+									<td>#{log}</td>
+									<td><h:commandButton
+											styleClass="btn btn-warning" value="Restore"
+											action="#{logBean.restore(log)}" /></td>
+								</tr>
+								</ui:repeat>
+							</tbody>
+						</table>
+					</h:form>
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

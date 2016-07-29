@@ -23,7 +23,82 @@ public class ColumnBean implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	private String colName;
+	private String dataType;
+	private String length;
+	private boolean nn;
+	private boolean pk;
+	private boolean fk;
+	private boolean ai;
+	
+	private boolean addSuccess;
+	
 	private ColumnNode columnNode;
+	
+
+	public boolean isAddSuccess() {
+		return addSuccess;
+	}
+
+	public void setAddSuccess(boolean addSuccess) {
+		this.addSuccess = addSuccess;
+	}
+
+	public String getLength() {
+		return length;
+	}
+
+	public void setLength(String length) {
+		this.length = length;
+	}
+
+	public boolean isNn() {
+		return nn;
+	}
+
+	public void setNn(boolean nn) {
+		this.nn = nn;
+	}
+
+	public boolean isPk() {
+		return pk;
+	}
+
+	public void setPk(boolean pk) {
+		this.pk = pk;
+	}
+
+	public boolean isFk() {
+		return fk;
+	}
+
+	public void setFk(boolean fk) {
+		this.fk = fk;
+	}
+
+	public boolean isAi() {
+		return ai;
+	}
+
+	public void setAi(boolean ai) {
+		this.ai = ai;
+	}
+
+	public String getColName() {
+		return colName;
+	}
+
+	public void setColName(String colName) {
+		this.colName = colName;
+	}
+
+	public String getDataType() {
+		return dataType;
+	}
+
+	public void setDataType(String dataType) {
+		this.dataType = dataType;
+	}
 
 	public ColumnNode getColumnNode() {
 		return columnNode;
@@ -37,68 +112,7 @@ public class ColumnBean implements Serializable {
 		columnNode = new ColumnNode();
 	}
 
-//	public void save(ColumnNode changeColNode) {
-//		System.out.println("Change Col Type:" + changeColNode);
-//
-//		FacesContext facesContext = FacesContext.getCurrentInstance();
-//		ExternalContext exContext = facesContext.getExternalContext();
-//		HttpSession session = (HttpSession) exContext.getSession(false);
-//
-//		String sessionid = session.getId();
-//		String dirKey = sessionid + "dir";
-//		String parsedFileDir = (String) session.getAttribute(dirKey);
-//
-//		CoreAPI api = new CoreAPI();
-//		TreeNode root = api.getParsedData(parsedFileDir);
-//
-//		List<TreeNode> tables = root.getChilds();
-//		for (TreeNode t : tables) {
-//			List<TreeNode> colsList = t.getChilds();
-//			for (TreeNode col : colsList) {
-//				if (!(col instanceof MTORelationshipNode) && !(col instanceof OTMRelationshipNode)) {
-//					if (col instanceof PrimaryKeyNode) {
-//						PrimaryKeyNode tempPKNode = (PrimaryKeyNode) col;
-//
-//						if (tempPKNode.getTempId() != changeColNode.getTempId())
-//							continue;
-//
-//						int colIndex = colsList.indexOf(col);
-//
-//						tempPKNode.setColumnName(changeColNode.getColumnName());
-//						tempPKNode.setDataType(changeColNode.getDataType());
-//						tempPKNode.setForeignKey(changeColNode.isForeignKey());
-//						tempPKNode.setLength(changeColNode.getLength());
-//						tempPKNode.setNotNull(changeColNode.isNotNull());
-//						tempPKNode.setPrimaryKey(changeColNode.isPrimaryKey());
-//						tempPKNode.setAutoIncrement(changedColNode);
-//
-//						colsList.set(colIndex, tempPKNode);
-//					} else if (col instanceof ColumnNode) {
-//						ColumnNode tempColNode = (ColumnNode) col;
-//						
-//						if (tempColNode.getTempId() != changeColNode.getTempId())
-//							continue;
-//
-//						int colIndex = colsList.indexOf(col);
-//
-//						tempColNode.setColumnName(changeColNode.getColumnName());
-//						tempColNode.setDataType(changeColNode.getDataType());
-//						tempColNode.setForeignKey(changeColNode.isForeignKey());
-//						tempColNode.setLength(changeColNode.getLength());
-//						tempColNode.setNotNull(changeColNode.isNotNull());
-//						tempColNode.setPrimaryKey(changeColNode.isPrimaryKey());
-//						
-//						
-//
-//						colsList.set(colIndex, tempColNode);
-//					}
-//
-//				}
-//			}
-//		}
-//	}
-
-	public void restore(String tempId) {
-		System.out.println(tempId);
+	public void add(ColumnNode col) {
+		System.out.println(col);
 	}
 }
