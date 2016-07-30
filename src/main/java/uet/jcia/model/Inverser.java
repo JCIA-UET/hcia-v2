@@ -76,16 +76,22 @@ public class Inverser {
         Element hibernateMapping = doc.createElement("hibernate-mapping");
 
         Element clazz = doc.createElement("class");
-        clazz.setAttribute("name", tableNode.getClassName());
-        clazz.setAttribute("table", tableNode.getTableName());
+        // set attributes for class tag
+        tableNode.setAttr("name", tableNode.getClassName());
+        tableNode.setAttr("table", tableNode.getTableName());
+        setAttributes(tableNode, clazz);
+        
         hibernateMapping.appendChild(clazz);
         
         for (TreeNode child : tableNode.getChilds()) {
             if (child instanceof PrimaryKeyNode) {
                 PrimaryKeyNode pk = (PrimaryKeyNode) child;
                 Element id = doc.createElement("id");
-                id.setAttribute("name", pk.getJavaName());
-                id.setAttribute("type", Mappers.getSqltoHbm(pk.getDataType()));
+                // set attributes for id tag
+                pk.setAttr("name", pk.getJavaName());
+                pk.setAttr("type", Mappers.getSqltoHbm(pk.getDataType()));
+                setAttributes(pk, id);
+                
                 clazz.appendChild(id);
                 
                 Element column = doc.createElement("column");
@@ -107,8 +113,11 @@ public class Inverser {
                 ColumnNode field = (ColumnNode) child;
                 if (!field.isForeignKey()) {
                     Element property = doc.createElement("property");
-                    property.setAttribute("name", field.getJavaName());
-                    property.setAttribute("type", Mappers.getSqltoHbm(field.getDataType()));
+                    // set attributes for property tag
+                    field.setAttr("name", field.getJavaName());
+                    field.setAttr("type", Mappers.getSqltoHbm(field.getDataType()));
+                    setAttributes(field, property);
+                    
                     clazz.appendChild(property);
                     
                     Element column = doc.createElement("column");
@@ -121,8 +130,11 @@ public class Inverser {
             } else if (child instanceof MTORelationshipNode) {
                 MTORelationshipNode relationship = (MTORelationshipNode) child;
                 Element manyToOne = doc.createElement("many-to-one");
-                manyToOne.setAttribute("name", relationship.getJavaName());
-                manyToOne.setAttribute("class", relationship.getReferTable().getClassName());
+                // set attributes for many-to-one tag
+                relationship.setAttr("name", relationship.getJavaName());
+                relationship.setAttr("class", relationship.getReferTable().getClassName());
+                setAttributes(relationship, manyToOne);
+                
                 clazz.appendChild(manyToOne);
                 
                 Element column = doc.createElement("column");
@@ -131,8 +143,11 @@ public class Inverser {
             } else if (child instanceof OTMRelationshipNode) {
                 OTMRelationshipNode relationship = (OTMRelationshipNode) child;
                 Element set = doc.createElement("set");
-                set.setAttribute("name", relationship.getJavaName());
-                set.setAttribute("table", relationship.getReferTable().getTableName());
+                // set attributes for set tag
+                relationship.setAttr("name", relationship.getJavaName());
+                relationship.setAttr("table", relationship.getReferTable().getTableName());
+                setAttributes(relationship, set);
+                
                 clazz.appendChild(set);
                 
                 Element key = doc.createElement("key");
@@ -152,15 +167,15 @@ public class Inverser {
     
     public void saveXml(String xmlPath, Document doc) {
         try {
-//            XPathFactory xFactory = XPathFactory.newInstance();
-//            XPath xPath = xFactory.newXPath();
-//            XPathExpression exprs = xPath.compile("//*[@" + DeprecatedParser2.HBM_ATT_TEMP_ID + "]");
-//            
-//            NodeList nodeList = (NodeList) exprs.evaluate(doc, XPathConstants.NODESET);
-//            for (int count = 0; count < nodeList.getLength(); count++) {
-//                Element e = (Element) nodeList.item(count);
-//                e.removeAttribute(DeprecatedParser2.HBM_ATT_TEMP_ID);
-//            }
+            XPathFactory xFactory = XPathFactory.newInstance();
+            XPath xPath = xFactory.newXPath();
+            XPathExpression exprs = xPath.compile("//*[@" + DeprecatedParser2.HBM_ATT_TEMP_ID + "]");
+            
+            NodeList nodeList = (NodeList) exprs.evaluate(doc, XPathConstants.NODESET);
+            for (int count = 0; count < nodeList.getLength(); count++) {
+                Element e = (Element) nodeList.item(count);
+                e.removeAttribute(DeprecatedParser2.HBM_ATT_TEMP_ID);
+            }
             
 //            XMLSerializer serializer = new XMLSerializer();
 //            serializer.setOutputCharStream(new java.io.FileWriter(xmlPath));
@@ -187,9 +202,16 @@ public class Inverser {
 
             transformer.transform(source, result);
             
-        } catch (TransformerException e) {
+        } catch (TransformerException | XPathExpressionException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
+        }
+    }
+    
+    private void setAttributes(TreeNode dataNode, Element domElement) {
+        HashMap<String, String> attrs = dataNode.getHbmAttributes();
+        for (String key : attrs.keySet()) {
+            domElement.setAttribute(key, attrs.get(key));
         }
     }
 

@@ -9,19 +9,18 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import uet.jcia.entities.Column;
 import uet.jcia.entities.ColumnNode;
 import uet.jcia.entities.MTORelationshipNode;
 import uet.jcia.entities.OTMRelationshipNode;
 import uet.jcia.entities.PrimaryKeyNode;
-import uet.jcia.entities.Relationship;
 import uet.jcia.entities.RootNode;
-import uet.jcia.entities.Table;
 import uet.jcia.entities.TableNode;
 import uet.jcia.entities.TreeNode;
 import uet.jcia.utils.Helper;
@@ -87,10 +86,13 @@ public class Parser {
         List<TreeNode> tableNodes = new ArrayList<>();
         
         for(String xml : xmlList){
-            TableNode tableNode = parseXmlFile(xml);
-            tableNode.setParent(root);
-            tableNode.setXmlPath(xml);
-            tableNodes.add(tableNode);
+            List<TableNode> parsedResult = parseXmlFile(xml);
+            for (TableNode tableNode : parsedResult) {
+                tableNode.setParent(root);
+                tableNode.setXmlPath(xml);
+                tableNodes.add(tableNode);
+            }
+            
         }
         
 //        System.out.println("[Parser] add relationships...");
@@ -136,8 +138,8 @@ public class Parser {
     }
     
     
-    private TableNode parseXmlFile(String xmlPath){
-        TableNode result = new TableNode();
+    private List<TableNode> parseXmlFile(String xmlPath){
+        List <TableNode> result = new ArrayList<>();
         try {
             File xmlFile = new File(xmlPath);
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
@@ -162,11 +164,14 @@ public class Parser {
             for(int temp = 0; temp < listClass.getLength(); temp++){
                 long tempId = generateId();
                 Node classNode = listClass.item(temp);
-                ((Element)classNode).setAttribute(HBM_ATT_TEMP_ID, Long.toString(tempId));
+//                ((Element)classNode).setAttribute(HBM_ATT_TEMP_ID, Long.toString(tempId));
                 
-                result = parseClassTag(classNode);
-                result.setTempId(tempId);
-                result.setLinkedElement((Element)classNode);
+                NamedNodeMap attributes = classNode.getAttributes();
+                TableNode table = parseClassTag(classNode);
+                table.setHbmAttributes(getAttrsFromNodeMap(attributes));
+                table.setTempId(tempId);
+//                table.setLinkedElement((Element)classNode);
+                result.add(table);
             }
             
             System.out.println("[Parser] analylised....");
@@ -198,9 +203,11 @@ public class Parser {
         // get primary key
         Node idNode = classElement.getElementsByTagName("id").item(0);
         if (idNode != null){
+            NamedNodeMap pkAttrs = idNode.getAttributes();
             PrimaryKeyNode primaryKey = parseIdTag(idNode);
-            primaryKey.setLinkedElement((Element)idNode);
-            primaryKey.setParent(tableNode);
+            primaryKey.setHbmAttributes(getAttrsFromNodeMap(pkAttrs));
+//            primaryKey.setLinkedElement((Element)idNode);
+//            primaryKey.setParent(tableNode);
             
             // add to cache
             pkNameMapper.put(tableName + "." + primaryKey.getColumnName(), primaryKey);
@@ -212,9 +219,12 @@ public class Parser {
         NodeList propertyNodes = classElement.getElementsByTagName("property");
         for (int temp = 0; temp < propertyNodes.getLength(); temp++){
             Node propertyNode = propertyNodes.item(temp);
+            
+            NamedNodeMap propertyAttrs = propertyNode.getAttributes();
             ColumnNode columnNode = parsePropertyTag(propertyNode);
-            columnNode.setLinkedElement((Element)propertyNode);
-            columnNode.setParent(tableNode);
+            columnNode.setHbmAttributes(getAttrsFromNodeMap(propertyAttrs));
+//            columnNode.setLinkedElement((Element)propertyNode);
+//            columnNode.setParent(tableNode);
             childElements.add(columnNode);
         }
         
@@ -222,9 +232,12 @@ public class Parser {
         NodeList mtoNodes = classElement.getElementsByTagName("many-to-one");
         for(int temp = 0; temp < mtoNodes.getLength(); temp++){
             Node mtoNode = mtoNodes.item(temp);
+            
+            NamedNodeMap mtoAttrs = mtoNode.getAttributes();
             MTORelationshipNode relationship = parseManyToOneTag(mtoNode);
-            relationship.setLinkedElement((Element)mtoNode);
-            relationship.setParent(tableNode);
+            relationship.setHbmAttributes(getAttrsFromNodeMap(mtoAttrs));
+//            relationship.setLinkedElement((Element)mtoNode);
+//            relationship.setParent(tableNode);
             childElements.add(relationship);
         }
         
@@ -232,7 +245,10 @@ public class Parser {
         NodeList setNodes = classElement.getElementsByTagName("set");
         for(int temp = 0; temp < setNodes.getLength(); temp++){
             Node setNode = setNodes.item(temp);
+            
+            NamedNodeMap setAttrs = setNode.getAttributes();
             OTMRelationshipNode set = parseSet(setNode);
+            set.setHbmAttributes(getAttrsFromNodeMap(setAttrs));
             set.setLinkedElement((Element)setNode);
             set.setParent(tableNode);
             childElements.add(set);
@@ -357,6 +373,15 @@ public class Parser {
         relationship.setType("One-to-Many");
         
         return relationship;
+    }
+    
+    private HashMap<String, String> getAttrsFromNodeMap(NamedNodeMap nodeMap) {
+        HashMap<String, String> attrs = new HashMap<>();
+        for (int i = 0; i < nodeMap.getLength(); i++) {
+            Attr attr = (Attr) nodeMap.item(i);
+            attrs.put(attr.getName(), attr.getValue());
+        }
+        return attrs;
     }
 
     private long generateId() {

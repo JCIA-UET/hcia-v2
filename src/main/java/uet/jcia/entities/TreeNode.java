@@ -1,6 +1,7 @@
 package uet.jcia.entities;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
 
 import org.w3c.dom.Element;
@@ -22,13 +23,13 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
     @JsonSubTypes.Type(value=MTORelationshipNode.class, name="mto"),
 	@JsonSubTypes.Type(value=OTMRelationshipNode.class, name="otm")
 })
-public class TreeNode implements Serializable{
-
-    /**
-	 * 
-	 */
+public abstract class TreeNode implements Serializable{
 	private static final long serialVersionUID = 1318575025108283976L;
+	
 	protected List<TreeNode> childs;
+	
+	protected HashMap<String, String> hbmAttributes = new HashMap<>();
+	
 	@JsonIgnore
     protected TreeNode parent;
 	@JsonIgnore
@@ -76,6 +77,22 @@ public class TreeNode implements Serializable{
 
     public void setLinkedElement(Element linkedElement) {
         this.linkedElement = linkedElement;
+    }
+    
+    public String getAttr(String attr) {
+        return hbmAttributes.get(attr);
+    }
+    
+    public String setAttr(String attr, String value) {
+        return hbmAttributes.put(attr, value);
+    }
+    
+    public HashMap<String, String> getHbmAttributes() {
+        return hbmAttributes;
+    }
+    
+    public void setHbmAttributes(HashMap<String, String> hbmAttributes) {
+        this.hbmAttributes = hbmAttributes;
     }
 
     @Override

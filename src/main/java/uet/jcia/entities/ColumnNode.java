@@ -1,12 +1,8 @@
 package uet.jcia.entities;
 
-import java.io.Serializable;
-
-import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 @JsonTypeName("column")
-
 public class ColumnNode extends TreeNode {
 	private static final long serialVersionUID = 3175171924945900577L;
 	
