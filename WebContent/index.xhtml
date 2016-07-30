@@ -1,135 +1,262 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
-"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
-
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:ui="http://java.sun.com/jsf/facelets"
-	xmlns:f="http://java.sun.com/jsf/core"
-	xmlns:h="http://java.sun.com/jsf/html"
-	xmlns:p="http://primefaces.org/ui"
-	xmlns:c="http://java.sun.com/jstl/core">
-
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets">
 <h:head>
-	<title>JSF 2.0 Hello World</title>
+  <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>HCIA</title>
+
+  <h:outputStylesheet library="webjars"
+    name="bootstrap/3.3.6/css/bootstrap.min-jsf.css" />
+  <h:outputStylesheet library="webjars"
+    name="bootstrap/3.3.6/css/bootstrap-theme.min-jsf.css" />
+  <h:outputStylesheet library="webjars"
+    name="font-awesome/4.5.0/css/font-awesome.min-jsf.css" />
+  <h:outputScript library="webjars" name="jquery/2.1.4/jquery.min.js" />
+  <h:outputScript library="webjars"
+    name="bootstrap/3.3.6/js/bootstrap.min.js" />
+
+  <!-- custom style sheets and scripts -->
+  <h:outputStylesheet name="css/jk.css" />
+  <h:outputScript name="js/bq.js" />
 </h:head>
 <h:body>
-	<h:outputStylesheet name="css/u.css" />
-	<!-- <h:form>
-		 <p:growl id="messages"/>
-		<p:menubar>
-			<p:submenu label="Open" icon="ui-icon-document">
-				<p:menuitem value="XML File" icon="ui-icon-document-b"
-					oncomplete="PF('dlgxml').show()" />
-				<p:menuitem value="Zip File" icon="ui-icon-folder-collapsed"
-					oncomplete="PF('dlgzip').show()" />
-			</p:submenu>
-			<p:submenu label="Edit" icon="ui-icon-pencil">
-			</p:submenu>
-		</p:menubar>
-		<p:dialog header="Choose an xml file..." widgetVar="dlgxml"
-			modal="true" height="250" weigh="250">
-			<h:form enctype="multipart/form-data">
-				<p:fileUpload style="weigh:250px;"
-					fileUploadListener="#{fileUploadBean.handleFileUpload}"
-					mode="advanced" dragDropSupport="true" auto="true"
-					update="messages" allowTypes="/(\.|\/)(hbm.xml|zip)$/" />
-				<p:growl id="messages" showDetail="true" />
-			</h:form>
-		</p:dialog>
-	</h:form> -->
-	<p:panelGrid styleClass="main-panel">
-		<p:row>
-			<p:column rowspan="2" colspan="3"
-				style="width:250px;height:680px;padding-top:4px;">
-				<h:form>
-					<p:tabView styleClass="left-tab">
-						<p:tab title="Menu" styleClass="content">
-						</p:tab>
-						<p:tab title="Tree">
-							<p:tree value="#{treeBean.root}" var="node" dynamic="true"
-								selectionMode="single" selection="#{treeBean.selectedNode}">
-								<p:treeNode type="table" icon="ui-icon ui-icon-calculator">
-									<h:outputText value="#{node.tableName}" />
-								</p:treeNode>
-								<p:treeNode type="column" icon="ui-icon-grip-dotted-vertical">
-									<h:outputText value="#{node.name}" />
-								</p:treeNode>
-								
-								<p:ajax event="select" listener="#{treeBean.onSelectNode}"></p:ajax>
-							</p:tree>
-						</p:tab>
-					</p:tabView>
-				</h:form>
-			</p:column>
-			<p:column colspan="9"
-				style="width:1100px;height:350px;padding-left:10px;padding-top:6px;">
-				<p:dataTable id="dttable" var="column"
-					value="#{tableBean.table.listColumn}">
-					<p:column headerText="Column Name">
-						<h:outputText value="#{column.name}" />
-					</p:column>
 
-					<p:column headerText="Type">
-						<h:outputText value="#{column.type} (#{column.length})" />
-					</p:column>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="container-fluid">
+      <!-- left side menu -->
+      <ul class="nav navbar-nav">
+        <li><a href="#"><span class="glyphicon glyphicon-upload"></span>Upload</a></li>
+        <li><a href="#"><span class="glyphicon glyphicon-download"></span>Download</a></li>
+      </ul>
+      <!-- right side menu -->
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="#"><span class="glyphicon glyphicon-envelope"></span> Contact</a></li>
+        <li><a href="#"><span class="glyphicon glyphicon-question-sign"></span> Help</a></li>
+      </ul>
+    </div>
+  </nav>
 
-					<p:column headerText="Primary Key">
-						<p:selectBooleanCheckbox value="#{column.primaryKey}" />
-					</p:column>
+  <div class="container-fluid hcia-container">
+    <!-- tree of tables -->
+    <div class="col-md-2">
+      <div class="hcia-treepanel">
+        <ul class="nav">
+          <!-- table -->
+          <li class="tree-root nav-header"><label class="tree-toggle">Table 1</label>
+            <ul class="nav">
+              <!-- column -->
+              <h:panelGroup>
+                <li><a class="tree-node" href="#" contenteditable="false">Column 1</a></li>
+                <li><a class="tree-node" href="#" contenteditable="false">Column 2</a></li>
+              </h:panelGroup>
+            </ul>
+          </li>
+          <li class="tree-root nav-header"><label class="tree-toggle">Table 2</label>
+            <ul class="nav">
+              <!-- column -->
+              <h:panelGroup>
+                <li><a class="tree-node" href="#" contenteditable="false">Column 3</a></li>
+                <li><a class="tree-node" href="#" contenteditable="false">Column 4</a></li>
+              </h:panelGroup>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
 
-					<p:column headerText="Auto Increment">
-						<p:selectBooleanCheckbox value="#{column.autoIcrement}" />
-					</p:column>
-					<p:column headerText="Not Null">
-						<p:selectBooleanCheckbox value="#{column.not_null}" />
-					</p:column>
+    <div class="col-md-10">
+      <div class="hcia-contentpanel">
+        <!-- tab titles -->
+        <ul class="nav nav-tabs">
+          <li class="active"><a data-toggle="tab" href="#columntab">Columns</a></li>
+          <li><a data-toggle="tab" href="#foreignkeytab">Foreign Keys</a></li>
+        </ul>
 
+        <!-- column tab -->
+        <div class="tab-content">
+          <!-- column table -->
+          <div id="columntab" class="tab-pane fade in active">
+            <div class="table-wrap">
+              <table class="table table-striped table-bordered hcia-table">
+                <thead>
+                  <tr>
+                    <th>Column Name</th>
+                    <th>Data Type</th>
+                    <th>NN</th>
+                    <th>PK</th>
+                    <th>FK</th>
+                    <th>AI</th>
+                  </tr>
+                </thead>
+                <tbody class="table-info">
+                  <!-- columns information go here -->
+                  <tr>
+                    <td>13</td>
+                    <td>13</td>
+                    <td>13</td>
+                    <td>13</td>
+                    <td>13</td>
+                    <td>13</td>
+                  </tr>
+                  <tr>
+                    <td>13</td>
+                    <td>13</td>
+                    <td>13</td>
+                    <td>13</td>
+                    <td>13</td>
+                    <td>13</td>
+                  </tr>
+                  <tr>
+                    <td>13</td>
+                    <td>13</td>
+                    <td>13</td>
+                    <td>13</td>
+                    <td>13</td>
+                    <td>13</td>
+                  </tr>
+                  <tr>
+                    <td>13</td>
+                    <td>13</td>
+                    <td>13</td>
+                    <td>13</td>
+                    <td>13</td>
+                    <td>13</td>
+                  </tr>
+                  <tr>
+                    <td>13</td>
+                    <td>13</td>
+                    <td>13</td>
+                    <td>13</td>
+                    <td>13</td>
+                    <td>13</td>
+                  </tr>
+                  <tr>
+                    <td>13</td>
+                    <td>13</td>
+                    <td>13</td>
+                    <td>13</td>
+                    <td>13</td>
+                    <td>13</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <!-- column table ends here -->
 
-				</p:dataTable>
+            <!-- column detail go here -->
+            <div class="detail-wrap">
+              <div class="heading">
+                <h2 style="border-bottom: 5px solid #03a9f4;">Detail</h2>
+              </div>
+              <div class="col-md-6">
+                <div class="row form-group">
+                  <label>Column Name: </label>
+                  <input type="text" class="form-control input-form" />
+                </div>
+                <div class="row form-group">
+                  <label>Data Type: </label>
+                  <select class="col-type-detail form-control input-form">
+                  <option value="VARCHAR">VARCHAR()</option>
+                  <option value="INTEGER">INTEGER</option>
+	              <option value="DOUBLE">DOUBLE</option>
+	              <option value="DATE">DATE</option>
+	              <option value="FLOAT">FLOAT</option>
+                  </select>
+                </div>
+                <div class="row form-group">
+                  <label>Length: </label>
+                  <input type="text" class="form-control input-form" />
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="row" style="padding: 30px 0px 0px 40px">
+                  <div class="form-group col-md-6">
+                    <input type="checkbox" />
+                    <label>Primary key</label>
+                    <br/>
+                    <input type="checkbox" />
+                    <label>Not null</label>
+                    <br/>
+                  </div>
+                  <div class="form-group col-md-6">
+                    <input type="checkbox" />
+                    <label>Foreign key</label>
+                    <br/>
+                    <input type="checkbox" />
+                    <label>Auto increment</label>
+                    <br/>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- column detail ends here -->
+          </div>
+          
+          <!-- foreign key tab -->
+          <div id="foreignkeytab" class="tab-pane fade">
+            <div class="table-wrap">
+              <table class="table table-striped table-bordered hcia-table">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Column</th>
+                    <th>Refer Table</th>
+                    <th>Refer Column</th>
+                  </tr>
+                </thead>
+                <tbody class="relationship-info">
+                <tr>
+                    <td>14</td>
+                    <td>14</td>
+                    <td>14</td>
+                    <td>14</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          
+            <div class="detail-wrap">
+              <div class="heading">
+                <h2 style="border-bottom: 5px solid #03a9f4;">Detail</h2>
+              </div>
+              <div class="col-md-6 hcia-reladetail">
+                <div class="row form-group">
+                  <label>Table Name: </label>
+                  <input type="text" class="form-control input-form" />
+                </div>
+                <div class="row form-group">
+                  <label>Column Name: </label>
+                  <input type="text" class="form-control input-form" />
+                </div>
+              </div>
+              <div class="col-md-6 hcia-reladetail">
+                <div class="row form-group">
+                  <label>Reference Table: </label>
+                  <select class="form-control"/>
+                </div>
+                <div class="row form-group">
+                  <label>Reference Column: </label>
+                  <select class="form-control"/>
+                </div>
+              </div>
 
-			</p:column>
-		</p:row>
-		<p:row>
-			<p:column style="padding-left:10px;padding-top:4px;height:320px;">
-				<p:tabView style="height: 100%;">
-					<p:tab title="Column">
-						<div class="ui-g">
-							<div class="ui-g-12 ui-md-6 col-content">
-								<h:outputLabel for="name"
-									value="Name:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" />
-								<h:inputText id="name" value="name"
-									readonly="#{facesContext.renderResponse}" />
-							</div>
-							<div class="ui-g-12 ui-md-6 col-content">
-								<h:outputText value="Primary Key: " />
-								<p:selectBooleanCheckbox value="true" />
-							</div>
-						</div>
-						<div class="ui-g">
-							<div class="ui-g-12 ui-md-6 col-content">
-								<h:outputLabel for="expression"
-									value="Default/Expression:&nbsp;&nbsp;&nbsp;&nbsp;" />
-								<p:inputTextarea id="expression" rows="6" cols="33"
-									value="something here"
-									readonly="#{facesContext.renderResponse}" />
-							</div>
-							<div class="ui-g-12 ui-md-6 col-content">
-								<h:outputText value="Auto Increment: " />
-								<p:selectBooleanCheckbox value="true" />
-							</div>
-						</div>
-					</p:tab>
-					<p:tab title="Foreign Key">
-						<h:panelGrid>
-						</h:panelGrid>
-					</p:tab>
-				</p:tabView>
-			</p:column>
-		</p:row>
+            </div><!-- detail wrap of pk tab -->
+          </div>
+          <!-- command button -->
+          <div class="hcia-tblaction">
+            <h:commandButton styleClass="btn btn-danger hcia-btnright" value="Cancel" />
+            <h:commandButton styleClass="btn btn-info hcia-btnright" value="Save" />
+          </div>
 
-	</p:panelGrid>
-
-
+        </div><!-- tab content -->
+    
+      </div><!-- hcia content tab -->
+    </div><!-- col-md-10 -->
+  </div><!-- container-fluid for main content -->
 </h:body>
 </html>

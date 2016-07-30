@@ -1,0 +1,104 @@
+body {
+  background-color: #efefef;
+}
+
+.navbar {
+  background: #446cb3;
+  border-radius: 0px;
+  margin-bottom: 10px;
+}
+
+.navbar-nav > li > a {
+  color: white;
+  text-decoration: none;
+}
+
+.navbar-nav > li > a{
+  border-right: 1px solid rgba(0, 0, 0, 0.1);
+  color: white;
+  display: inline-block;
+  font-size: 16px;
+  text-decoration: none;
+
+  -o-transition:color 0.2s ease-out, background 0.2s ease-in;
+  -ms-transition:color 0.2s ease-out, background 0.2s ease-in;
+  -moz-transition:color 0.2s ease-out, background 0.2s ease-in;
+  -webkit-transition:color 0.2s ease-out, background 0.2s ease-in;
+}
+
+.navbar-nav > li > a:hover {
+  color:#446cb3;
+}
+
+.hcia-container {
+  padding: 0px 10px 0px 10px;
+}
+
+.hcia-treepanel {
+  height: 90vh;
+  padding: 20px 0px 0px 20px;
+  background-color: #ffffff;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.hcia-contentpanel {
+  height: 90vh;
+  padding: 0px 10px 0px 10px;
+  background-color: #ffffff;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.tab-content {
+  padding: 5px 10px 0px 10px;
+}
+
+/* Tab panel */
+.table-wrap {
+  height: 30vh;
+  padding: 10px 0px 0px 20px;
+  overflow-y: scroll;
+}
+
+.hcia-table {
+  margin: 0px;
+}
+
+.hcia-table > thead {
+  color:#fff;
+  background-color:#03a9f4;
+}
+
+.table > tbody > tr:hover {
+  background-color:#949494;
+  color:#fff;
+}
+
+.detail-wrap {
+  padding: 0px 20px 0px 20px;
+}
+
+.hcia-reladetail {
+  padding: 0px 20px 0px 20px;
+}
+
+.hcia-tblaction {
+  position: absolute;
+  right: 15px;
+  bottom: 15px;
+}
+
+.hcia-btnright {
+  margin-left: 5px;
+  width: 80px;
+  float: right;
+}
+
+
+/* test  */
+.col-md-2 {
+  padding: 0px 10px 0px 0px;
+}
+
+.col-md-10 {
+  padding: 0px;
+}
