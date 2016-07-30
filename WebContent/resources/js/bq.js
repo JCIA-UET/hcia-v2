@@ -70,23 +70,25 @@ $(document).ready(function() {
 						$(".table-info").append("<tr>" +
 								"<td>" + col.columnName + "</td>" +
 								"<td>" + col.dataType + "</td>" +
-								"<td>" + "<input id='nn-" + i + "' type='checkbox' disabled='disabled'/></td>" +
-								"<td>" + "<input id='pk-" + i + "' type='checkbox' disabled='disabled'/></td>" +
-								"<td>" + "<input id='fk-" + i + "' type='checkbox' disabled='disabled'/></td>" +
-								"<td>" + "<input id='ai-" + i + "' type='checkbox' disabled='disabled'/></td>" +
-								"<td><span class='glyphicon glyphicon-remove-sign'></span></td>" +
+								"<td>" + "<input id='nn-" + col.tempId + "' type='checkbox' disabled='disabled'/></td>" +
+								"<td>" + "<input id='pk-" + col.tempId + "' type='checkbox' disabled='disabled'/></td>" +
+								"<td>" + "<input id='fk-" + col.tempId + "' type='checkbox' disabled='disabled'/></td>" +
+								"<td>" + "<input id='ai-" + col.tempId + "' type='checkbox' disabled='disabled'/></td>" +
+								"<td>" +
+									"<input type='hidden' value='" + col.tempId + "'/>" + 
+									"<span class='rmv-col glyphicon glyphicon-trash'></span></td>" +
 								"</tr>"
 								);
 						
 						// Checked a checkbox if attribute of col is true
-						if(col.notNull == true) $("#nn-" + i).prop('checked', true);
-						else $("#nn-" + i).prop('checked', false);
-						if(col.primaryKey == true) $("#pk-" + i).prop('checked', true);
-						else $("#pk-" + i).prop('checked', false);
-						if(col.foreignKey == true) $("#fk-" + i).prop('checked', true);
-						else $("#fk-" + i).prop('checked', false);
+						if(col.notNull == true) $("#nn-" + col.tempId).prop('checked', true);
+						else $("#nn-" + col.tempId).prop('checked', false);
+						if(col.primaryKey == true) $("#pk-" + col.tempId).prop('checked', true);
+						else $("#pk-" + col.tempId).prop('checked', false);
+						if(col.foreignKey == true) $("#fk-" + col.tempId).prop('checked', true);
+						else $("#fk-" + col.tempId).prop('checked', false);
 						if(col.autoIncrement == true) $("#ai-" + i).prop('checked', true);
-						else $("#ai-" + i).prop('checked', false);
+						else $("#ai-" + col.tempId).prop('checked', false);
 					}
 					else {
 						var fkColName = (g_data.childs[j].childs[i].foreignKey != null) ? g_data.childs[j].childs[i].foreignKey.columnName : "";
@@ -110,7 +112,7 @@ $(document).ready(function() {
 	
 	$("#rela-rftable-detail").change(function(){
 		var optionVal = $("#rela-rftable-detail	 option:selected").val();
-		showColOptionByTableName(optionVal, g_data);
+		showColOptionByTableId(optionVal, g_data);
 	});
 	
 	$(".relation-info").on("click", "tr", function(){
@@ -121,6 +123,18 @@ $(document).ready(function() {
 	$(".table-info").on("click", "tr", function(){
 		var colName = $(this).children(":first").text();
 		showColDetail(colName, crtShowTable.childs);
+		
+		$(".rmv-col").click(function(){
+			var chosenColTempId = $(this).parent().children('input').val();
+			
+			for(var i = 0; i < crtShowTable.childs.length; i++) {
+				var col = crtShowTable.childs[i];
+				if(col.tempId == chosenColTempId) {
+					crtShowTable.childs.splice(i, 1);
+				}
+			}
+			$("#nn-" + chosenColTempId).parent().parent().hide();
+		});
 	});
 	
 	$(".tree-node").click(function(){
@@ -140,7 +154,9 @@ $(document).ready(function() {
 		
 		// Visible properties
 		var colName = $(".col-name-detail").val();
+		
 		var colType = $(".col-type-detail").val();
+		
 		var colLength = $(".col-length-detail").val();
 		if ($('.col-nn-detail').is(":checked")) colNN = true;
 		else colNN = false;
@@ -151,7 +167,7 @@ $(document).ready(function() {
 		if ($('.col-ai-detail').is(":checked")) colAI = true;
 		else colAI = false;
 		
-		//console.log("Temp ID: " + colTempId + "Name: " + colName + "Type: " + colType + "Length: " + colLength + "NN: " + colNN + "PK: " + colPK + "FK: " + colFK +  "AI: " + colAI);
+		console.log("Temp ID: " + colTempId + "Name: " + colName + "Type: " + colType + "Length: " + colLength + "NN: " + colNN + "PK: " + colPK + "FK: " + colFK +  "AI: " + colAI);
 		
 		var colsList = crtShowTable.childs;
 		for(var i = 0; i < colsList.length; i++) {
@@ -202,6 +218,18 @@ $(document).ready(function() {
 	$('#reset-data-trigger').click(function() {
 		$('#noticeModal').modal('show');
 		return false;
+	});
+	
+	$('#add-column').click(function(){
+		$('#addColModal').modal('show');
+	});
+	
+	$('#add-table').click(function(){
+		$('#addTableModal').modal('show');
+	});
+	
+	$('#change-log').click(function(){
+		$('#logModal').modal('show');
 	});
 
 	$(".dropdown").hover(function() {
@@ -277,7 +305,7 @@ function showRelaDetail(crtTable, elementName, relaArray) {
 				$(".rela-table-detail").val(crtTable.tableName);
 				$(".rela-col-detail").val(fkCol.columnName);
 				$("#rela-rftable-detail option[value=" + rfTable.tempId + "]").attr("selected","selected");
-				showColOptionByTableName(tfTable.tempId, g_data);
+				showColOptionByTableId(rfTable.tempId, g_data);
 				$("#rela-rfcol-detail option[value=" + rfCol.tempId + "]").attr("selected","selected");
 				
 				break;
@@ -287,9 +315,9 @@ function showRelaDetail(crtTable, elementName, relaArray) {
 	}
 }
 
-function showColOptionByTableName(tableTempId, jsonData) {
+function showColOptionByTableId(tableTempId, jsonData) {
 	for(var i = 0; i < jsonData.childs.length; i++) {
-		var table = g_data.childs[i];
+		var table = jsonData.childs[i];
 		if(table.tempId != tableTempId)
 			continue;
 		else {

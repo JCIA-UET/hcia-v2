@@ -1,5 +1,6 @@
 package uet.jcia.controller;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
@@ -44,7 +45,7 @@ public class TreeBean implements Serializable {
 		if(parsedDir != null) {
 			try {
 				TreeNode root = api.getParsedData(parsedDir);
-				System.out.println(root);
+				//System.out.println("Root: " + root);
 				ObjectMapper mapper = new ObjectMapper();
 				String jsonData = mapper.writeValueAsString(root);
 				//System.out.println(tree);
@@ -58,6 +59,7 @@ public class TreeBean implements Serializable {
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void save(String jsonData) {
 		FacesContext facesContext = FacesContext.getCurrentInstance();
 		ExternalContext exContext = facesContext.getExternalContext();
@@ -71,9 +73,20 @@ public class TreeBean implements Serializable {
 		
 		if(jsonData != null && parsedDir != null) {
 			try {
+				System.out.println(jsonData);
 				ObjectMapper mapper = new ObjectMapper();
 				TableNode changedTable = mapper.readValue(jsonData, TableNode.class);	
 				api.updateData(changedTable);
+				String newDir = api.refresh(parsedDir);
+				File tempFile = new File(newDir);
+				System.out.println("New path: " + newDir);
+				exContext.getSessionMap().put(dirKey, newDir);
+				
+				String logKey = sessionid + "log";
+				List<String> changeLog = (List<String>) session.getAttribute(logKey);
+				
+				changeLog.add(tempFile.getName());
+				exContext.getSessionMap().put(logKey, changeLog);
 				
 				exContext.redirect("home.xhtml");
 			} catch (IOException e) {
