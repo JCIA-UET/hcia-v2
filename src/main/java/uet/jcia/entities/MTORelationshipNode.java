@@ -1,8 +1,5 @@
 package uet.jcia.entities;
 
-import java.io.Serializable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 @JsonTypeName("mto")
