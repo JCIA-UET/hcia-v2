@@ -112,7 +112,7 @@ InfoPanel.showRelaDetail = function(szColName) {
 		var rfColName = (element.referColumn != null) ? element.referColumn.columnName : "";
 			
 		if(szColName == fkColName) {
-			$("#rela-table-detail").val(Table.tableName);
+			$("#rela-table-detail").val(Table.instance.tableName);
 			$("#rela-col-detail").val(fkColName);
 			
 			var refTblEl = document.getElementById('rela-rftable-detail');
