@@ -5,6 +5,7 @@ function TableAction() {
 
 TableAction.resetDetails = function () {
   // reset column details
+  $("#col-tempid-detail").val("");
   $("#col-name-detail").val("");
   $("#col-type-detail").val("");
   $("#col-length-detail").val("");
@@ -14,6 +15,7 @@ TableAction.resetDetails = function () {
   $("#col-ai-detail").prop('checked', false);
   
   // reset relationship details
+  $("#rela-tempid-detail").val("");
   $("#rela-table-detail").val("");
   $("#rela-col-detail").val("");
   $("#rela-rftable-detail").val("");
@@ -28,6 +30,8 @@ TableAction.save = function () {
 
 function updateRelationship() {
   var relTempId = $("#rela-tempid-detail").val();
+  if (relTempId == "") return;
+  
   var colName = $("#rela-col-detail").val();
   var rfTableName = $("#rela-rftable-detail").val();
   var rfColName = $("#rela-rfcol-detail").val();
@@ -35,7 +39,17 @@ function updateRelationship() {
   for(var i = 0; i < Table.instance.childs.length; i++) {
     var rela = Table.instance.childs[i];
     if (rela.tempId == relTempId) {
-      console.log(rela);
+      
+      rela.foreignKey.columnName = colName;
+      rela.referTable.tableName = rfTableName;
+      
+      if (rela.json == "mto") {
+        //cmto relationship
+        rela.referColumn.columnName = rfColName;
+      } else if (rela.json == "otm") {
+        // do something with otm relationshipS
+      }
+      
       alert("updated relationship " + rela.tempId);
     }
   }
@@ -43,6 +57,8 @@ function updateRelationship() {
 
 function updateColumn() {
   var colTempId = $("#col-tempid-detail").val();
+  if (colTempId == "") return;
+  
   var colName = $("#col-name-detail").val();
   var colType = $("#col-type-detail").val();
   var colLength = $("#col-length-detail").val();
@@ -54,7 +70,7 @@ function updateColumn() {
   
   for(var i = 0; i < Table.instance.childs.length; i++) {
     var col = Table.instance.childs[i];
-    if (col.tempId == colTempId && colName != "" && colType != "" && colLength != "") {
+    if (col.tempId == colTempId) {
       if (col.foreignKey) {
         alert("cannot update foreign key from reference table");
         return ;
