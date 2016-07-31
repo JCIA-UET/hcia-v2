@@ -22,6 +22,7 @@
   <!-- custom style sheets and scripts -->
   <h:outputStylesheet name="css/jk.css" />
   <h:outputScript name="js/TableList.js" />
+  <h:outputScript name="js/FakeTable.js" />
   <h:outputScript name="js/TreeView.js" />
   <h:outputScript name="js/InfoPanel.js" />
   <h:outputScript name="js/main.js" />
@@ -190,7 +191,7 @@
               <div class="col-md-6 hcia-reladetail">
                 <div class="row form-group">
                   <label>Reference Table: </label>
-                  <select id="rela-rftable-detail" class="form-control"/>
+                  <select id="rela-rftable-detail" class="form-control" onchange="FakeTable.updateColList()"/>
                 </div>
                 <div class="row form-group">
                   <label>Reference Column: </label>

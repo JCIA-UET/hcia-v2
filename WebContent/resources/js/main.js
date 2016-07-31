@@ -32,6 +32,11 @@ $(document).ready(function() {
 //			$("#nn-" + chosenColTempId).parent().parent().hide();
 //		});
 	});
+	
+	$(".relationship-info").on("click", "tr", function(){
+		console.log("show detail: " + $(this).children().eq(1).text());
+		InfoPanel.showRelaDetail($(this).children().eq(1).text());
+	});
 });
 
 function prepareData() {

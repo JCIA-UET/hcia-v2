@@ -24,8 +24,14 @@ TreeView.createTree = function() {
 				treeChildComponent.append(
 						"<li><a class='tree-node' href='#' contenteditable='false'>" + Column.columnName + "</a></li>"
 						);
+				
+				// add to FakeTable list
+				if (Column.json == "pk") {
+				  FakeTable.add(Table.tableName, Column.columnName);
+				  console.log("Add to FakeTable: " + Table.tableName + " - " + Column.columnName);
+				}
+				
 			}
-			else continue;
 		}
 		
 		treeComponent.append("</ul></li>");

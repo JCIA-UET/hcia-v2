@@ -103,11 +103,19 @@ InfoPanel.showRelaDetail = function(szColName) {
 		var rfColName = (element.referColumn != null) ? element.referColumn.columnName : "";
 			
 		if(szColName == fkColName) {
-			$("#rela-table-detail").val(crtTable.tableName);
-			$("#rela-col-detail").val(fkCol.columnName);
-			$("#rela-rftable-detail option[value=" + rfTable.tempId + "]").attr("selected","selected");
-			$("#rela-rfcol-detail option[value=" + rfCol.tempId + "]").attr("selected","selected");
-				
+			$("#rela-table-detail").val(Table.tableName);
+			$("#rela-col-detail").val(fkColName);
+			
+			var refTblEl = document.getElementById('rela-rftable-detail');
+	    for (var i = 0; i < FakeTable.list.length; i++) {
+	      var tbl = FakeTable.list[i];
+	      refTblEl.options[i] = new Option(tbl.tblName, tbl.tblName);
+	      
+	      if (i == 0) {
+	        document.getElementById('rela-rfcol-detail').options[i] = new Option(tbl.pkName, tbl.pkName);
+        }
+	    }
+	    
 			break;
 		}
 	}
