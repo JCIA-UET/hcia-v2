@@ -21,16 +21,20 @@
 
   <!-- custom style sheets and scripts -->
   <h:outputStylesheet name="css/jk.css" />
-  <h:outputScript name="js/bq.js" />
+  <h:outputScript name="js/TableList.js" />
+  <h:outputScript name="js/TreeView.js" />
+  <h:outputScript name="js/InfoPanel.js" />
+  <h:outputScript name="js/main.js" />
+  
 </h:head>
 <h:body>
-
+	
   <!-- Navigation -->
   <nav class="navbar">
     <div class="container-fluid">
       <!-- left side menu -->
       <ul class="nav navbar-nav">
-        <li><a href="#"><span class="glyphicon glyphicon-upload"></span>Upload</a></li>
+        <li><a id="upload-trigger" href="#"><span class="glyphicon glyphicon-upload"></span>Upload</a></li>
         <li><a href="#"><span class="glyphicon glyphicon-download"></span>Download</a></li>
       </ul>
       <!-- right side menu -->
@@ -44,12 +48,14 @@
   <div class="container-fluid hcia-container">
     <!-- tree of tables -->
     <div class="col-md-2">
+    	<!-- Get raw data from backing bean -->
+    	<input type="hidden" id="raw-data" value="#{treeBean.jsonData}"/>
       <div class="hcia-treepanel">
-        <ul class="nav">
+        <ul id="tree-root" class="nav">
           <!-- table -->
-          <li class="tree-root nav-header"><label class="tree-toggle">Table 1</label>
+          <!-- <li class="tree-root nav-header"><label class="tree-toggle">Table 1</label>
             <ul class="nav">
-              <!-- column -->
+              column
               <h:panelGroup>
                 <li><a class="tree-node" href="#" contenteditable="false">Column 1</a></li>
                 <li><a class="tree-node" href="#" contenteditable="false">Column 2</a></li>
@@ -58,13 +64,13 @@
           </li>
           <li class="tree-root nav-header"><label class="tree-toggle">Table 2</label>
             <ul class="nav">
-              <!-- column -->
+              column
               <h:panelGroup>
                 <li><a class="tree-node" href="#" contenteditable="false">Column 3</a></li>
                 <li><a class="tree-node" href="#" contenteditable="false">Column 4</a></li>
               </h:panelGroup>
             </ul>
-          </li>
+          </li> -->
         </ul>
       </div>
     </div>
@@ -95,54 +101,6 @@
                 </thead>
                 <tbody class="table-info">
                   <!-- columns information go here -->
-                  <tr>
-                    <td>13</td>
-                    <td>13</td>
-                    <td>13</td>
-                    <td>13</td>
-                    <td>13</td>
-                    <td>13</td>
-                  </tr>
-                  <tr>
-                    <td>13</td>
-                    <td>13</td>
-                    <td>13</td>
-                    <td>13</td>
-                    <td>13</td>
-                    <td>13</td>
-                  </tr>
-                  <tr>
-                    <td>13</td>
-                    <td>13</td>
-                    <td>13</td>
-                    <td>13</td>
-                    <td>13</td>
-                    <td>13</td>
-                  </tr>
-                  <tr>
-                    <td>13</td>
-                    <td>13</td>
-                    <td>13</td>
-                    <td>13</td>
-                    <td>13</td>
-                    <td>13</td>
-                  </tr>
-                  <tr>
-                    <td>13</td>
-                    <td>13</td>
-                    <td>13</td>
-                    <td>13</td>
-                    <td>13</td>
-                    <td>13</td>
-                  </tr>
-                  <tr>
-                    <td>13</td>
-                    <td>13</td>
-                    <td>13</td>
-                    <td>13</td>
-                    <td>13</td>
-                    <td>13</td>
-                  </tr>
                 </tbody>
               </table>
             </div>
@@ -156,11 +114,11 @@
               <div class="col-md-6">
                 <div class="row form-group">
                   <label>Column Name: </label>
-                  <input type="text" class="form-control input-form" />
+                  <input id="col-name-detail" type="text" class="form-control input-form" />
                 </div>
                 <div class="row form-group">
                   <label>Data Type: </label>
-                  <select class="col-type-detail form-control input-form">
+                  <select id="col-type-detail" class="col-type-detail form-control input-form">
                   <option value="VARCHAR">VARCHAR()</option>
                   <option value="INTEGER">INTEGER</option>
 	              <option value="DOUBLE">DOUBLE</option>
@@ -170,24 +128,24 @@
                 </div>
                 <div class="row form-group">
                   <label>Length: </label>
-                  <input type="text" class="form-control input-form" />
+                  <input id="col-length-detail" type="text" class="form-control input-form" />
                 </div>
               </div>
               <div class="col-md-6">
                 <div class="row" style="padding: 30px 0px 0px 40px">
                   <div class="form-group col-md-6">
-                    <input type="checkbox" />
+                    <input id="col-pk-detail" type="checkbox" />
                     <label>Primary key</label>
                     <br/>
-                    <input type="checkbox" />
+                    <input id="col-nn-detail" type="checkbox" />
                     <label>Not null</label>
                     <br/>
                   </div>
                   <div class="form-group col-md-6">
-                    <input type="checkbox" />
+                    <input id="col-fk-detail" type="checkbox" />
                     <label>Foreign key</label>
                     <br/>
-                    <input type="checkbox" />
+                    <input id="col-ai-detail" type="checkbox" />
                     <label>Auto increment</label>
                     <br/>
                   </div>
@@ -210,12 +168,6 @@
                   </tr>
                 </thead>
                 <tbody class="relationship-info">
-                <tr>
-                    <td>14</td>
-                    <td>14</td>
-                    <td>14</td>
-                    <td>14</td>
-                  </tr>
                 </tbody>
               </table>
             </div>
@@ -227,21 +179,21 @@
               <div class="col-md-6 hcia-reladetail">
                 <div class="row form-group">
                   <label>Table Name: </label>
-                  <input type="text" class="form-control input-form" />
+                  <input id="rela-table-detail" type="text" class="form-control input-form" />
                 </div>
                 <div class="row form-group">
                   <label>Column Name: </label>
-                  <input type="text" class="form-control input-form" />
+                  <input id="rela-col-detail" type="text" class="form-control input-form" />
                 </div>
               </div>
               <div class="col-md-6 hcia-reladetail">
                 <div class="row form-group">
                   <label>Reference Table: </label>
-                  <select class="form-control"/>
+                  <select id="rela-rftable-detail" class="form-control"/>
                 </div>
                 <div class="row form-group">
                   <label>Reference Column: </label>
-                  <select class="form-control"/>
+                  <select id="rela-rfcol-detail" class="form-control"/>
                 </div>
               </div>
 
@@ -258,5 +210,39 @@
       </div><!-- hcia content tab -->
     </div><!-- col-md-10 -->
   </div><!-- container-fluid for main content -->
+  
+  <!-- Upload Modal -->
+  <div class="modal fade" id="uploadModal" role="dialog">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title">
+						<strong>Upload File</strong>
+					</h4>
+				</div>
+				<div class="modal-body">
+					<h4>Select file from your computer</h4>
+					<h:form id="xml-form" enctype="multipart/form-data">
+						<h:inputFile id="input-file" value="#{fileUploadBean.file}"
+							validator="#{fileUploadBean.validateFile}" />
+						<h:message style="color:red" for="input-file" />
+						<br></br>
+						<h:commandButton value="Upload" action="#{fileUploadBean.upload}">
+							<f:ajax execute="xml-form" render="xml-form" />
+						</h:commandButton>
+					</h:form>
+					<h:panelGroup layout="block" id="xml-pane"
+						rendered="#{fileUploadBean.validPass == 'true'}">
+						<script type="text/javascript">
+							$('#uploadModal').modal('hide');
+						</script>
+					</h:panelGroup>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
 </h:body>
 </html>

@@ -26,7 +26,7 @@ public class TreeBean implements Serializable {
 	 */
 	private static final long serialVersionUID = 6525378828188254901L;
 	private TreeNode root;
-	private String jsonTree;
+	private String jsonData;
 
 	public TreeBean() {
 		FacesContext facesContext = FacesContext.getCurrentInstance();
@@ -51,7 +51,7 @@ public class TreeBean implements Serializable {
 				//System.out.println(tree);
 				
 				setRoot(root);
-				setJsonTree(jsonData);
+				setJsonData(jsonData);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -105,11 +105,11 @@ public class TreeBean implements Serializable {
 		this.root = root;
 	}
 
-	public String getJsonTree() {
-		return jsonTree;
+	public String getJsonData() {
+		return jsonData;
 	}
 
-	public void setJsonTree(String jsonTree) {
-		this.jsonTree = jsonTree;
+	public void setJsonData(String jsonTree) {
+		this.jsonData = jsonTree;
 	}
 }

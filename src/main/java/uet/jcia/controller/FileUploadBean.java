@@ -22,7 +22,6 @@ import javax.servlet.http.Part;
 import uet.jcia.entities.TreeNode;
 import uet.jcia.model.CoreAPI;
 import uet.jcia.utils.Constants;
-import uet.jcia.utils.Helper;
 
 @ManagedBean
 @SessionScoped
@@ -99,14 +98,14 @@ public class FileUploadBean implements Serializable {
 				
 			}
 			
-			exContext.redirect("home.xhtml");
+			exContext.redirect("index.xhtml");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 
-	public void validateZipFile(FacesContext ctx, UIComponent comp, Object value) {
+	public void validateFile(FacesContext ctx, UIComponent comp, Object value) {
 		FacesMessage msg = null;
 		Part file = (Part) value;
 		this.validPass = false;
@@ -115,32 +114,11 @@ public class FileUploadBean implements Serializable {
 		if (file.getSize() == 0) {
 			msg = new FacesMessage("File is required to upload.");
 			msg.setSeverity(FacesMessage.SEVERITY_ERROR);
-		} else if (!fileName.endsWith("zip")) {
-			msg = new FacesMessage("Only allowed ZIP file.");
+		} else if (!fileName.endsWith("zip") && !fileName.endsWith("hbm.xml")) {
+			msg = new FacesMessage("Allowed extensions: zip, hbm.xml");
 			msg.setSeverity(FacesMessage.SEVERITY_ERROR);
 		}
 
-		if (msg == null) {
-			this.validPass = true;
-		} else if (!(msg == null)) {
-			FacesContext.getCurrentInstance().addMessage("input-file", msg);
-			throw new ValidatorException(msg);
-		}
-	}
-
-	public void validateXmlFile(FacesContext ctx, UIComponent comp, Object value) {
-		FacesMessage msg = null;
-		Part file = (Part) value;
-		this.validPass = false;
-
-		String fileName = file.getSubmittedFileName();
-		if (file.getSize() == 0) {
-			msg = new FacesMessage("File is required to upload.");
-			msg.setSeverity(FacesMessage.SEVERITY_ERROR);
-		} else if (!fileName.endsWith("hbm.xml")) {
-			msg = new FacesMessage("Only allowed XML file.");
-			msg.setSeverity(FacesMessage.SEVERITY_ERROR);
-		}
 		if (msg == null) {
 			this.validPass = true;
 		} else if (!(msg == null)) {
