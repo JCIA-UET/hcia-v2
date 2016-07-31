@@ -25,6 +25,7 @@
   <h:outputScript name="js/FakeTable.js" />
   <h:outputScript name="js/TreeView.js" />
   <h:outputScript name="js/InfoPanel.js" />
+  <h:outputScript name="js/TableAction.js" />
   <h:outputScript name="js/main.js" />
   
 </h:head>
@@ -113,6 +114,10 @@
               <div class="heading">
                 <h2 style="border-bottom: 5px solid #03a9f4;">Detail</h2>
               </div>
+              
+              <!-- column tempid here -->
+              <input type="hidden" id="col-tempid-detail"/>
+              
               <div class="col-md-6">
                 <div class="row form-group">
                   <label>Column Name: </label>
@@ -178,6 +183,10 @@
               <div class="heading">
                 <h2 style="border-bottom: 5px solid #03a9f4;">Detail</h2>
               </div>
+              
+              <!-- column tempid here -->
+              <input type="hidden" id="rela-tempid-detail"/>
+              
               <div class="col-md-6 hcia-reladetail">
                 <div class="row form-group">
                   <label>Table Name: </label>
@@ -203,8 +212,8 @@
           </div>
           <!-- command button -->
           <div class="hcia-tblaction">
-            <h:commandButton styleClass="btn btn-danger hcia-btnright" value="Cancel" />
-            <h:commandButton styleClass="btn btn-info hcia-btnright" value="Save" />
+            <button class="btn btn-danger hcia-btnright" onclick="InfoPanel.displayCurrentTable()">Cancel</button>
+            <button class="btn btn-info hcia-btnright" onclick="TableAction.save()">Save</button>
           </div>
 
         </div><!-- tab content -->

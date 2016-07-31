@@ -1,6 +1,9 @@
 function InfoPanel() {};
 
 InfoPanel.displayCurrentTable = function() {
+  // reset all details of table
+  TableAction.resetDetails();
+  
 	if(Table.instance == null) {
 		console.log("No table to be displayed");
 	}
@@ -67,6 +70,8 @@ InfoPanel.showColDetail = function(szColName) {
 	for(var i = 0; i < Table.instance.childs.length; i++) {
 		var col = Table.instance.childs[i];
 		if(szColName == col.columnName) {
+		  
+		  $("#col-tempid-detail").val(col.tempId);
 			$("#col-name-detail").val(col.columnName);
 			$("#col-type-detail").val(col.dataType);
 			$("#col-length-detail").val(col.length);
@@ -103,6 +108,7 @@ InfoPanel.showRelaDetail = function(szColName) {
 		var rfColName = (element.referColumn != null) ? element.referColumn.columnName : "";
 			
 		if(szColName == fkColName) {
+      $("#rela-tempid-detail").val(element.tempId);
 			$("#rela-table-detail").val(Table.tableName);
 			$("#rela-col-detail").val(fkColName);
 			
