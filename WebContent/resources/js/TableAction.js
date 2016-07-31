@@ -20,12 +20,52 @@ TableAction.resetDetails = function () {
   $("#rela-col-detail").val("");
   $("#rela-rftable-detail").val("");
   $("#rela-rfcol-detail").val("");
+  
+  // reset button save
+  $("#btn-save").text("Save");
 }
 
 TableAction.save = function () {
   updateColumn();
   updateRelationship();
+  addColumn();
+  
   InfoPanel.displayCurrentTable();
+}
+
+function addColumn() {
+  var colTempId = $("#col-tempid-detail").val();
+  var colName = $("#col-name-detail").val();
+  var colType = $("#col-type-detail").val();
+  var colLength = $("#col-length-detail").val();
+  var colNN = false, colPK = false, colFK = false, colAI = false;
+  if ($('#col-nn-detail').is(":checked")) colNN = true;
+  if ($('#col-pk-detail').is(":checked")) colPK = true;
+  if ($('#col-fk-detail').is(":checked")) colFK = true;
+  if ($('#col-ai-detail').is(":checked")) colAI = true;
+  
+  if (colTempId == "" && colName != "" && colType != "" && colLength != "") {
+    var col = {};
+    col['hbmAttributes'] = {};
+    col['javaName'] = "";
+    col['columnName'] = colName;
+    col['dataType'] = colType;
+    col['length'] = colLength;
+    col['primaryKey'] = colPK;
+    col['notNull'] = colNN;
+    col['foreignKey'] = colFK;
+    
+    if (colPK) {
+      col['autoIncrement'] = colAI;
+      col['json'] = "pk";
+    } else {
+      col['json'] = "column";
+    }
+    
+    Table.instance.childs.push(col);
+    alert("add column successfully");
+  }
+  
 }
 
 function updateRelationship() {

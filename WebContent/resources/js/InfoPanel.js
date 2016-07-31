@@ -70,6 +70,7 @@ InfoPanel.showColDetail = function(szColName) {
 	for(var i = 0; i < Table.instance.childs.length; i++) {
 		var col = Table.instance.childs[i];
 		if(szColName == col.columnName) {
+		  $("#btn-save").text("Update");
 		  
 		  $("#col-tempid-detail").val(col.tempId);
 			$("#col-name-detail").val(col.columnName);
@@ -108,6 +109,8 @@ InfoPanel.showRelaDetail = function(szColName) {
 		var rfColName = (element.referColumn != null) ? element.referColumn.columnName : "";
 			
 		if(szColName == fkColName) {
+		  $("#btn-save").text("Update");
+		  
       $("#rela-tempid-detail").val(element.tempId);
 			$("#rela-table-detail").val(Table.tableName);
 			$("#rela-col-detail").val(fkColName);
