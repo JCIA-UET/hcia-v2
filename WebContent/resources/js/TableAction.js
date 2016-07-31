@@ -40,8 +40,10 @@ function updateRelationship() {
     var rela = Table.instance.childs[i];
     if (rela.tempId == relTempId) {
       
-      rela.foreignKey.columnName = colName;
+      var minRefTable = MinTable.getTableByName(rfTableName);
       rela.referTable.tableName = rfTableName;
+      rela.referTable.className = minRefTable.className;
+      rela.foreignKey.columnName = colName;
       
       if (rela.json == "mto") {
         //cmto relationship
@@ -49,7 +51,7 @@ function updateRelationship() {
       } else if (rela.json == "otm") {
         // do something with otm relationshipS
       }
-      
+      console.log(rela);
       alert("updated relationship " + rela.tempId);
     }
   }
