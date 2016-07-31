@@ -111,8 +111,9 @@ InfoPanel.showRelaDetail = function(szColName) {
 	      var tbl = FakeTable.list[i];
 	      refTblEl.options[i] = new Option(tbl.tblName, tbl.tblName);
 	      
-	      if (i == 0) {
-	        document.getElementById('rela-rfcol-detail').options[i] = new Option(tbl.pkName, tbl.pkName);
+	      if (tbl.tblName == rfTableName) {
+	        refTblEl.selectedIndex = i;
+	        document.getElementById('rela-rfcol-detail').options[0] = new Option(tbl.pkName, tbl.pkName);
         }
 	    }
 	    
