@@ -8,12 +8,9 @@ body {
   margin-bottom: 10px;
 }
 
-.navbar-nav > li > a {
-  color: white;
-  text-decoration: none;
-}
-
-.navbar-nav > li > a{
+.navbar-nav > li > a, .navbar-nav > li > form > a{
+	height: 100%;
+	padding: 13px 27px 15px;
   border-right: 1px solid rgba(0, 0, 0, 0.1);
   color: white;
   display: inline-block;
@@ -26,10 +23,13 @@ body {
   -webkit-transition:color 0.2s ease-out, background 0.2s ease-in;
 }
 
-.navbar-nav > li > a:hover {
+.navbar-nav > li > a:hover, .navbar-nav > li > form > a:hover {
   color:#446cb3;
 }
 
+.nav > li > a:hover, .nav > li > form > a:hover {
+	background-color:#fff;
+}
 .hcia-container {
   padding: 0px 10px 0px 10px;
 }

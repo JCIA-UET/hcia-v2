@@ -6,8 +6,7 @@ InfoPanel.displayCurrentTable = function() {
 	}
 	else {
 		// empty tables before insert new data
-		$(".table-info").html("");
-		$(".relationship-info").html("");
+		InfoPanel.clearData();
 		
 		for(var i = 0; i < Table.instance.childs.length; i++) {
 			var col = Table.instance.childs[i];
@@ -48,6 +47,9 @@ InfoPanel.displayCurrentTable = function() {
 						"<td>" + fkColName + "</td>" +
 						"<td>" + rfTableName + "</td>" +
 						"<td>" + rfColName + "</td>" +
+						"<td>" +
+							"<input type='hidden' value='" + col.tempId + "'/>" + 
+							"<span class='rmv-rela glyphicon glyphicon-trash'></span></td>" +
 						"</tr>"
 						);
 				
@@ -57,11 +59,18 @@ InfoPanel.displayCurrentTable = function() {
 	}
 };
 
-InfoPanel.deleteColumn = function() {
-	for(var i = 0; i < Table.instance.childs.length; i++) {
-		
-	}
+InfoPanel.deleteColumn = function(szColumnId) {
+	Table.deleteColumn(szColumnId);
+	InfoPanel.clearData();
+	TreeView.createTree();
 };
+
+InfoPanel.deleteRela = function(szColumnId) {
+	console.log("Prepare to delete tempId: " + szColumnId);
+	Table.deleteRela(szColumnId);
+	InfoPanel.clearData();
+	TreeView.createTree();
+}
 
 InfoPanel.showColDetail = function(szColName) {
 	for(var i = 0; i < Table.instance.childs.length; i++) {
@@ -120,4 +129,9 @@ InfoPanel.showRelaDetail = function(szColName) {
 			break;
 		}
 	}
+}
+
+InfoPanel.clearData = function() {
+	$(".table-info").html("");
+	$(".relationship-info").html("");
 }
