@@ -20,7 +20,7 @@ TreeView.createTree = function() {
 		// Create Column List
 		for(var j = 0; j < Table.childs.length; j++) {
 			var Column = Table.childs[j];
-			if(Column.json == "column") {
+			if(Column.json == "column" || Column.json == "pk") {
 				treeChildComponent.append(
 						"<li><a class='tree-node' href='#' contenteditable='false'>" + Column.columnName + "</a></li>"
 						);
