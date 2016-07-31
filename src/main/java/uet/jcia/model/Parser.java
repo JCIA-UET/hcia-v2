@@ -110,16 +110,23 @@ public class Parser {
                         referTable.setChilds(null);
                         mtoNode.setReferTable(referTable);
                         
-                        PrimaryKeyNode referColumn = pkNameMapper.get(referTable.getTableName() + "." + referColumnName);
-                        if (referColumn != null) {
-                            mtoNode.setReferColumn(referColumn);
-                            // add foreign key for relationship
-                            ColumnNode foreignKey = TreeDataHelper.generateForeignKey(referColumn);
-                            foreignKey.setParent(tblNode);
-                            childNodes.add(foreignKey);
-                            mtoNode.setForeignKey(foreignKey);
-                        }
+                    } else { // use class name instead of table name
+                        String referTableName = referClass.substring(referClass.lastIndexOf("\\.") + 1);
+                        mtoNode.getReferTable().setTableName(referTableName);
                     }
+                    
+                    PrimaryKeyNode referColumn = pkNameMapper.get(mtoNode.getReferTable().getTableName() + "." + referColumnName);
+                    if (referColumn != null) {
+                        mtoNode.setReferColumn(referColumn);
+                    } else {
+                        referColumn = mtoNode.getReferColumn();
+                    }
+                    
+                    // add foreign key for relationship
+                    ColumnNode foreignKey = TreeDataHelper.generateForeignKey(referColumn);
+//                        foreignKey.setParent(tblNode);
+                    childNodes.add(foreignKey);
+                    mtoNode.setForeignKey(foreignKey);
                     
                 }
             }

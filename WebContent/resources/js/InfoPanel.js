@@ -5,6 +5,10 @@ InfoPanel.displayCurrentTable = function() {
 		console.log("No table to be displayed");
 	}
 	else {
+		// empty tables before insert new data
+		$(".table-info").html("");
+		$(".relationship-info").html("");
+		
 		for(var i = 0; i < Table.instance.childs.length; i++) {
 			var col = Table.instance.childs[i];
 			
@@ -32,9 +36,9 @@ InfoPanel.displayCurrentTable = function() {
 				if(col.autoIncrement == true) $("#ai-" + i).prop('checked', true);
 				else $("#ai-" + col.tempId).prop('checked', false);
 				
-				console.log("Table Added: " + col.columnName);
+				console.log("Column Added: " + col.columnName);
 			}
-			else {
+			else if (col.json == "mto" || col.json == "otm"){
 				var fkColName = (col.foreignKey != null) ? col.foreignKey.columnName : "";
 				var rfTableName = (col.referTable != null) ? col.referTable.tableName : "";
 				var rfColName = (col.referColumn != null) ? col.referColumn.columnName : "";
@@ -47,7 +51,7 @@ InfoPanel.displayCurrentTable = function() {
 						"</tr>"
 						);
 				
-				console.log("Relation Added: " + col.columnName);
+				console.log("Relation Added: " + col.javaName);
 			}
 		};	
 	}
