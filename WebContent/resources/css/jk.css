@@ -71,6 +71,7 @@ body {
 .table > tbody > tr:hover {
   background-color:#949494;
   color:#fff;
+  cursor: pointer;
 }
 
 .detail-wrap {

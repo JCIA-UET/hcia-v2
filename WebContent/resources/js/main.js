@@ -18,7 +18,9 @@ $(document).ready(function() {
 		InfoPanel.showColDetail($(this).children(":first").text());
 		
 		$(".rmv-col").on("click", function(){
-			InfoPanel.deleteColumn($(this).parent().children('input').val());
+			if(confirm("Are you sure?") == true)
+				InfoPanel.deleteColumn($(this).parent().children('input').val());
+			else return false;
 		});
 	});
 	
@@ -29,7 +31,9 @@ $(document).ready(function() {
 		InfoPanel.showRelaDetail($(this).children().eq(1).text());
 		
 		$(".rmv-rela").on("click", function(){
-			InfoPanel.deleteRela($(this).parent().children('input').val());
+			if(confirm("Are you sure?") == true)
+				InfoPanel.deleteRela($(this).parent().children('input').val());
+			else return false;
 		});
 	});
 	
