@@ -38,7 +38,16 @@
       <!-- left side menu -->
       <ul class="nav navbar-nav">
         <li><a id="upload-trigger" href="#"><span class="glyphicon glyphicon-upload"></span>Upload</a></li>
-        <li><a href="#"><span class="glyphicon glyphicon-download"></span>Download</a></li>
+        <li><h:form id="dl-form">
+        		<h:panelGroup styleClass="rawdata-op-area">
+							<h:inputHidden binding="#{jsonData}" />
+						</h:panelGroup>
+						<h:commandLink styleClass="download-btn" onclick="getJsonData()" action="#{downloadBean.download(jsonData.value)}">
+							<span class="glyphicon glyphicon-download"></span>Download
+							<f:ajax execute="dl-form" render="@all" />
+            </h:commandLink>
+            <a class="download-btn" onclick="getJsonData()" href="#" >adasd</a>
+				</h:form></li>
       </ul>
       <!-- right side menu -->
       <ul class="nav navbar-nav navbar-right">
@@ -52,28 +61,10 @@
     <!-- tree of tables -->
     <div class="col-md-2">
     	<!-- Get raw data from backing bean -->
-    	<input type="hidden" id="raw-data" value="#{treeBean.jsonData}"/>
+    	<input type="hidden" id="raw-data-ip" value="#{treeBean.jsonData}"/>
       <div class="hcia-treepanel">
+      	<!-- Tree View -->
         <ul id="tree-root" class="nav">
-          <!-- table -->
-          <!-- <li class="tree-root nav-header"><label class="tree-toggle">Table 1</label>
-            <ul class="nav">
-              column
-              <h:panelGroup>
-                <li><a class="tree-node" href="#" contenteditable="false">Column 1</a></li>
-                <li><a class="tree-node" href="#" contenteditable="false">Column 2</a></li>
-              </h:panelGroup>
-            </ul>
-          </li>
-          <li class="tree-root nav-header"><label class="tree-toggle">Table 2</label>
-            <ul class="nav">
-              column
-              <h:panelGroup>
-                <li><a class="tree-node" href="#" contenteditable="false">Column 3</a></li>
-                <li><a class="tree-node" href="#" contenteditable="false">Column 4</a></li>
-              </h:panelGroup>
-            </ul>
-          </li> -->
         </ul>
       </div>
     </div>
@@ -234,13 +225,13 @@
 				</div>
 				<div class="modal-body">
 					<h4>Select file from your computer</h4>
-					<h:form id="xml-form" enctype="multipart/form-data">
+					<h:form id="ul-form" enctype="multipart/form-data">
 						<h:inputFile id="input-file" value="#{fileUploadBean.file}"
 							validator="#{fileUploadBean.validateFile}" />
 						<h:message style="color:red" for="input-file" />
 						<br></br>
 						<h:commandButton value="Upload" action="#{fileUploadBean.upload}">
-							<f:ajax execute="xml-form" render="xml-form" />
+							<f:ajax execute="ul-form" render="ul-form" />
 						</h:commandButton>
 					</h:form>
 					<h:panelGroup layout="block" id="xml-pane"

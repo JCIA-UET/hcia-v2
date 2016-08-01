@@ -7,6 +7,9 @@ TreeView.createTree = function() {
 	
 	var treeComponent = $("#tree-root");
 	
+	// empty element before create new tree
+	treeComponent.html("");
+	
 	// Create Table List
 	for(var i = 0; i < TablesList.instances.length; i++) {
 		var Table = TablesList.instances[i];
@@ -40,4 +43,7 @@ TreeView.createTree = function() {
 		
 		treeComponent.append("</ul></li>");
 	}
+	
+	// Tree toggle
+	$(".nav>li ul").hide();
 }
