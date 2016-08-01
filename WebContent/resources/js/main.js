@@ -1,4 +1,12 @@
 $(document).ready(function() {
+  
+//  console.log($("#raw-data-ip").val());
+
+  // notify when user tries to refresh 
+  window.onbeforeunload = function() {
+    return "All data will be lost if you refresh, are you sure?";
+  };
+  
 	modalAction();
 	prepareData();
 	TreeView.createTree();

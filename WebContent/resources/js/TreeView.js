@@ -13,6 +13,10 @@ TreeView.createTree = function() {
 	// Create Table List
 	for(var i = 0; i < TablesList.instances.length; i++) {
 		var Table = TablesList.instances[i];
+		
+		//add table to MinTable list
+		MinTable.add(Table);
+		
 		treeComponent.append(
 				"<li class='tree-root nav-header'>" +
 					"<label class='tree-toggle'>" + Table.tableName + "</label>" +
