@@ -62,6 +62,27 @@ function Table() {};
 Table.instance = {};
 
 /** Method **/
+
+TablesList.getTableByName = function (szTableName) {
+  for (var i = 0; i < TablesList.instances.length; i++) {
+    var table = TablesList.instances[i];
+    if (table.tableName == szTableName) {
+      return table;
+    }
+  }
+  return null;
+}
+
+TablesList.getTableById = function (tempId) {
+  for (var i = 0; i < TablesList.instances.length; i++) {
+    var table = TablesList.instances[i];
+    if (table.tempId == tempId) {
+      return table;
+    }
+  }
+  return null;
+}
+
 Table.findColumnByName = function(szColumnName) {
 	for(var i = 0; i < Table.instance.childs.length; i++) {
 		if(Table.instance.childs[i].json == "column" || Table.instance.childs[i].json == "pk") {

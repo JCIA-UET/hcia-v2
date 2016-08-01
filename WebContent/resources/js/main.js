@@ -1,4 +1,7 @@
 $(document).ready(function() {
+  
+  console.log($("#raw-data-ip").val());
+  
 	modalAction();
 	prepareData();
 	TreeView.createTree();

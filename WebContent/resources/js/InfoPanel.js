@@ -119,9 +119,10 @@ InfoPanel.showRelaDetail = function(szColName) {
 			
 		if(szColName == fkColName) {
 		  $("#btn-save").text("Update");
-		  
-      $("#rela-tempid-detail").val(element.tempId);
-			$("#rela-table-detail").val(Table.instance.tableName);
+
+		  $("#rela-tempid-detail").val(element.tempId);
+		  $("#rela-tableid-detail").val(Table.instance.tempId);
+			$("#rela-type-detail").val(element.type);
 			$("#rela-col-detail").val(fkColName);
 			
 			var refTblEl = document.getElementById('rela-rftable-detail');

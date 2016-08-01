@@ -107,11 +107,15 @@ public class Parser {
                     
                     TableNode referTable = (TableNode) Helper.deepClone(classNameMapper.get(referClass));
                     if (referTable != null) {
+                        // remove unnecessary attributes
                         referTable.setChilds(null);
+                        referTable.setXmlPath(null);
+                        referTable.setHbmAttributes(null);
+                        
                         mtoNode.setReferTable(referTable);
                         
                     } else { // use class name instead of table name
-                        String referTableName = referClass.substring(referClass.lastIndexOf("\\.") + 1);
+                        String referTableName = referClass.substring(referClass.lastIndexOf(".") + 1);
                         mtoNode.getReferTable().setTableName(referTableName);
                     }
                     
@@ -128,6 +132,17 @@ public class Parser {
                     childNodes.add(foreignKey);
                     mtoNode.setForeignKey(foreignKey);
                     
+                } else if (childNode instanceof OTMRelationshipNode) {
+                    OTMRelationshipNode otmNode = (OTMRelationshipNode) childNode;
+                    String referClass = otmNode.getReferTable().getClassName();
+                    TableNode referTable = (TableNode) Helper.deepClone(classNameMapper.get(referClass));
+                    if (referTable != null) {
+                        referTable.setChilds(null);
+                        referTable.setXmlPath(null);
+                        referTable.setHbmAttributes(null);
+                        
+                        otmNode.setReferTable(referTable);
+                    }
                 }
             }
         }
@@ -137,6 +152,7 @@ public class Parser {
         root.setTempId(-1);
         return root;
     }
+    
 
     public TreeNode parseXml(String xmlPath){
         List<String> xmlList = new ArrayList<>();

@@ -164,6 +164,7 @@
                     <th>Column</th>
                     <th>Refer Table</th>
                     <th>Refer Column</th>
+                    <th></th>
                   </tr>
                 </thead>
                 <tbody class="relationship-info">
@@ -178,11 +179,12 @@
               
               <!-- column tempid here -->
               <input type="hidden" id="rela-tempid-detail"/>
+              <input type="hidden" id="rela-tableid-detail"/>
               
               <div class="col-md-6 hcia-reladetail">
                 <div class="row form-group">
-                  <label>Table Name: </label>
-                  <input id="rela-table-detail" type="text" class="form-control input-form" />
+                  <label>Type: </label>
+                  <input id="rela-type-detail" type="text" class="form-control input-form" disabled="disabled"/>
                 </div>
                 <div class="row form-group">
                   <label>Column Name: </label>

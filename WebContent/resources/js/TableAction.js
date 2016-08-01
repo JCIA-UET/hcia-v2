@@ -16,7 +16,7 @@ TableAction.resetDetails = function () {
   
   // reset relationship details
   $("#rela-tempid-detail").val("");
-  $("#rela-table-detail").val("");
+  $("#rela-type-detail").val("");
   $("#rela-col-detail").val("");
   $("#rela-rftable-detail").val("");
   $("#rela-rfcol-detail").val("");
@@ -72,6 +72,7 @@ function updateRelationship() {
   var relTempId = $("#rela-tempid-detail").val();
   if (relTempId == "") return;
   
+  var tableId = $("#rela-tableid-detail").val();
   var colName = $("#rela-col-detail").val();
   var rfTableName = $("#rela-rftable-detail").val();
   var rfColName = $("#rela-rfcol-detail").val();
@@ -79,20 +80,52 @@ function updateRelationship() {
   for(var i = 0; i < Table.instance.childs.length; i++) {
     var rela = Table.instance.childs[i];
     if (rela.tempId == relTempId) {
-      
-      var minRefTable = MinTable.getTableByName(rfTableName);
-      rela.referTable.tableName = rfTableName;
-      rela.referTable.className = minRefTable.className;
-      rela.foreignKey.columnName = colName;
-      
-      if (rela.json == "mto") {
-        //cmto relationship
-        rela.referColumn.columnName = rfColName;
-      } else if (rela.json == "otm") {
-        // do something with otm relationshipS
+      if (rela.json == "otm") {
+        alert("cannot update relationship from referenced table");
+        return;
       }
-      console.log(rela);
-      alert("updated relationship " + rela.tempId);
+      
+      // mto relationship
+      if (rela.json == "mto") {
+        var minRefTable = MinTable.getTableByName(rfTableName);
+        
+        // only update referential column
+        if (rela.referTable.tableName == rfTableName) {
+          rela.foreignKey.columnName = colName;
+          rela.referColumn.columnName = rfColName;
+          
+        } else { // refer to other table
+          var oldRefTable = TablesList.getTableByName(rela.referTable.tableName);
+          var newRefTable = TablesList.getTableByName(rfTableName);
+          
+          // update relationship on this table
+          rela.referTable.tableName = rfTableName;
+          rela.referTable.className = minRefTable.className;
+          rela.foreignKey.columnName = colName;
+          rela.referColumn.columnName = rfColName;
+          
+          // delete set on old referential table
+          var newOtm;
+          for (var j = 0; j < oldRefTable.childs.length; j++) {
+            var child = oldRefTable.childs[j];
+            if (child.json == "otm" && child.referTable.tempId == tableId) {
+              oldRefTable.childs.splice(j, 1);
+              newOtm = child;
+              console.log(oldRefTable.childs[j]);
+              break;
+            }
+          }
+          
+          newRefTable.childs.push(newOtm);
+        }
+        
+        alert("updated relationship " + rela.tempId);
+      
+      } else {
+        alert("not found relationship type");
+      }
+      
+      
     }
   }
 }
