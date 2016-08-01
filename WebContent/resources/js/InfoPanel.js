@@ -64,15 +64,15 @@ InfoPanel.displayCurrentTable = function() {
 
 InfoPanel.deleteColumn = function(szColumnId) {
 	Table.deleteColumn(szColumnId);
-	InfoPanel.clearData();
-	TreeView.createTree();
+//	InfoPanel.clearData();
+//	TreeView.createTree(); 
 };
 
 InfoPanel.deleteRela = function(szColumnId) {
 	console.log("Prepare to delete tempId: " + szColumnId);
 	Table.deleteRela(szColumnId);
-	InfoPanel.clearData();
-	TreeView.createTree();
+//	InfoPanel.clearData();
+//	TreeView.createTree();
 }
 
 InfoPanel.showColDetail = function(szColName) {

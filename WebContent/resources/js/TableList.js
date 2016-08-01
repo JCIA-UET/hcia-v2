@@ -1,4 +1,7 @@
 
+function RootNode() {};
+RootNode.instance = {};
+
 // Constructor
 function TablesList() {};
 
@@ -13,10 +16,11 @@ TablesList.convertStringToObject = function(rawData) {
 		console.log("No data to display");
 	}
 	else {
-		//console.log(rawData);
-		TablesList.instances = JSON.parse(rawData).childs;
+		console.log(rawData);
+		RootNode.instance = JSON.parse(rawData);
+		TablesList.instances = RootNode.instance.childs;
 		console.log("Convert successfully!");
-		console.log(TablesList.instances);
+		
 	}
 };
 
@@ -106,6 +110,7 @@ Table.deleteColumn = function(tempId) {
 			}
 		}
 	}
+	InfoPanel.displayCurrentTable();
 };
 
 Table.deleteRela = function(tempId) {
@@ -159,6 +164,6 @@ Table.deleteRela = function(tempId) {
 			TablesList.updateTable(Table.instance);
 		}
 	}
-	
+	InfoPanel.displayCurrentTable();
 }
 Table.addColumn = function(column) {};

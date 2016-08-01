@@ -76,7 +76,8 @@ function modalAction() {
 	});
 }
 function getJsonData() {
-	var rawData = JSON.stringify(TablesList.instances);
+	RootNode.instance.childs = TablesList.instances;
+	var rawData = JSON.stringify(RootNode.instance);
 	console.log("Raw Data: " + rawData);
 	$(".rawdata-op-area input[type=hidden]").val(rawData);
 }
