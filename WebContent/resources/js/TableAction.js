@@ -115,7 +115,7 @@ function updateRelationship() {
               break;
             }
           }
-          
+          newOtm.foreignKey.columnName = rfColName;
           newRefTable.childs.push(newOtm);
         }
         

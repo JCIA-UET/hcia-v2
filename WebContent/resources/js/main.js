@@ -1,6 +1,6 @@
 $(document).ready(function() {
   
-//  console.log($("#raw-data-ip").val());
+  console.log($("#raw-data-ip").val());
 
   // notify when user tries to refresh 
   window.onbeforeunload = function() {
