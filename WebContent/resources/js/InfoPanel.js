@@ -14,6 +14,7 @@ InfoPanel.displayCurrentTable = function() {
 		for(var i = 0; i < Table.instance.childs.length; i++) {
 			var col = Table.instance.childs[i];
 			
+			// Show all columns
 			if(col.json == "pk" || col.json == "column") {
 				$(".table-info").append("<tr>" +
 						"<td>" + col.columnName + "</td>" +
@@ -40,6 +41,7 @@ InfoPanel.displayCurrentTable = function() {
 				
 				console.log("Column Added: " + col.columnName);
 			}
+			// Show all relations
 			else if (col.json == "mto" || col.json == "otm"){
 				var fkColName = (col.foreignKey != null) ? col.foreignKey.columnName : "";
 				var rfTableName = (col.referTable != null) ? col.referTable.tableName : "";
@@ -58,19 +60,18 @@ InfoPanel.displayCurrentTable = function() {
 				
 				console.log("Relation Added: " + col.javaName);
 			}
-		};	
+		};
 	}
 };
 
-InfoPanel.deleteColumn = function(szColumnId) {
-	Table.deleteColumn(szColumnId);
+InfoPanel.deleteColumn = function(table, szColumnId) {
+	Table.deleteColumn(table, szColumnId);
 //	InfoPanel.clearData();
 //	TreeView.createTree(); 
 };
 
-InfoPanel.deleteRela = function(szColumnId) {
-	console.log("Prepare to delete tempId: " + szColumnId);
-	Table.deleteRela(szColumnId);
+InfoPanel.deleteRela = function(table, szColumnId) {
+	Table.deleteRela(table, szColumnId);
 //	InfoPanel.clearData();
 //	TreeView.createTree();
 }

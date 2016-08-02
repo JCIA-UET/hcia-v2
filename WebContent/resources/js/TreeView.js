@@ -47,3 +47,19 @@ TreeView.createTree = function() {
 	// Tree toggle
 	$(".nav>li ul").hide();
 }
+
+TreeView.hideElementById = function(table, tempId) {
+	var treeElements = document.getElementsByClassName("tree-toggle");
+	var delColName = Table.findColumnById(table, tempId).columnName;
+	console.log("Delete col: " + delColName);
+	
+	for(var i = 0; i < treeElements.length; i++) {
+		if($(treeElements[i]).text() == table.tableName) {
+			$(treeElements[i]).parent().children("ul").children("li").each(function(){
+				if($(this).text() == delColName) {
+					$(this).remove();
+				}
+			});
+		}
+	}
+}

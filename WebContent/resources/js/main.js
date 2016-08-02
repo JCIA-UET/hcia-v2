@@ -4,7 +4,7 @@ $(document).ready(function() {
 
   // notify when user tries to refresh 
   window.onbeforeunload = function() {
-    return "All data will be lost if you refresh, are you sure?";
+    return "All your changes will be lost if you refresh, are you sure?";
   };
   
 	modalAction();
@@ -24,25 +24,27 @@ $(document).ready(function() {
 	
 	$(".table-info").on("click", "tr", function(){
 		InfoPanel.showColDetail($(this).children(":first").text());
-		
-		$(".rmv-col").on("click", function(){
-			if(confirm("Are you sure?") == true)
-				InfoPanel.deleteColumn($(this).parent().children('input').val());
-			else return false;
-		});
 	});
 	
-	
+	$(".table-info").on("click", ".rmv-col", function(){
+		var confirmDialog = confirm("Are you sure?");
+		if(confirmDialog) {
+			var colId = $(this).parent().children('input').val();
+			InfoPanel.deleteColumn(Table.instance, colId);
+		}
+		else return false;
+	});
 	
 	$(".relationship-info").on("click", "tr", function(){
 		console.log("show detail: " + $(this).children().eq(1).text());
 		InfoPanel.showRelaDetail($(this).children().eq(1).text());
-		
-		$(".rmv-rela").on("click", function(){
-			if(confirm("Are you sure?") == true)
-				InfoPanel.deleteRela($(this).parent().children('input').val());
-			else return false;
-		});
+	});
+	
+	$(".relationship-info").on("click", ".rmv-rela", function(){
+		var confirmDialog = confirm("Are you sure?");
+		if(confirmDialog)
+			InfoPanel.deleteRela(Table.instance, $(this).parent().children('input').val());
+		else return false;
 	});
 	
 //	$(".download-btn").click(function(){
@@ -54,6 +56,7 @@ $(document).ready(function() {
 
 function prepareData() {
 	TablesList.convertStringToObject($("#raw-data-ip").val());
+	Relationship.loadAll();
 }
 
 function resetPanelValue() {
