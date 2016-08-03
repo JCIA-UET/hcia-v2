@@ -249,5 +249,35 @@
 			</div>
 		</div>
 	</div>
+	
+	<!-- Notice Modal -->
+	<div class="modal fade" id="noticeModal" role="dialog">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title">
+						<strong>Delete Confirmation</strong>
+					</h4>
+				</div>
+				<div class="modal-body">
+					The following columns will be deleted if you delete this column:
+					<div id="notice-body">
+						<div id="related-none">
+						</div>
+						<div id="related-column">
+						</div>
+						<div id="related-relation">
+						</div>
+					</div>
+					
+				</div>
+				<div class="modal-footer">
+					<p>Press "Delete" to finish the deletion, or "Cancel" to abort</p>
+					<button type="button" id="delete" class="btn btn-warning" data-dismiss="modal">Delete</button>
+					<button type="button" id="cancel" class="btn btn-default" data-dismiss="modal">Cancel</button>
+				</div>
+			</div>
+		</div>
+	</div>
 </h:body>
 </html>

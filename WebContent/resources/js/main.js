@@ -27,12 +27,43 @@ $(document).ready(function() {
 	});
 	
 	$(".table-info").on("click", ".rmv-col", function(){
-		var confirmDialog = confirm("Are you sure?");
-		if(confirmDialog) {
-			var colId = $(this).parent().children('input').val();
-			InfoPanel.deleteColumn(Table.instance, colId);
+		var colId = $(this).parent().children('input').val();
+		$("#related-none").html("");
+		$("#related-column").html("");
+		$("#related-relation").html("");
+		// Add value to modal
+		var relatedList = TablesList.findRelatedElements(Table.instance, colId);
+		if(relatedList.length == 0) {
+			$("#related-none").append("<strong>No columns and relations are affected.</strong>")
 		}
-		else return false;
+		else {
+			$("#related-column").append("<u><h3>Column:</h3></u>");
+			$("#related-relation").append("<u><h3>Relation:</h3></u>");
+			
+			for(var i = 0; i < relatedList.length; i++) {
+				var relatedTable = TablesList.instances[parseInt(relatedList[i][0])];
+				var relatedColumn = relatedTable.childs[parseInt(relatedList[i][1])];
+				
+				if(relatedColumn.json == "column" || relatedColumn.json == "pk") {
+					$("#related-column").append("<div>" +
+							"<strong>" + relatedColumn.columnName + "</strong> (in " +
+							"<strong>" + relatedTable.tableName + "</strong>)" +
+							"</div>");
+				}
+				else if(relatedColumn.json == "mto" || relatedColumn.json == "otm") {
+					$("#related-relation").append("<div>" +
+							"<strong>" + relatedColumn.type + "</strong> (in " +
+							"<strong>" + relatedTable.tableName + "</strong>)" +
+							"</div>");
+				}
+			}
+		}
+		// Show notice modal
+		$("#noticeModal")
+			.modal({ backdrop: 'static', keyboard: false })
+			.one("click", "#delete", function(){
+				InfoPanel.deleteColumn(Table.instance, colId, relatedList);
+		});
 	});
 	
 	$(".relationship-info").on("click", "tr", function(){
@@ -41,10 +72,44 @@ $(document).ready(function() {
 	});
 	
 	$(".relationship-info").on("click", ".rmv-rela", function(){
-		var confirmDialog = confirm("Are you sure?");
-		if(confirmDialog)
-			InfoPanel.deleteRela(Table.instance, $(this).parent().children('input').val());
-		else return false;
+		var colId = $(this).parent().children('input').val();
+		$("#related-none").html("");
+		$("#related-column").html("");
+		$("#related-relation").html("");
+		// Add value to modal
+		var relatedList = TablesList.findRelatedElements(Table.instance, colId);
+		
+		if(relatedList.length == 0) {
+			$("#related-none").append("<strong>No column and relation are affected</strong>")
+		}
+		else {
+			$("#related-column").append("<u><h3>Column:</h3></u>");
+			$("#related-relation").append("<u><h3>Relation:</h3></u>");
+			
+			for(var i = 0; i < relatedList.length; i++) {
+				var relatedTable = TablesList.instances[parseInt(relatedList[i][0])];
+				var relatedColumn = relatedTable.childs[parseInt(relatedList[i][1])];
+				
+				if(relatedColumn.json == "column" || relatedColumn.json == "pk") {
+					$("#related-column").append("<div>" +
+							"<strong>" + relatedColumn.columnName + "</strong> (in " +
+							"<strong>" + relatedTable.tableName + "</strong>)" +
+							"</div>");
+				}
+				else if(relatedColumn.json == "mto" || relatedColumn.json == "otm") {
+					$("#related-relation").append("<div>" +
+							"<strong>" + relatedColumn.type + "</strong> (in " +
+							"<strong>" + relatedTable.tableName + "</strong>)" +
+							"</div>");
+				}
+			}
+		}
+		// Show notice modal
+		$("#noticeModal")
+			.modal({ backdrop: 'static', keyboard: false })
+			.one("click", "#delete", function(){
+				InfoPanel.deleteRela(Table.instance, colId, relatedList);
+		});
 	});
 	
 //	$(".download-btn").click(function(){

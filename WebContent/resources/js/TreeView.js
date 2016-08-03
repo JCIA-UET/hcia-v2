@@ -50,16 +50,17 @@ TreeView.createTree = function() {
 
 TreeView.hideElementById = function(table, tempId) {
 	var treeElements = document.getElementsByClassName("tree-toggle");
-	var delColName = Table.findColumnById(table, tempId).columnName;
-	console.log("Delete col: " + delColName);
+	var delCol = TablesList.findColumnById(table, tempId);
 	
-	for(var i = 0; i < treeElements.length; i++) {
-		if($(treeElements[i]).text() == table.tableName) {
-			$(treeElements[i]).parent().children("ul").children("li").each(function(){
-				if($(this).text() == delColName) {
-					$(this).remove();
-				}
-			});
+	if(delCol != null) {
+		for(var i = 0; i < treeElements.length; i++) {
+			if($(treeElements[i]).text() == table.tableName) {
+				$(treeElements[i]).parent().children("ul").children("li").each(function(){
+					if($(this).text() == delCol.columnName) {
+						$(this).remove();
+					}
+				});
+			}
 		}
 	}
 }

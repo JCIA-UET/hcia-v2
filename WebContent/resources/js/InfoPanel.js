@@ -64,16 +64,12 @@ InfoPanel.displayCurrentTable = function() {
 	}
 };
 
-InfoPanel.deleteColumn = function(table, szColumnId) {
-	Table.deleteColumn(table, szColumnId);
-//	InfoPanel.clearData();
-//	TreeView.createTree(); 
+InfoPanel.deleteColumn = function(table, szColumnId, relatedList) {
+	Table.deleteColumn(table, szColumnId, relatedList);
 };
 
-InfoPanel.deleteRela = function(table, szColumnId) {
-	Table.deleteRela(table, szColumnId);
-//	InfoPanel.clearData();
-//	TreeView.createTree();
+InfoPanel.deleteRela = function(table, szColumnId, relatedList) {
+	Table.deleteRela(table, szColumnId, relatedList);
 }
 
 InfoPanel.showColDetail = function(szColName) {
