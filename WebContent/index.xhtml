@@ -18,9 +18,11 @@
   <h:outputScript library="webjars" name="jquery/2.1.4/jquery.min.js" />
   <h:outputScript library="webjars"
     name="bootstrap/3.3.6/js/bootstrap.min.js" />
+    <h:outputScript library="webjars" name="d3js/3.4.11/d3.min.js"></h:outputScript>
 
   <!-- custom style sheets and scripts -->
   <h:outputStylesheet name="css/jk.css" />
+  <h:outputStylesheet name="css/line.css" />
   <h:outputScript name="js/TablesList.js" />
   <h:outputScript name="js/TableObject.js" />
   <h:outputScript name="js/Relationship.js" />
@@ -30,6 +32,7 @@
   <h:outputScript name="js/InfoPanel.js" />
   <h:outputScript name="js/TableAction.js" />
   <h:outputScript name="js/main.js" />
+  <h:outputScript name="js/d3.js" />
   
 </h:head>
 <h:body>
@@ -48,6 +51,7 @@
 							<span class="glyphicon glyphicon-download"></span>Download
             </h:commandLink>
 				</h:form></li>
+			        <li><a id="upload-trigger" href="#" onclick="tranferMode()"><span class="glyphicon glyphicon-transfer"></span></a></li>
       </ul>
       <!-- right side menu -->
       <ul class="nav navbar-nav navbar-right">
@@ -57,7 +61,7 @@
     </div>
   </nav>
 
-  <div class="container-fluid hcia-container">
+  <div class="container-fluid hcia-container" id="tableMode">
     <!-- tree of tables -->
     <div class="col-md-2">
     	<!-- Get raw data from backing bean -->
@@ -280,5 +284,6 @@
 			</div>
 		</div>
 	</div>
+	<div id="ERDMode"></div>
 </h:body>
 </html>
