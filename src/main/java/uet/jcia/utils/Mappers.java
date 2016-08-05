@@ -20,15 +20,18 @@ public class Mappers {
         hbmToSql.put("float", "FLOAT");
         hbmToSql.put("java.lang.Double", "DOUBLE");
         hbmToSql.put("double", "DOUBLE");
+        hbmToSql.put("BigDecimal", "DOUBLE");
         hbmToSql.put("java.math.BigDecimal", "NUMERIC");
         hbmToSql.put("java.lang.String", "VARCHAR");
         hbmToSql.put("string", "VARCHAR");
+        hbmToSql.put("String", "VARCHAR");
         hbmToSql.put("java.lang.Byte", "TINYINT");
         hbmToSql.put("byte", "TINYINT");
         hbmToSql.put("java.lang.Boolean", "BIT");
         hbmToSql.put("boolean", "BIT");
         hbmToSql.put("java.sql.Date", "DATE");
         hbmToSql.put("date", "DATE");
+        hbmToSql.put("Date", "DATE");
         hbmToSql.put("java.util.Date", "DATE");
         hbmToSql.put("java.sql.Time", "TIME");
         hbmToSql.put("java.sql.Timestamp", "TIMESTAMP");
