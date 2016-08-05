@@ -23,7 +23,7 @@ import uet.jcia.entities.TreeNode;
 import uet.jcia.model.CoreAPI;
 import uet.jcia.utils.Constants;
 
-@ManagedBean
+@ManagedBean(name="fileUploadBean")
 @SessionScoped
 public class FileUploadBean implements Serializable {
 	private static final long serialVersionUID = 1L;
