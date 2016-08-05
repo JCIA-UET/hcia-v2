@@ -149,3 +149,15 @@ function getJsonData() {
 	console.log("Raw Data: " + rawData);
 	$(".rawdata-op-area input[type=hidden]").val(rawData);
 }
+function tranferMode(){
+	var element = document.getElementById('tableMode'),
+    style = window.getComputedStyle(element),
+    display = style.getPropertyValue('display');
+	if(display == "none"){
+		document.getElementById('tableMode').style.display ="block";
+		document.getElementById('ERDMode').style.display ="none";
+	}else{
+		document.getElementById('tableMode').style.display ="none";
+		document.getElementById('ERDMode').style.display ="block";
+	}
+}

@@ -130,7 +130,7 @@ $(document).ready(
 			     });
    var zoom = d3.behavior.zoom().scaleExtent([0.4, 3]).on("zoom", zoomed);
 
-   var svg = d3.select("body").append("svg")
+   var svg = d3.select("#ERDMode").append("svg")
    							  .attr("width",width)
    							  .attr("height", height)
    							  .attr("transform","translate(" + 0 + "," + 0 + ")")

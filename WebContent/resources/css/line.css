@@ -4,3 +4,10 @@
   shape-rendering: crispEdges;
   vector-effect: non-scaling-stroke;
 }
+
+#tableMode {
+	display: none;
+}
+#ERDMode{
+	display : block;
+}
