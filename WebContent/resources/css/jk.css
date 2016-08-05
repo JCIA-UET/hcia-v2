@@ -1,5 +1,6 @@
 body {
   background-color: #efefef;
+  overflow :hidden;
 }
 
 .navbar {
@@ -103,4 +104,12 @@ body {
 
 .col-md-10 {
   padding: 0px;
+}
+#option-panel{
+  height: 90vh;
+  padding: 20px 0px 0px 20px;
+  background-color: #ffffff;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  overflow-y: auto;
+  margin-left:0px;
 }

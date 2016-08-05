@@ -2,16 +2,16 @@ $(document).ready(
   function() {
    var margin = {
      top: -5,
-     right: -5,
+     right: -40,
      bottom: -5,
      left: -5
     },
     width = 960 - margin.left - margin.right,
-    height = 650 - margin.top - margin.bottom;
+    height = 610 - margin.top - margin.bottom;
    
    var tbl1 = {
-    "x": 0,
-    "y": 0,
+    "x": 50,
+    "y": 50,
     "name": "table1",
     "listColumn": [{
      "name": "column1",
@@ -22,8 +22,8 @@ $(document).ready(
     }]
    };
    var tbl2 = {
-    "x": 0,
-    "y": 0,
+    "x": 50,
+    "y": 50,
     "name": "table2",
     "listColumn": [{
      "name": "column3",
@@ -34,8 +34,8 @@ $(document).ready(
     }]
    };
    var tbl3 = {
-    "x": 0,
-    "y": 0,
+    "x": 50,
+    "y": 50,
     "name": "table3",
     "listColumn": [{
      "name": "column3",
@@ -130,7 +130,7 @@ $(document).ready(
 			     });
    var zoom = d3.behavior.zoom().scaleExtent([0.4, 3]).on("zoom", zoomed);
 
-   var svg = d3.select("#ERDMode").append("svg")
+   var svg = d3.select("#ERD").append("svg")
    							  .attr("width",width)
    							  .attr("height", height)
    							  .attr("transform","translate(" + 0 + "," + 0 + ")")
@@ -167,7 +167,7 @@ $(document).ready(
 					      var name = d.name;
 					      var listColumn = d.listColumn;
 					      var gCurrent = d3.select(this).attr("class", "jifj")
-					      								.attr("transform","translate(" + 0 + "," + 0 + ")")
+					      								.attr("transform","translate(" + d.x + "," + d.y + ")")
 					      								.attr("id", name)
 					      								.call(drag);
 					      var table = gCurrent.append("rect")
@@ -223,9 +223,9 @@ $(document).ready(
 	      var pointOne = d3.select("#" + data.table).data()[0];
 	      var pointTwo = d3.select("#" + data.referTbl).data()[0];
 	      
-	      var lCurrent = d3.select(this).attr('x1',pointOne.x + d3.select("#rect2" + data.table).attr("width"))
+	      var lCurrent = d3.select(this).attr('x1',pointOne.x +	parseInt( d3.select("#rect2" + data.table).attr("width")))
 								        .attr("y1",pointOne.y + d3.select("#rect2" + data.table).attr("height") / 2)
-								        .attr( "x2",pointTwo.x + d3.select("#rect" + data.referTbl).attr("x"))
+								        .attr( "x2",pointTwo.x + parseInt(d3.select("#rect" + data.referTbl).attr("x")))
 								        .attr("y2",pointTwo.y + d3.select("#rect2" + data.referTbl).attr("height") / 2)
 								       .attr("class", "line")
 								       .attr("marker-end", "url(#arrowhead)")
