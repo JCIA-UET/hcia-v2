@@ -39,24 +39,26 @@
 	
   <!-- Navigation -->
   <nav class="navbar">
-    <div class="container-fluid">
+    <div class="headerbar-container">
       <!-- left side menu -->
       <ul class="nav navbar-nav">
-        <li><a id="upload-trigger" href="#"><span class="glyphicon glyphicon-upload"></span>Upload</a></li>
+      	<li><label id="switch-mode-icon" onclick="tranferMode()">
+			  	<span class="glyphicon glyphicon-transfer"></span>
+			  </label></li>
+        <li><label id="upload-trigger"><span class="glyphicon glyphicon-upload"></span> Upload</label></li>
         <li><h:form id="dl-form">
         		<h:panelGroup styleClass="rawdata-op-area">
 							<h:inputHidden binding="#{jsonData}" />
 						</h:panelGroup>
 						<h:commandLink styleClass="download-btn" onclick="getJsonData()" action="#{downloadBean.download(jsonData.value)}">
-							<span class="glyphicon glyphicon-download"></span>Download
+							<span class="glyphicon glyphicon-download"></span> Download
             </h:commandLink>
 				</h:form></li>
-			        <li><a id="upload-trigger" href="#" onclick="tranferMode()"><span class="glyphicon glyphicon-transfer"></span></a></li>
+			  
       </ul>
       <!-- right side menu -->
       <ul class="nav navbar-nav navbar-right">
-        <li><a href="#"><span class="glyphicon glyphicon-envelope"></span> Contact</a></li>
-        <li><a href="#"><span class="glyphicon glyphicon-question-sign"></span> Help</a></li>
+        <li id="present-mode">Table Mode</li>
       </ul>
     </div>
   </nav>

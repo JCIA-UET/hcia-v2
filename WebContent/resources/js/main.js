@@ -151,12 +151,14 @@ function getJsonData() {
 }
 function tranferMode(){
 	var element = document.getElementById('tableMode'),
-    style = window.getComputedStyle(element),
+    style = window.getComputedStyle(element);
     display = style.getPropertyValue('display');
 	if(display == "none"){
+		$("#present-mode").text("Table Mode");
 		document.getElementById('tableMode').style.display ="block";
 		document.getElementById('ERDMode').style.display ="none";
 	}else{
+		$("#present-mode").text("ERD Mode");
 		document.getElementById('tableMode').style.display ="none";
 		document.getElementById('ERDMode').style.display ="block";
 	}
