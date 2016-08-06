@@ -32,12 +32,13 @@ Table.deleteColumn = function(table, colId, relatedList) {
 	
 	for(var i = 0; i < table.childs.length; i++) {
 		if(table.childs[i].tempId == colId) {
-			TreeView.hideElementById(table, colId);
 			table.childs.splice(i, 1);
-			TablesList.updateTable(table);
 			break;
 		}
 	}
+	TreeView.recreateTree();
+	TreeView.expanseElement(table.tableName);
+	
 	InfoPanel.displayCurrentTable();
 };
 
@@ -53,11 +54,12 @@ Table.deleteRela = function(table, colId, relatedList) {
 	
 	for(var i = 0; i < table.childs.length; i++) {
 		if(table.childs[i].tempId == colId) {
-			table.childs.splice(i, 1);
-			TablesList.updateTable(table);
+			table.childs.splice(i, 1);	
 			break;
 		}
 	}
+	TreeView.recreateTree();
+	TreeView.expanseElement(table.tableName);
 	
 	InfoPanel.displayCurrentTable();
 }

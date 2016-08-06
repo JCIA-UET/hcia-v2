@@ -21,7 +21,6 @@ InfoPanel.displayCurrentTable = function() {
 						"<td>" + col.dataType + "</td>" +
 						"<td>" + "<input id='nn-" + col.tempId + "' type='checkbox' disabled='disabled'/></td>" +
 						"<td>" + "<input id='pk-" + col.tempId + "' type='checkbox' disabled='disabled'/></td>" +
-						"<td>" + "<input id='fk-" + col.tempId + "' type='checkbox' disabled='disabled'/></td>" +
 						"<td>" + "<input id='ai-" + col.tempId + "' type='checkbox' disabled='disabled'/></td>" +
 						"<td>" +
 							"<input type='hidden' value='" + col.tempId + "'/>" + 
@@ -33,13 +32,9 @@ InfoPanel.displayCurrentTable = function() {
 				if(col.notNull == true) $("#nn-" + col.tempId).prop('checked', true);
 				else $("#nn-" + col.tempId).prop('checked', false);
 				if(col.primaryKey == true) $("#pk-" + col.tempId).prop('checked', true);
-				else $("#pk-" + col.tempId).prop('checked', false);
-				if(col.foreignKey == true) $("#fk-" + col.tempId).prop('checked', true);
 				else $("#fk-" + col.tempId).prop('checked', false);
 				if(col.autoIncrement == true) $("#ai-" + i).prop('checked', true);
 				else $("#ai-" + col.tempId).prop('checked', false);
-				
-				console.log("Column Added: " + col.columnName);
 			}
 			// Show all relations
 			else if (col.json == "mto" || col.json == "otm"){
@@ -57,8 +52,6 @@ InfoPanel.displayCurrentTable = function() {
 							"<span class='rmv-rela glyphicon glyphicon-trash'></span></td>" +
 						"</tr>"
 						);
-				
-				console.log("Relation Added: " + col.javaName);
 			}
 		};
 	}
