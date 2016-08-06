@@ -1,5 +1,6 @@
 $(document).ready(
   function() {
+	  
    var margin = {
      top: -5,
      right: -40,
@@ -239,9 +240,9 @@ $(document).ready(
 function maxHeight(d){
 	var max = 0;
 	for(var i = 0 ; i < d.listColumn.length ; i++){
-		if(d.listColumn[i].name.length > max){
-			max = d.listColumn[i].name.length;
+		if(d.listColumn[i].name.length + d.listColumn[i].type.length > max){
+			max = d.listColumn[i].name.length+d.listColumn[i].type.length ;
 		}
 	}
-	return max * 8 + 56;
+	return max * 7.5;
 }
