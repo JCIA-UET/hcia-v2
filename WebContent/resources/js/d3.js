@@ -1,7 +1,12 @@
 $(document).ready(
   function() {
-	  
-   var margin = {
+	  var json = JSON.parse($("#raw-data-ip").val()) ;
+	  console.log(convert(json));
+	  var listRelationship = convert(json).relationships
+
+	  var listTable = convert(json).tables;
+
+	  var margin = {
      top: -5,
      right: -40,
      bottom: -5,
@@ -10,63 +15,8 @@ $(document).ready(
     width = 960 - margin.left - margin.right,
     height = 610 - margin.top - margin.bottom;
    
-   var tbl1 = {
-    "x": 50,
-    "y": 50,
-    "name": "table1",
-    "listColumn": [{
-     "name": "column1",
-     "type": "int"
-    }, {
-     "name": "column2",
-     "type": "varchar()"
-    }]
-   };
-   var tbl2 = {
-    "x": 50,
-    "y": 50,
-    "name": "table2",
-    "listColumn": [{
-     "name": "column3",
-     "type": "int"
-    }, {
-     "name": "column4",
-     "type": "varchar()"
-    }]
-   };
-   var tbl3 = {
-    "x": 50,
-    "y": 50,
-    "name": "table3",
-    "listColumn": [{
-     "name": "column3",
-     "type": "int"
-    },
-    {
-        "name": "column5555555555555",
-        "type": "int"
-       }, {
-     "name": "column4",
-     "type": "varchar()"
-    }]
-   };
-   var listRelationship = [{
-    "table": "table1",
-    "column": "column1",
-    "referTbl": "table2",
-    "referColumn": "column3",
-    "type": "onetomany"
-   }, {
-    "table": "table1",
-    "column": "column1",
-    "referTbl": "table3",
-    "referColumn": "column3",
-    "type": "onetomany"
-   }];
-
-   var listTable = [];
-   listTable.push(tbl1, tbl2, tbl3);
-
+  
+   
    var drag = d3.behavior
 			    .drag()
 			    .on('dragstart', function() {
@@ -232,7 +182,7 @@ $(document).ready(
 								       .attr("marker-end", "url(#arrowhead)")
 								       .attr("tableone", data.table)
 								       .attr("tabletwo", data.referTbl)
-								       .attr("stroke-width", 2).attr("stroke", "#808080");
+								       .attr("stroke-width", 4).attr("stroke", "#808080");
 	      
 	     });
   });
@@ -244,5 +194,39 @@ function maxHeight(d){
 			max = d.listColumn[i].name.length+d.listColumn[i].type.length ;
 		}
 	}
-	return max * 7.5;
+	return max * 8 + 15;
+}
+function convert(datajson){
+	var result = {"tables":[], "relationships":[]};
+	for(var i = 0 ; i<datajson.childs.length; i++ ){
+		var currentTable = datajson.childs[i] ;
+		var table = {"x":50, "y":50 , "listColumn":[]};
+		table.name = currentTable.tableName;
+		for(var j = 0 ; j < currentTable.childs.length ; j++){
+			var currentElement = currentTable.childs[j];
+			if (currentElement.json == "pk" || currentElement.json == "column"){
+				var column = {};
+				column.name = currentElement.columnName;
+				column.type = currentElement.dataType;
+				column.length = currentElement.length;
+				column.primaryKey = currentElement.primaryKey;
+				column.notNull = currentElement.notNull;
+				column.foreignKey = currentElement.foreignKey;
+				column.unique = currentElement.unique;
+				if(currentElement.json == "pk"){
+				column.autoIncrement = currentElement.autoIncrement; }
+				table.listColumn.push(column);
+			}
+			if(currentElement.json == "otm"){
+				var relationship = {};
+				relationship.table = currentTable.tableName;
+				relationship.column = currentElement.foreignKey.columnName;
+				relationship.referTbl = currentElement.referTable.tableName;
+				relationship.referColumn = currentElement.foreignKey.columnName;
+				result.relationships.push(relationship);
+			}
+		}
+		result.tables.push(table);
+	}
+	return result;
 }
