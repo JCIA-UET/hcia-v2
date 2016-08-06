@@ -8,12 +8,22 @@ public class TableNode extends TreeNode {
 	
 	protected String className;
     protected String tableName;
+    protected String catalog;
     
     protected String xmlPath;
     
     public TableNode(){
     	
     }
+    
+    public String getCatalog() {
+        return catalog;
+    }
+    
+    public void setCatalog(String catalog) {
+        this.catalog = catalog;
+    }
+    
     public String getXmlPath() {
         return xmlPath;
     }

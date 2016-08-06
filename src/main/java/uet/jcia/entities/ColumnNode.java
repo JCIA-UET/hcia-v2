@@ -13,6 +13,15 @@ public class ColumnNode extends TreeNode {
     protected boolean primaryKey;
     protected boolean notNull;
     protected boolean foreignKey;
+    protected boolean unique;
+    
+    public boolean isUnique() {
+        return unique;
+    }
+    
+    public void setUnique(boolean unique) {
+        this.unique = unique;
+    }
     
     public String getColumnName() {
         return columnName;
