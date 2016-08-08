@@ -17,6 +17,14 @@ label {
 	margin-bottom: 0px;
 }
 
+.h1, .h2, .h3, h1, h2, h3, h4 {
+    margin-bottom: 0;
+    margin-top: 0;
+}
+p {
+    margin: 0;
+}
+
 .navbar-nav > li > form > a, #switch-mode-icon, #upload-trigger {
 	height: 100%;
 	padding: 13px 27px 15px;
@@ -38,11 +46,9 @@ label {
 	display: inline-block;
 	font-size: 16px;
   text-decoration: none;
-  padding: 13px 0px 15px;
-  width: 200px;
-  text-align: center;
-  background-color: #fff;
-  color:#86888a;
+  padding: 13px 40px 15px;
+  background-color: #446cb3;
+  color:#fff;
 }
 
 .navbar-nav > li > form > a:hover, #switch-mode-icon:hover, #upload-trigger:hover {
@@ -77,7 +83,7 @@ label {
 
 /* Tab panel */
 .table-wrap {
-  height: 30vh;
+  height: 35vh;
   padding: 10px 0px 0px 20px;
   overflow-y: scroll;
 }
@@ -101,18 +107,22 @@ label {
   padding: 0px 20px 0px 20px;
 }
 
+.addcol-wrap {
+	padding: 10px 0 0 20px;
+}
+
 .hcia-reladetail {
   padding: 0px 20px 0px 20px;
 }
 
 .hcia-tblaction {
   position: absolute;
-  right: 15px;
-  bottom: 15px;
+  right: 25px;
+  bottom: 16px;
 }
 
 .hcia-btnright {
-  margin-left: 5px;
+  margin-left: 10px;
   width: 80px;
   float: right;
 }
@@ -126,6 +136,7 @@ label {
 .col-md-10 {
   padding: 0px;
 }
+
 #option-panel{
   height: 90vh;
   padding: 20px 0px 0px 20px;
@@ -133,4 +144,13 @@ label {
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
   overflow-y: auto;
   margin-left:0px;
+}
+
+/* modal */
+#col-input {
+	height:325px;
+}
+
+#validate-notice-col {
+	padding-left: 100px;
 }

@@ -1,5 +1,4 @@
 $(document).ready(function() {
-  
   console.log($("#raw-data-ip").val());
 
   // notify when user tries to refresh 
@@ -10,6 +9,8 @@ $(document).ready(function() {
 	modalAction();
 	prepareData();
 	TreeView.createTree();
+	createTableSelectList(document.getElementById("rftable-new-col"));
+	showPKListByChosenTableName($("#rftable-new-col").val(), document.getElementById("rfcolumn-new-col"));
 	
 	// Click on table
 	$('.hcia-treepanel').on("click", ".tree-toggle", function() {
@@ -112,6 +113,52 @@ $(document).ready(function() {
 		});
 	});
 	
+	$("#type-new-col").change(function(){
+		var colType = $("#type-new-col").val();
+		
+		if(colType == "nm" || colType == "pk") {
+			$("#col-input").css({'height':'325px'});
+			$("#rftable-nc-container").hide();
+			$("#rfcolumn-nc-container").hide();
+				
+			if(colType == "nm") $("#ai-nc-checkbox").hide();
+			else $("#ai-nc-checkbox").show();
+		}
+		else if(colType == "fk") {
+			$("#col-input").css({'height':'425px'});
+			$("#ai-nc-checkbox").hide();
+			$("#rftable-nc-container").show();
+			$("#rfcolumn-nc-container").show();
+		}
+	});
+	
+	$("#create-new-col").click(function(){
+		var result = validateName();
+		if(result == false) {
+			return;
+		}
+		else {
+			var simpleCol = {
+				type: 			$("#type-new-col").val(),
+				columnName: 	$("#name-new-col").val(),
+				dataType:		$("#datatype-new-col").val(),
+				notNull: 		$("#nn-new-col").is(":checked") ? true : false,
+				autoIncrement:	$("#ai-new-col").is(":checked") ? true : false,
+				rfTableName:	$("#rftable-new-col").val(),
+				rfColName:		$("#rfcolumn-new-col").val()
+			};
+			
+			InfoPanel.addColumn(Table.instance, simpleCol);
+			
+			TreeView.recreateTree();
+			//TreeView.expanseElement(Table.instance.tableName);
+			
+			console.log(TablesList.instances);
+			
+			InfoPanel.displayCurrentTable();
+		}
+	});
+	
 //	$(".download-btn").click(function(){
 //		var rawData = JSON.stringify(TablesList.instances);
 //		console.log("Raw Data: " + rawData);
@@ -122,6 +169,30 @@ $(document).ready(function() {
 function prepareData() {
 	TablesList.convertStringToObject($("#raw-data-ip").val());
 	Relationship.loadAll();
+}
+
+function createTableSelectList(element) {
+	if(TablesList.instances != null) {
+		for(var i = 0; i < TablesList.instances.length; i++) {
+			element.options[element.options.length]= new Option(TablesList.instances[i].tableName, TablesList.instances[i].tableName);
+		} 
+	}
+}
+
+function onChangeSelectedTableNC() {
+	var tableName = $("#rftable-new-col").val();
+	showPKListByChosenTableName(tableName, document.getElementById("rfcolumn-new-col"));
+}
+
+function showPKListByChosenTableName(tableName, colElement) {
+	var table = TablesList.findTableByName(tableName);
+	
+	colElement.options.length = 0;
+			
+	for(var i = 0; i < table.childs.length; i++) {
+		if(table.childs[i].json == "pk")
+			colElement.options[colElement.options.length]= new Option(table.childs[i].columnName, table.childs[i].columnName)
+	} 
 }
 
 function resetPanelValue() {
@@ -138,11 +209,71 @@ function resetPanelValue() {
 	$(".table-info").empty();
 	$(".relation-info").empty();
 }
+
+function resetCreatedColPanelValue() {
+	$("#new-col-tablename").text("Table: " + Table.instance.tableName);
+	
+	$("#type-new-col").val("nm");
+	$("#col-input").css({'height':'325px'});
+	
+	$("#ai-nc-checkbox").hide();
+	$("#rftable-nc-container").hide();
+	$("#rfcolumn-nc-container").hide();
+	
+	$("#name-new-col").val("");
+	$("#nn-nc-checkbox").prop('checked', false);
+	
+	var parentElement = $("#name-new-col").parent();
+	parentElement.removeClass();
+
+	var spanElement = parentElement.children("span");
+	if(spanElement != null) spanElement.remove();
+	
+	$("#validate-notice-col").text("");
+}
 function modalAction() {
 	$('#upload-trigger').click(function() {
 		$('#uploadModal').modal("show");
-	});
+	});	
+	
+	$("#add-col-trigger").click(function() {
+		$('#addColModal').modal("show");
+	})
 }
+
+function validateName() {
+	var tempColName = $("#name-new-col").val();
+	var colFound = Table.findColumnByName(Table.instance, tempColName);
+
+	var parentElement = $("#name-new-col").parent();
+	parentElement.removeClass();
+
+	var spanElement = parentElement.children("span");
+	if(spanElement != null) spanElement.remove();
+	
+	if(tempColName == "") {
+		$("#validate-notice-col").css({'color':'#a94442'});
+		$("#validate-notice-col").text("Column name is required.");
+		parentElement.addClass("has-error has-feedback");
+		parentElement.append("<span class='glyphicon glyphicon-remove form-control-feedback'></span>");
+		return false;
+	}
+	else if(colFound == null) {
+		$("#validate-notice-col").css({'color':'#3c763d'});
+		$("#validate-notice-col").text("You can use this name.");
+		parentElement.addClass("has-success has-feedback");
+		parentElement.append("<span class='glyphicon glyphicon-ok form-control-feedback'></span>");
+		return true;
+	}
+	else {
+		$("#validate-notice-col").css({'color':'#a94442'});
+		$("#validate-notice-col").text("This name is used by another column.");
+		parentElement.addClass("has-error has-feedback");
+		parentElement.append("<span class='glyphicon glyphicon-remove form-control-feedback'></span>")
+		return false;
+	}
+}
+
 function getJsonData() {
 	RootNode.instance.childs = TablesList.instances;
 	var rawData = JSON.stringify(RootNode.instance);

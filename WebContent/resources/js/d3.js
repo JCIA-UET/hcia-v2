@@ -2,16 +2,18 @@ $(document).ready(
   function() {
 	  var json = JSON.parse($("#raw-data-ip").val()) ;
 	  console.log(convert(json));
-	  var listRelationship = convert(json).relationships
+	console.log(convert(json));
+	var listRelationship = convert(json).relationships
 
-	  var listTable = convert(json).tables;
+	var listTable = convert(json).tables;
 
-	  var margin = {
-     top: -5,
-     right: -40,
-     bottom: -5,
-     left: -5
+	var margin = {
+		top: -5,
+		right: -40,
+		bottom: -5,
+		left: -5
     },
+    
     width = 960 - margin.left - margin.right,
     height = 610 - margin.top - margin.bottom;
    
@@ -100,11 +102,8 @@ $(document).ready(
    					 .attr("width", width)
    					 .attr("height", height)
    					 .style("fill", "#FFFFFF");
-
    var gSecond = gFirst.append("g");
-   
-
-
+ 
    function zoomed() {
     gSecond.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
    }

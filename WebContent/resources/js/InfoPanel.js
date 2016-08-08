@@ -100,6 +100,11 @@ InfoPanel.showColDetail = function(szColName) {
 	}
 };
 
+InfoPanel.addColumn = function(table, simpleCol) {
+	var result = Table.addColumn(table, simpleCol);
+	if(result == true) $('#addColModal').modal("hide");
+}
+
 InfoPanel.showRelaDetail = function(szColName) {
 	for(var i = 0; i < Table.instance.childs.length; i++) {
 		var element = Table.instance.childs[i];
@@ -116,15 +121,15 @@ InfoPanel.showRelaDetail = function(szColName) {
 			$("#rela-col-detail").val(fkColName);
 			
 			var refTblEl = document.getElementById('rela-rftable-detail');
-	    for (var i = 0; i < FakeTable.list.length; i++) {
-	      var tbl = FakeTable.list[i];
-	      refTblEl.options[i] = new Option(tbl.tblName, tbl.tblName);
+			for (var i = 0; i < FakeTable.list.length; i++) {
+				var tbl = FakeTable.list[i];
+				refTblEl.options[i] = new Option(tbl.tblName, tbl.tblName);
 	      
-	      if (tbl.tblName == rfTableName) {
-	        refTblEl.selectedIndex = i;
-	        document.getElementById('rela-rfcol-detail').options[0] = new Option(tbl.pkName, tbl.pkName);
-        }
-	    }
+				if (tbl.tblName == rfTableName) {
+					refTblEl.selectedIndex = i;
+					document.getElementById('rela-rfcol-detail').options[0] = new Option(tbl.pkName, tbl.pkName);
+				}
+			}
 	    
 			break;
 		}
