@@ -18,7 +18,7 @@
   <h:outputScript library="webjars" name="jquery/2.1.4/jquery.min.js" />
   <h:outputScript library="webjars"
     name="bootstrap/3.3.6/js/bootstrap.min.js" />
-    <h:outputScript library="webjars" name="d3js/3.4.11/d3.min.js"></h:outputScript>
+  <h:outputScript library="webjars" name="d3js/3.4.11/d3.min.js" />
 
   <!-- custom style sheets and scripts -->
   <h:outputStylesheet name="css/jk.css" />
@@ -39,24 +39,26 @@
 	
   <!-- Navigation -->
   <nav class="navbar">
-    <div class="container-fluid">
+    <div class="headerbar-container">
       <!-- left side menu -->
       <ul class="nav navbar-nav">
-        <li><a id="upload-trigger" href="#"><span class="glyphicon glyphicon-upload"></span>Upload</a></li>
+      	<li><label id="switch-mode-icon" onclick="tranferMode()">
+			  	<span class="glyphicon glyphicon-transfer"></span>
+			  </label></li>
+        <li><label id="upload-trigger"><span class="glyphicon glyphicon-upload"></span> Upload</label></li>
         <li><h:form id="dl-form">
         		<h:panelGroup styleClass="rawdata-op-area">
 							<h:inputHidden binding="#{jsonData}" />
 						</h:panelGroup>
 						<h:commandLink styleClass="download-btn" onclick="getJsonData()" action="#{downloadBean.download(jsonData.value)}">
-							<span class="glyphicon glyphicon-download"></span>Download
+							<span class="glyphicon glyphicon-download"></span> Download
             </h:commandLink>
 				</h:form></li>
-			        <li><a id="upload-trigger" href="#" onclick="tranferMode()"><span class="glyphicon glyphicon-transfer"></span></a></li>
+			  
       </ul>
       <!-- right side menu -->
       <ul class="nav navbar-nav navbar-right">
-        <li><a href="#"><span class="glyphicon glyphicon-envelope"></span> Contact</a></li>
-        <li><a href="#"><span class="glyphicon glyphicon-question-sign"></span> Help</a></li>
+        <li id="present-mode">Table Mode</li>
       </ul>
     </div>
   </nav>
@@ -93,7 +95,6 @@
                     <th>Data Type</th>
                     <th>NN</th>
                     <th>PK</th>
-                    <th>FK</th>
                     <th>AI</th>
                     <th>Action</th>
                   </tr>
@@ -102,10 +103,14 @@
                   <!-- columns information go here -->
                 </tbody>
               </table>
+              
             </div>
             <!-- column table ends here -->
-
+						<div class="addcol-wrap" style="margin-bottom:7px">
+							<button class="btn btn-success" id="add-col-trigger" onclick="resetCreatedColPanelValue()"><span class="glyphicons glyphicons-plus-sign"></span> Add Column</button>
+						</div>
             <!-- column detail go here -->
+            
             <div class="detail-wrap">
               <div class="heading">
                 <h2 style="border-bottom: 5px solid #03a9f4;">Detail</h2>
@@ -139,19 +144,14 @@
                   <div class="form-group col-md-6">
                     <input id="col-pk-detail" type="checkbox" />
                     <label>Primary key</label>
-                    <br/>
+                    <br/><br/>
                     <input id="col-nn-detail" type="checkbox" />
                     <label>Not null</label>
-                    <br/>
-                  </div>
-                  <div class="form-group col-md-6">
-                    <input id="col-fk-detail" type="checkbox" />
-                    <label>Foreign key</label>
-                    <br/>
+                    <br/><br/>
                     <input id="col-ai-detail" type="checkbox" />
                     <label>Auto increment</label>
                     <br/>
-                  </div>
+                   </div>
                 </div>
               </div>
             </div>
@@ -169,7 +169,6 @@
                     <th>Refer Table</th>
                     <th>Refer Column</th>
                     <th>Action</th>
-                    <th></th>
                   </tr>
                 </thead>
                 <tbody class="relationship-info">
@@ -284,6 +283,107 @@
 			</div>
 		</div>
 	</div>
-	<div id="ERDMode"></div>
+	<div class="container-fluid" id="ERDMode">
+		<div class="row">
+			<div class="col-lg-9">
+				<div id="ERD"></div>
+			</div>
+			<div class="col-lg-3">
+				<div id="option-panel"></div>
+			</div>
+		</div>
+	</div>
+	
+	<!-- Notice Modal -->
+	<div class="modal fade" id="addColModal" role="dialog">
+		<div class="modal-dialog">
+			<div class="modal-content">
+			
+				<div class="modal-header">
+					<div class="col-md-6">
+						<h3>
+							<strong>Create New Column</strong>
+						</h3>
+					</div>
+					<div class="col-md-6" >
+						<h4 id="new-col-tablename" style="float:right"></h4>
+					</div>
+				</div>
+				
+				<div id="col-input" class="modal-body">
+					<p>1. Choose type of new column: </p>
+			  	<form class="form-inline">
+						<div style="padding-left:15px;">
+							<label style="width: 80px">Type: </label>
+							<select id="type-new-col" class="form-control" style="width: 30%">
+	            	<option value="nm">Normal Column</option>
+	            	<option value="pk">Primary Key</option>
+		          	<option value="fk">Foreign Key</option>
+	            </select>
+	          </div>
+	        </form>
+					<br/>
+					<p>2. Fill all information below:</p>
+					<form class="form-inline">
+						<p id="validate-notice-col"></p>
+          	<div style="padding-left:15px;margin-bottom: 15px;margin-top:5px;">
+            	<label style="width: 80px">Name: </label>
+            	<input id="name-new-col" type="text" style="width: 80%" class="form-control input-form" onchange="validateName()"/>
+            	<br/>
+            </div>
+            <div style="padding-left:15px;margin-bottom: 15px;">
+            	<label style="width: 80px">Data Type: </label>
+            	<select id="datatype-new-col" style="width: 30%" class="form-control input-form">
+              	<option value="VARCHAR">VARCHAR()</option>
+              	<option value="INTEGER">INTEGER</option>
+	            	<option value="DOUBLE">DOUBLE</option>
+	              <option value="DATE">DATE</option>
+	              <option value="FLOAT">FLOAT</option>
+              </select>
+            	<br/>
+            </div>
+            <div style="padding-left:15px;margin-bottom: 15px;">
+            	<label style="width: 80px">Length: </label>
+              <input id="length-new-col" style="width: 80%" type="text" class="form-control input-form" />
+            	<br/>
+            </div>
+            <div id="rftable-nc-container" style="padding-left:15px;margin-bottom: 15px;">
+            	<label style="width: 145px">Reference Table: </label>
+            	<select id="rftable-new-col" style="width: 30%" class="form-control input-form" onchange="onChangeSelectedTableNC()"/>
+            	<br/>
+            </div>
+            <div id="rfcolumn-nc-container" style="padding-left:15px;margin-bottom: 15px;">
+            	<label style="width: 145px">Reference Column: </label>
+            	<select id="rfcolumn-new-col" style="width: 30%" class="form-control input-form"/>
+            	<br/>
+            </div>
+            <div class="col-md-6" id="nn-nc-checkbox" style="text-align:center;">
+            	<input id="nn-new-col" type="checkbox"/>
+            	<label>Not Null</label>
+            </div>
+            <div class="col-md-6" id="ai-nc-checkbox" style="text-align:center;">
+            	<input id="ai-new-col" type="checkbox"/>
+            	<label>Auto Increment</label>
+            </div>
+            </form>
+          </div>
+				<div class="modal-footer">
+					<button type="button" id="create-new-col" class="btn btn-warning">Create</button>
+					<button type="button" id="cancel" class="btn btn-default" data-dismiss="modal">Cancel</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="container-fluid" id="ERDMode">
+		<div class="row">
+			<div class="col-lg-9">
+				<div id="ERD"></div>
+			</div>
+			<div class="col-lg-3">
+				<div id="option-panel"></div>
+			</div>
+		</div>
+	</div>
+	
 </h:body>
 </html>

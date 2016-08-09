@@ -1,71 +1,24 @@
 $(document).ready(
   function() {
-   var margin = {
-     top: -5,
-     right: -5,
-     bottom: -5,
-     left: -5
+	  var json = JSON.parse($("#raw-data-ip").val()) ;
+	  console.log(convert(json));
+	console.log(convert(json));
+	var listRelationship = convert(json).relationships
+
+	var listTable = convert(json).tables;
+
+	var margin = {
+		top: -5,
+		right: -40,
+		bottom: -5,
+		left: -5
     },
+    
     width = 960 - margin.left - margin.right,
-    height = 650 - margin.top - margin.bottom;
+    height = 610 - margin.top - margin.bottom;
    
-   var tbl1 = {
-    "x": 0,
-    "y": 0,
-    "name": "table1",
-    "listColumn": [{
-     "name": "column1",
-     "type": "int"
-    }, {
-     "name": "column2",
-     "type": "varchar()"
-    }]
-   };
-   var tbl2 = {
-    "x": 0,
-    "y": 0,
-    "name": "table2",
-    "listColumn": [{
-     "name": "column3",
-     "type": "int"
-    }, {
-     "name": "column4",
-     "type": "varchar()"
-    }]
-   };
-   var tbl3 = {
-    "x": 0,
-    "y": 0,
-    "name": "table3",
-    "listColumn": [{
-     "name": "column3",
-     "type": "int"
-    },
-    {
-        "name": "column5555555555555",
-        "type": "int"
-       }, {
-     "name": "column4",
-     "type": "varchar()"
-    }]
-   };
-   var listRelationship = [{
-    "table": "table1",
-    "column": "column1",
-    "referTbl": "table2",
-    "referColumn": "column3",
-    "type": "onetomany"
-   }, {
-    "table": "table1",
-    "column": "column1",
-    "referTbl": "table3",
-    "referColumn": "column3",
-    "type": "onetomany"
-   }];
-
-   var listTable = [];
-   listTable.push(tbl1, tbl2, tbl3);
-
+  
+   
    var drag = d3.behavior
 			    .drag()
 			    .on('dragstart', function() {
@@ -130,7 +83,7 @@ $(document).ready(
 			     });
    var zoom = d3.behavior.zoom().scaleExtent([0.4, 3]).on("zoom", zoomed);
 
-   var svg = d3.select("#ERDMode").append("svg")
+   var svg = d3.select("#ERD").append("svg")
    							  .attr("width",width)
    							  .attr("height", height)
    							  .attr("transform","translate(" + 0 + "," + 0 + ")")
@@ -149,11 +102,8 @@ $(document).ready(
    					 .attr("width", width)
    					 .attr("height", height)
    					 .style("fill", "#FFFFFF");
-
    var gSecond = gFirst.append("g");
-   
-
-
+ 
    function zoomed() {
     gSecond.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
    }
@@ -167,7 +117,7 @@ $(document).ready(
 					      var name = d.name;
 					      var listColumn = d.listColumn;
 					      var gCurrent = d3.select(this).attr("class", "jifj")
-					      								.attr("transform","translate(" + 0 + "," + 0 + ")")
+					      								.attr("transform","translate(" + d.x + "," + d.y + ")")
 					      								.attr("id", name)
 					      								.call(drag);
 					      var table = gCurrent.append("rect")
@@ -223,15 +173,15 @@ $(document).ready(
 	      var pointOne = d3.select("#" + data.table).data()[0];
 	      var pointTwo = d3.select("#" + data.referTbl).data()[0];
 	      
-	      var lCurrent = d3.select(this).attr('x1',pointOne.x + d3.select("#rect2" + data.table).attr("width"))
+	      var lCurrent = d3.select(this).attr('x1',pointOne.x +	parseInt( d3.select("#rect2" + data.table).attr("width")))
 								        .attr("y1",pointOne.y + d3.select("#rect2" + data.table).attr("height") / 2)
-								        .attr( "x2",pointTwo.x + d3.select("#rect" + data.referTbl).attr("x"))
+								        .attr( "x2",pointTwo.x + parseInt(d3.select("#rect" + data.referTbl).attr("x")))
 								        .attr("y2",pointTwo.y + d3.select("#rect2" + data.referTbl).attr("height") / 2)
 								       .attr("class", "line")
 								       .attr("marker-end", "url(#arrowhead)")
 								       .attr("tableone", data.table)
 								       .attr("tabletwo", data.referTbl)
-								       .attr("stroke-width", 2).attr("stroke", "#808080");
+								       .attr("stroke-width", 4).attr("stroke", "#808080");
 	      
 	     });
   });
@@ -239,9 +189,43 @@ $(document).ready(
 function maxHeight(d){
 	var max = 0;
 	for(var i = 0 ; i < d.listColumn.length ; i++){
-		if(d.listColumn[i].name.length > max){
-			max = d.listColumn[i].name.length;
+		if(d.listColumn[i].name.length + d.listColumn[i].type.length > max){
+			max = d.listColumn[i].name.length+d.listColumn[i].type.length ;
 		}
 	}
-	return max * 8 + 56;
+	return max * 8 + 15;
+}
+function convert(datajson){
+	var result = {"tables":[], "relationships":[]};
+	for(var i = 0 ; i<datajson.childs.length; i++ ){
+		var currentTable = datajson.childs[i] ;
+		var table = {"x":50, "y":50 , "listColumn":[]};
+		table.name = currentTable.tableName;
+		for(var j = 0 ; j < currentTable.childs.length ; j++){
+			var currentElement = currentTable.childs[j];
+			if (currentElement.json == "pk" || currentElement.json == "column"){
+				var column = {};
+				column.name = currentElement.columnName;
+				column.type = currentElement.dataType;
+				column.length = currentElement.length;
+				column.primaryKey = currentElement.primaryKey;
+				column.notNull = currentElement.notNull;
+				column.foreignKey = currentElement.foreignKey;
+				column.unique = currentElement.unique;
+				if(currentElement.json == "pk"){
+				column.autoIncrement = currentElement.autoIncrement; }
+				table.listColumn.push(column);
+			}
+			if(currentElement.json == "otm"){
+				var relationship = {};
+				relationship.table = currentTable.tableName;
+				relationship.column = currentElement.foreignKey.columnName;
+				relationship.referTbl = currentElement.referTable.tableName;
+				relationship.referColumn = currentElement.foreignKey.columnName;
+				result.relationships.push(relationship);
+			}
+		}
+		result.tables.push(table);
+	}
+	return result;
 }

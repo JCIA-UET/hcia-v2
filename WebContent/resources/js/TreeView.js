@@ -8,7 +8,7 @@ TreeView.createTree = function() {
 	var treeComponent = $("#tree-root");
 	
 	// empty element before create new tree
-	treeComponent.html("");
+	treeComponent.empty();
 	
 	// Create Table List
 	for(var i = 0; i < TablesList.instances.length; i++) {
@@ -48,19 +48,17 @@ TreeView.createTree = function() {
 	$(".nav>li ul").hide();
 }
 
-TreeView.hideElementById = function(table, tempId) {
+TreeView.recreateTree = function() {
+	$("#tree-root").empty();
+	TreeView.createTree();
+}
+
+TreeView.expanseElement = function(tableName) {
 	var treeElements = document.getElementsByClassName("tree-toggle");
-	var delCol = TablesList.findColumnById(table, tempId);
 	
-	if(delCol != null) {
-		for(var i = 0; i < treeElements.length; i++) {
-			if($(treeElements[i]).text() == table.tableName) {
-				$(treeElements[i]).parent().children("ul").children("li").each(function(){
-					if($(this).text() == delCol.columnName) {
-						$(this).remove();
-					}
-				});
-			}
+	for(var i = 0; i < treeElements.length; i++) {
+		if($(treeElements[i]).text() == tableName) {
+			$(treeElements[i]).parent().children("ul").show();
 		}
 	}
 }

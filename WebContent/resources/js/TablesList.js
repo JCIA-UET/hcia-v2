@@ -25,7 +25,6 @@ TablesList.convertStringToObject = function(rawData) {
 		console.log("No data to display");
 	}
 	else {
-		console.log(rawData);
 		RootNode.instance = JSON.parse(rawData);
 		TablesList.instances = RootNode.instance.childs;
 		console.log("Convert successfully!");
@@ -33,13 +32,37 @@ TablesList.convertStringToObject = function(rawData) {
 	}
 };
 
+TablesList.findMaximumTempId = function() {
+	var max = -1;
+	var iTempId = -1;
+	
+	for (var i = 0; i < TablesList.instances.length; i++) {
+		var tempTable = TablesList.instances[i];
+		iTempId = parseInt(tempTable.tempId);
+		
+		if (iTempId >= max) {
+			max = iTempId;
+		}
+		
+		for (var j = 0; j < TablesList.instances[i].childs.length; j++) {
+			var tempCol = TablesList.instances[i].childs[j];
+			iTempId = parseInt(tempCol.tempId);
+			if (iTempId >= max) {
+				max = iTempId;
+			}
+		}
+	}
+	
+	return max;
+}
+
 TablesList.findTableByName = function(szTableName) {
 	if(szTableName == null || szTableName == "") {
 		console.log("Can't find table with name: " + szTableName);
 	}
 	else {
 		for(var i = 0; i < TablesList.instances.length; i++) {
-			if(TablesList.instances[i].tableName == szTableName)
+			if(TablesList.instances[i].tableName.toLowerCase() == szTableName.toLowerCase())
 				return TablesList.instances[i];
 		}
 		return null;

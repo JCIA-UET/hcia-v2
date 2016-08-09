@@ -10,7 +10,7 @@ FakeTable.add = function (tblName, pkName) {
   FakeTable.list.push(tbl);
 }
 
-FakeTable.getFkByTbl = function (szName) {
+FakeTable.getPkByTbl = function (szName) {
   for (var i = 0; i < FakeTable.list.length; i++) {
     if (FakeTable.list[i].tblName == szName) {
       return FakeTable.list[i].pkName;
