@@ -1,7 +1,9 @@
 package uet.jcia.model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.Annotation;
@@ -32,7 +34,17 @@ public class HASTVisitor extends ASTVisitor {
     private TableNode table;
     private List<TreeNode> children;
     
+    /**
+     * mapping between className and tableNode 
+     */
+    private Map<String, TableNode> cachedTables;
+    
     public HASTVisitor() {
+        cachedTables = new HashMap<>();
+        resetTable();
+    }
+    
+    public void resetTable() {
         table = new TableNode();
         children = new ArrayList<>();
         table.setChilds(children);
@@ -40,6 +52,10 @@ public class HASTVisitor extends ASTVisitor {
     
     public TableNode getTable() {
         return table;
+    }
+    
+    public TableNode getTableNodeByClassName(String className) {
+        return cachedTables.get(className);
     }
     
     @Override
@@ -90,6 +106,8 @@ public class HASTVisitor extends ASTVisitor {
         table.setTableName(tableName);
         table.setClassName(className);
         table.setCatalog(catalog);
+        
+        cachedTables.put(className, table);
         return true;
     }
 
