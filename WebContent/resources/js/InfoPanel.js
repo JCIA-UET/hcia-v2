@@ -1,8 +1,12 @@
 function InfoPanel() {};
 
 InfoPanel.displayCurrentTable = function() {
-  // reset all details of table
-  TableAction.resetDetails();
+	// Show table and detail area
+	$(".hcia-contentpanel").children("ul").show();
+	$(".tab-content").show();
+	
+	// reset all details of table
+	TableAction.resetDetails();
   
 	if(Table.instance == null) {
 		console.log("No table to be displayed");

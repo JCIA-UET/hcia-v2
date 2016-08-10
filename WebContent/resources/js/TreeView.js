@@ -35,7 +35,6 @@ TreeView.createTree = function() {
 				// add to FakeTable list
 				if (Column.json == "pk") {
 				  FakeTable.add(Table.tableName, Column.columnName);
-				  console.log("Add to FakeTable: " + Table.tableName + " - " + Column.columnName);
 				}
 				
 			}

@@ -1,14 +1,24 @@
 $(document).ready(function() {
-  console.log($("#raw-data-ip").val());
-
-  // notify when user tries to refresh 
-  window.onbeforeunload = function() {
-    return "All your changes will be lost if you refresh, are you sure?";
-  };
-  
 	modalAction();
+	console.log($("#raw-data-ip").val());
+
+	// notify when user tries to refresh
+	if (TablesList.instances != null) {
+		window.onbeforeunload = function() {
+			return "All your changes will be lost if you refresh, are you sure?";
+		};
+	}
+  
 	prepareData();
+	
+	if(TablesList.instances == null) return;
+	
 	TreeView.createTree();
+	
+	Table.instance = null;
+	$(".hcia-contentpanel").children("ul").hide();
+	$(".tab-content").hide();
+	
 	createTableSelectList(document.getElementById("rftable-new-col"));
 	showPKListByChosenTableName($("#rftable-new-col").val(), document.getElementById("rfcolumn-new-col"));
 	
@@ -115,18 +125,25 @@ $(document).ready(function() {
 	
 	$("#type-new-col").change(function(){
 		var colType = $("#type-new-col").val();
+		resetCreatedColFormValue();
+		$("#col-input").css({'height':'300px'});
 		
-		if(colType == "nm" || colType == "pk") {
-			$("#col-input").css({'height':'325px'});
+		if(colType == "nm" || colType == "pk") {	
+			
 			$("#rftable-nc-container").hide();
 			$("#rfcolumn-nc-container").hide();
+			
+			$("#datatype-nc-container").show();
+			$("#length-nc-container").show();
 				
 			if(colType == "nm") $("#ai-nc-checkbox").hide();
 			else $("#ai-nc-checkbox").show();
 		}
 		else if(colType == "fk") {
-			$("#col-input").css({'height':'425px'});
 			$("#ai-nc-checkbox").hide();
+			$("#datatype-nc-container").hide();
+			$("#length-nc-container").hide();
+			
 			$("#rftable-nc-container").show();
 			$("#rfcolumn-nc-container").show();
 		}
@@ -188,7 +205,7 @@ function showPKListByChosenTableName(tableName, colElement) {
 	var table = TablesList.findTableByName(tableName);
 	
 	colElement.options.length = 0;
-			
+	
 	for(var i = 0; i < table.childs.length; i++) {
 		if(table.childs[i].json == "pk")
 			colElement.options[colElement.options.length]= new Option(table.childs[i].columnName, table.childs[i].columnName)
@@ -211,9 +228,13 @@ function resetPanelValue() {
 }
 
 function resetCreatedColPanelValue() {
+	$("#type-new-col").val("nm");
+	resetCreatedColFormValue();
+}
+
+function resetCreatedColFormValue() {
 	$("#new-col-tablename").text("Table: " + Table.instance.tableName);
 	
-	$("#type-new-col").val("nm");
 	$("#col-input").css({'height':'325px'});
 	
 	$("#ai-nc-checkbox").hide();
@@ -221,15 +242,23 @@ function resetCreatedColPanelValue() {
 	$("#rfcolumn-nc-container").hide();
 	
 	$("#name-new-col").val("");
+	$("#length-new-col").val("");
 	$("#nn-nc-checkbox").prop('checked', false);
 	
 	var parentElement = $("#name-new-col").parent();
 	parentElement.removeClass();
 
-	var spanElement = parentElement.children("span");
-	if(spanElement != null) spanElement.remove();
+//	var spanElement = parentElement.children("span");
+//	if(spanElement != null) spanElement.remove();
 	
-	$("#validate-notice-col").text("");
+	var parentElement = $("#length-new-col").parent();
+	parentElement.removeClass();
+
+//	var spanElement = parentElement.children("span");
+//	if(spanElement != null) spanElement.remove();
+	
+	$("#validate-name-notice").text("");
+	$("#validate-length-notice").text("");
 }
 function modalAction() {
 	$('#upload-trigger').click(function() {
@@ -251,25 +280,61 @@ function validateName() {
 	var spanElement = parentElement.children("span");
 	if(spanElement != null) spanElement.remove();
 	
+	
+	
 	if(tempColName == "") {
-		$("#validate-notice-col").css({'color':'#a94442'});
-		$("#validate-notice-col").text("Column name is required.");
+		$("#validate-name-notice").css({'color':'#a94442'});
+		$("#col-input").css({'height':'325px'});
+		$("#validate-name-notice").text("This field is required.");
 		parentElement.addClass("has-error has-feedback");
-		parentElement.append("<span class='glyphicon glyphicon-remove form-control-feedback'></span>");
+		//parentElement.append("<span id='name-icon' class='glyphicon glyphicon-remove form-control-feedback'></span>");
 		return false;
 	}
 	else if(colFound == null) {
-		$("#validate-notice-col").css({'color':'#3c763d'});
-		$("#validate-notice-col").text("You can use this name.");
+		$("#validate-name-notice").css({'color':'#3c763d'});
+		$("#col-input").css({'height':'325px'});
+		$("#validate-name-notice").text("You can use this name.");
 		parentElement.addClass("has-success has-feedback");
-		parentElement.append("<span class='glyphicon glyphicon-ok form-control-feedback'></span>");
+		//parentElement.append("<span id='name-icon' class='glyphicon glyphicon-ok form-control-feedback'></span>");
 		return true;
 	}
 	else {
-		$("#validate-notice-col").css({'color':'#a94442'});
-		$("#validate-notice-col").text("This name is used by another column.");
+		$("#validate-name-notice").css({'color':'#a94442'});
+		$("#col-input").css({'height':'325px'});
+		$("#validate-name-notice").text("This name is used by another column.");
 		parentElement.addClass("has-error has-feedback");
-		parentElement.append("<span class='glyphicon glyphicon-remove form-control-feedback'></span>")
+		//parentElement.append("<span id='name-icon' class='glyphicon glyphicon-remove form-control-feedback'></span>")
+		return false;
+	}
+	
+	//$("#name-icon").css({'line-height': '75px'});
+}
+
+function validateLength() {
+	var reg = new RegExp("^[0-9]+$");
+	var lengthCol = $("#length-new-col").val();
+	
+	var parentElement = $("#length-new-col").parent();
+	parentElement.removeClass();
+
+	var spanElement = parentElement.children("span");
+	if(spanElement != null) spanElement.remove();
+	
+	if(reg.test(lengthCol)) {
+		$("#validate-length-notice").css({'color':'#3c763d'});
+		$("#validate-length-notice").text("");
+		parentElement.addClass("has-success has-feedback");
+		//parentElement.append("<span id='length-icon' class='glyphicon glyphicon-ok form-control-feedback'></span>");
+		//$("#length-icon").css({'line-height': '34px'});
+		return true;
+	}
+	else {
+		$("#validate-length-notice").css({'color':'#a94442'});
+		$("#col-input").css({'height':'325px'});
+		$("#validate-length-notice").text("Please enter a valid number.");
+		parentElement.addClass("has-error has-feedback");
+		//parentElement.append("<span id='length-icon' class='glyphicon glyphicon-remove form-control-feedback'></span>");
+		//$("#length-new-col").css({'line-height': '75px'});
 		return false;
 	}
 }

@@ -1,11 +1,9 @@
 $(document).ready(
   function() {
-	  var json = JSON.parse($("#raw-data-ip").val()) ;
-	  console.log(convert(json));
-	console.log(convert(json));
-	var listRelationship = convert(json).relationships
+	var d3Obj = convert(RootNode.instance);
+	var listRelationship = d3Obj.relationships;
 
-	var listTable = convert(json).tables;
+	var listTable = d3Obj.tables;
 
 	var margin = {
 		top: -5,
@@ -17,13 +15,10 @@ $(document).ready(
     width = 960 - margin.left - margin.right,
     height = 610 - margin.top - margin.bottom;
    
-  
-   
-   var drag = d3.behavior
+	var drag = d3.behavior
 			    .drag()
 			    .on('dragstart', function() {
 			     d3.event.sourceEvent.stopPropagation();
-			     console.log("xxx")
 			    })
 			    .on("drag",function(d, i) {
 			      d.x += d3.event.dx;

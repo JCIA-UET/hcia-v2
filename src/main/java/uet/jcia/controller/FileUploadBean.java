@@ -67,29 +67,11 @@ public class FileUploadBean implements Serializable {
 			
 			if(parsedResultDir != null) {
 				String sessionid = session.getId();
-				TreeNode root = core.getParsedData(parsedResultDir);
-				
-				//String sessionDir = Constants.TEMP_SOURCE_FOLDER + "\\" + sessionid + "\\" + sessionid;
-				//Helper.copyFile(parsedResultDir, sessionDir);
-				//System.out.println(parsedResultDir);
-				
-//				try {
-//					ObjectMapper mapper = new ObjectMapper();
-//					String jsonData = mapper.writeValueAsString(root);
-//					
-//					String jsonKey = sessionid + "json";
-//					exContext.getSessionMap().put(jsonKey, jsonData);
-//					
-//				} catch (JsonProcessingException e) {
-//					// TODO Auto-generated
-//					e.printStackTrace();
-//				}
 
 				String logKey = sessionid + "log";
 				List<String> changeLog = new ArrayList<>();
 				File tempFile = new File(parsedResultDir);
 				changeLog.add(tempFile.getName());
-				System.out.println("First: " + changeLog);
 				exContext.getSessionMap().put(logKey, changeLog);
 				
 				String originDirKey = sessionid + "origindir";
