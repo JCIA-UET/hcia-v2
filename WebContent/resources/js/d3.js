@@ -1,8 +1,8 @@
-$(document).ready(
-  function() {
+$(document).ready(draw);
+  	function draw() {
+	var json = RootNode.instance;
 	var d3Obj = convert(RootNode.instance);
 	var listRelationship = d3Obj.relationships;
-
 	var listTable = d3Obj.tables;
 
 	var margin = {
@@ -150,8 +150,9 @@ $(document).ready(
 						       .attr("pointer-events","none");
 						      for(var j = 0 ; j < d.listColumn.length;j++){
 						    	  var textCol = gCurrent.append("text")
-						    	  						.text(d.listColumn[j].name+"("+d.listColumn[j].type+")")
+						    	  						.text(d.listColumn[j].name )
 						    	  						 .attr("y", "0.5em")
+						    	  						 .attr("class", "text"+name)
 						    	  						 .attr("id",d.name+d.listColumn[j].name)
 						    						       .attr("transform","translate(" + [5 + i * 200,31+j*20] + ")")
 						    						       .attr("text-anchor", "start")
@@ -163,8 +164,7 @@ $(document).ready(
 						      }
 						      i++;
 						     })
-		   var line = gSecond
-		    .selectAll("line")
+		   var line = gSecond.selectAll("line")
 		    .data(listRelationship)
 		    .enter()
 		    .append("line")
@@ -191,16 +191,14 @@ $(document).ready(
 		     });
 	   
 	   		//jquery begin
-	   		var s = $("#column-erd-curent").change(function(){
-	   			console.log(this);
-	   		})
-	  });
+	   		$("#btn-delete-pro").click(onclick_btn_delete_pro);
+	  };
 
 	function maxHeight(d){
 		var max = 0;
 		for(var i = 0 ; i < d.listColumn.length ; i++){
-			if(d.listColumn[i].name.length + d.listColumn[i].type.length > max){
-				max = d.listColumn[i].name.length+d.listColumn[i].type.length ;
+			if(d.listColumn[i].name.length  > max){
+				max = d.listColumn[i].name.length ;
 			}
 		}
 		return max * 8 + 15;
@@ -213,14 +211,13 @@ $(document).ready(
 			table.name = currentTable.tableName;
 			for(var j = 0 ; j < currentTable.childs.length ; j++){
 				var currentElement = currentTable.childs[j];
-				if (currentElement.json == "pk" || currentElement.json == "column"){
+				if ((currentElement.json == "pk" || currentElement.json == "column") && currentElement.foreignKey==false ){
 					var column = {};
 					column.name = currentElement.columnName;
 					column.type = currentElement.dataType;
 					column.length = currentElement.length;
 					column.primaryKey = currentElement.primaryKey;
 					column.notNull = currentElement.notNull;
-					column.foreignKey = currentElement.foreignKey;
 					column.unique = currentElement.unique;
 					if(currentElement.json == "pk"){
 					column.autoIncrement = currentElement.autoIncrement; }
@@ -258,17 +255,12 @@ $(document).ready(
 		}
 		$("#column-erd-current").change(function(){
 			var value = $(this).val();
-			for(var i = 0 ; i < d.listColumn.length ; i++){
-				if(value == d.listColumn[i].name){
-					$("#typedata-erd-current").val(d.listColumn[i].type);
-					$("#pk-erd-current").prop('checked',d.listColumn[i].primaryKey);
-					$("#nn-erd-current").prop('checked',d.listColumn[i].notNull);
-					$("#ai-erd-current").prop('checked',false);
-				}
-			}
-		})
-		.change();
+			if(value != null)
+			$("#btn-delete-pro").prop("disabled",false);
+		}).change();
+		$("#btn-add-pro").prop("disabled",false);
 		d3.event.stopPropagation();
+	
 	}
 	function mouse_over_line(d){
 		d3.select(this).attr('stroke',"red");
@@ -284,5 +276,60 @@ $(document).ready(
 		$("#fk-table-erd-current").val(d.table);
 		$("#fk-refertable-erd-current").val(d.referTbl);
 		$("#fk-joincolumn-erd-current").val(d.column);
-		
+		d3.event.stopPropagation();
 	}
+	function onclick_btn_delete_pro(){
+		var table = $("#table-erd-current").val();
+		var columns = $('#column-erd-current').val();
+		for(var temp = 0 ; temp < columns.length ; temp++){
+			for(var i = 0 ; i < RootNode.instance.childs.length;i++){
+				if(table == RootNode.instance.childs[i].tableName){
+					var tableCurrent = RootNode.instance.childs[i];
+					for(var j = 0 ; j < tableCurrent.childs.length;j++){
+						if(tableCurrent.childs[j].json == "column")
+							if(tableCurrent.childs[j].columnName == columns[temp]){
+								 RootNode.instance.childs[i].childs.splice(j,1);
+								delete_data_d3(table,columns[temp]);
+								break;
+							}
+					}
+					break;
+				}
+			}
+		}
+	}
+	function delete_data_d3(table,column){
+		var data = d3.select("#"+table).data()[0];
+		for(var i = 0 ; i < data.listColumn.length ; i++ ){
+			if(data.listColumn[i].name == column){
+				data.listColumn.splice(i,1);
+			}
+		}
+		$(".option-column-erd").remove();
+		for(var i = 0 ; i < data.listColumn.length;i++){
+			$("#column-erd-current").append($("<option></option>")
+	                .attr("value",data.listColumn[i].name)
+	                .attr("class","option-column-erd")
+	                .text(data.listColumn[i].name));
+		}
+		d3.selectAll(".text"+table).remove();
+		d3.select("#rect2"+table).attr("height",data.listColumn.length*20);
+		for(var i = 0 ; i < data.listColumn.length ; i++){
+			console.log(data.listColumn[i].name);
+			d3.select("#"+table).append("text")
+				.text(data.listColumn[i].name )
+					 .attr("y", "0.5em")
+					 .attr("class", "text"+table)
+					 .attr("id",data.name+data.listColumn[i].name)
+			       .attr("transform","translate(" + [5 + parseInt(d3.select("#rect2"+table).attr("x")),31+i*20] + ")")
+			       .attr("text-anchor", "start")
+			       .attr("font-weight", 500).attr("font-family","Helvetica")
+			       .attr( "fill", "#000")
+			        .attr("font-size","12px")
+			       .attr("stroke", "none")
+			       .attr("pointer-events","none");
+		}
+	}
+
+	
+	
