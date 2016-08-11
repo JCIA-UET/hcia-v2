@@ -21,6 +21,7 @@ public class CoreAPI {
     private ZipManager zm = new ZipManager();
     private FileManager fm = new FileManager();
     private Parser parser = new Parser();
+    private JavaParser jParser = new JavaParser();
     private Inverser inverser = new Inverser();
     
     
@@ -30,31 +31,44 @@ public class CoreAPI {
     // mapping between temp file and document file
     private static HashMap<String, String> tempDocumentMapper = new HashMap<>();
     
-    public String parse(String uploadPath) {
-        TreeNode rootNode;
+    public String parse(String uploadPath) throws Exception {
+        TreeNode rootNode = null;
         String resultPath = null;
-        
-        // user upload xml file
-        if (uploadPath.matches(".*\\.xml")) {
+
+        // user uploads xml or java file
+        if (uploadPath.matches(".*\\.xml") || uploadPath.matches(".*\\.java")) {
             Date date = new Date();
             String dstDir =  Constants.TEMP_SOURCE_FOLDER + File.separator
                     + "upload-src-" + Helper.DATE_FORMATER.format(date);
-            File xmlFile = new File(uploadPath);
-            String dstPath = dstDir + File.separator + xmlFile.getName();
+            File uploadedFile = new File(uploadPath);
+            String dstPath = dstDir + File.separator + uploadedFile.getName();
             // copy file to generated folder
             Helper.copyFile(uploadPath, dstPath);
+
+            if (uploadPath.matches(".*\\.xml")) {
+            	rootNode = parser.parseXml(dstPath);
+            } else if (uploadPath.matches(".*\\.java")) {
+            	rootNode = jParser.parseJavaFile(dstPath);
+            }
             
-            rootNode = parser.parseXml(dstPath);
             resultPath = fm.saveTempData(rootNode);
             mapper.put(resultPath, dstDir);
             
         } else if (uploadPath.matches(".*\\.zip")) {
             String extractedFolder = zm.unzip(uploadPath);
             List<String> xmlList = new ArrayList<>();
-            fm.findFiles(
-                    extractedFolder, ".*\\.xml", xmlList);
-
-            rootNode = parser.parseXmlList(xmlList);
+            List<String> javaList = new ArrayList<>();
+            fm.findFiles(extractedFolder, ".*\\.xml", xmlList);
+            fm.findFiles(extractedFolder, ".*\\.java", javaList);
+            
+            if (!xmlList.isEmpty() && !javaList.isEmpty()) {
+            	throw new Exception("can not parse both java and xml at the same time");
+            } else if (!xmlList.isEmpty()) {
+            	rootNode = parser.parseXmlList(xmlList);
+            } else if (!javaList.isEmpty()) {
+            	rootNode = jParser.parseJavaList(javaList);
+            }
+            
             resultPath = fm.saveTempData(rootNode);
             String documentPath = fm.saveDocumentsHash(parser.getCachedDocument());
             
