@@ -36,8 +36,6 @@ Table.deleteColumn = function(table, colId, relatedList) {
 			break;
 		}
 	}
-	TreeView.recreateTree();
-	TreeView.expanseElement(table.tableName);
 	
 	InfoPanel.displayCurrentTable();
 };
@@ -58,8 +56,6 @@ Table.deleteRela = function(table, colId, relatedList) {
 			break;
 		}
 	}
-	TreeView.recreateTree();
-	TreeView.expanseElement(table.tableName);
 	
 	InfoPanel.displayCurrentTable();
 }

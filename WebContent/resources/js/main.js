@@ -78,8 +78,10 @@ $(document).ready(function() {
 	});
 	
 	$(".relationship-info").on("click", "tr", function(){
-		console.log("show detail: " + $(this).children().eq(1).text());
 		InfoPanel.showRelaDetail($(this).children().eq(1).text());
+		
+		TreeView.recreateTree();
+		TreeView.expanseElement(Table.instance.tableName);
 	});
 	
 	$(".relationship-info").on("click", ".rmv-rela", function(){
@@ -120,6 +122,9 @@ $(document).ready(function() {
 			.modal({ backdrop: 'static', keyboard: false })
 			.one("click", "#delete", function(){
 				InfoPanel.deleteRela(Table.instance, colId, relatedList);
+				
+				TreeView.recreateTree();
+				TreeView.expanseElement(Table.instance.tableName);
 		});
 	});
 	
@@ -168,9 +173,7 @@ $(document).ready(function() {
 			InfoPanel.addColumn(Table.instance, simpleCol);
 			
 			TreeView.recreateTree();
-			//TreeView.expanseElement(Table.instance.tableName);
-			
-			console.log(TablesList.instances);
+			TreeView.expanseElement(Table.instance.tableName);
 			
 			InfoPanel.displayCurrentTable();
 		}
@@ -271,6 +274,7 @@ function modalAction() {
 }
 
 function validateName() {
+	var reg = new RegExp("^[0-9]");
 	var tempColName = $("#name-new-col").val();
 	var colFound = Table.findColumnByName(Table.instance, tempColName);
 
@@ -288,6 +292,13 @@ function validateName() {
 		$("#validate-name-notice").text("This field is required.");
 		parentElement.addClass("has-error has-feedback");
 		//parentElement.append("<span id='name-icon' class='glyphicon glyphicon-remove form-control-feedback'></span>");
+		return false;
+	}
+	else if(reg.test(tempColName)) {
+		$("#validate-name-notice").css({'color':'#a94442'});
+		$("#col-input").css({'height':'325px'});
+		$("#validate-name-notice").text("Column Name cannot begin with numbers.");
+		parentElement.addClass("has-error has-feedback");
 		return false;
 	}
 	else if(colFound == null) {

@@ -112,7 +112,6 @@ TablesList.deleteColumnById = function(colId) {
 	for(var i = 0; i < TablesList.instances.length; i++) {
 		for(var j = 0; j < TablesList.instances[i].childs.length; j++) {
 			if(TablesList.instances[i].childs[j].tempId == colId) {
-				TreeView.hideElementById(TablesList.instances[i], TablesList.instances[i].childs[j].tempId);	
 				TablesList.instances[i].childs.splice(j, 1);
 			}
 		}

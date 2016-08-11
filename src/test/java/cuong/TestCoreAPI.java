@@ -8,15 +8,24 @@ import uet.jcia.entities.Relationship;
 import uet.jcia.entities.Table;
 import uet.jcia.entities.TreeNode;
 import uet.jcia.model.CoreAPI;
+import uet.jcia.utils.JsonHelper;
 
 public class TestCoreAPI {
 
     static CoreAPI api = new CoreAPI();
     
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
 //        testZip();
-        testXml();
+//        testXml();
+    	testJava();
+    }
+    
+    public static void testJava() throws Exception {
+        String resultPath = api.parse("temp\\upload\\classicmodels.zip");
+        System.out.println("[temp data] " + resultPath);
         
+        TreeNode rootNode = api.getParsedData(resultPath);
+        System.out.println(JsonHelper.toJsonString(rootNode));
     }
     
     /*public static void testZip() {
@@ -85,7 +94,7 @@ public class TestCoreAPI {
     }*/
     
 
-    public static void testXml() {
+   /* public static void testXml() {
         String resultPath = api.parse("temp\\upload\\OrderItem.hbm.xml");
         System.out.println("[temp data] " + resultPath);
         
@@ -101,7 +110,7 @@ public class TestCoreAPI {
         System.out.println(rootNode);
         
         System.out.println(api.download(updatedPath));
-    }
+    }*/
     
     public static Table getTableById(List<Table> tables, String tableId) {
         for (Table tbl : tables) {

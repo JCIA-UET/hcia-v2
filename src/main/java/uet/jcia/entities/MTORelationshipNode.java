@@ -1,8 +1,10 @@
 package uet.jcia.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 @JsonTypeName("mto")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class MTORelationshipNode extends RelationshipNode {
 	private static final long serialVersionUID = -639214173809042259L;
 	

@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -40,12 +41,29 @@ public class JavaParser {
     
     public static void main(String[] args) throws IllegalArgumentException, IOException {
         JavaParser parser = new JavaParser();
-        RootNode root = parser.parse(SAMPLE_TEST);
+        RootNode root = parser.parse(Arrays.asList(SAMPLE_TEST));
         System.out.println(JsonHelper.toJsonString(root));
 //        System.out.println(root);
     }
     
-    public RootNode parse(String[] sourcePaths) throws IllegalArgumentException, IOException {
+    public RootNode parseJavaList(List<String> javaList) {
+    	try {
+			return parse(javaList);
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+    	return null;
+    }
+    
+    public RootNode parseJavaFile(String path) {
+    	List<String> javaList = new ArrayList<>();
+    	javaList.add(path);
+    	return parseJavaList(javaList);
+    }
+    
+    public RootNode parse(List<String> sourcePaths) throws IllegalArgumentException, IOException {
         RootNode root = new RootNode();
         List<TreeNode> children = new ArrayList<>();
         for (String sourcePath : sourcePaths) {
