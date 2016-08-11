@@ -284,16 +284,7 @@
 			</div>
 		</div>
 	</div>
-	<div class="container-fluid" id="ERDMode">
-		<div class="row">
-			<div class="col-lg-9">
-				<div id="ERD"></div>
-			</div>
-			<div class="col-lg-3">
-				<div id="option-panel"></div>
-			</div>
-		</div>
-	</div>
+	
 	
 	<!-- Notice Modal -->
 	<div class="modal fade" id="addColModal" role="dialog">
@@ -382,10 +373,82 @@
 				<div id="ERD"></div>
 			</div>
 			<div class="col-lg-3">
-				<div id="option-panel"></div>
+				<div id="option-panel"  >
+					<form class="form-horizontal" role="form">
+						<div class="form-group" style="width:100%">
+							<label class="control-label col-sm-3" for="table-erd-current">Table:</label>
+							<div class="col-sm-9">
+								<input type="text" class="form-control" id="table-erd-current" style="width:95%" disabled="disabled"/>
+							</div>
+						</div>
+						<div class="form-group" style="width:100%">
+							<label class="control-label col-sm-3" for="column-erd-current">Column:</label>
+							<div class="col-sm-9">
+								<select class="form-control" id="column-erd-current" style="width:95%">
+								</select>
+							</div>
+						</div>
+						<div class="heading">
+								<h2 style="border-bottom: 2px solid #03a9f4;"></h2>
+							</div>
+						<div class="form-group" style="width:100%">
+							<label class="control-label col-sm-3" for="typedata-erd-current">Type:</label>
+							<div class="col-sm-9">
+								<select class="form-control" id="typedata-erd-current" style="width:95%">
+										<option value="VARCHAR">VARCHAR()</option>
+										<option value="INTEGER">INTEGER</option>
+										<option value="DOUBLE">DOUBLE</option>
+										<option value="DATE">DATE</option>
+										<option value="FLOAT">FLOAT</option>
+								</select>
+							</div>
+						</div>
+						<div class="form-group" style="width:100%">
+							<label class="control-label col-sm-3" for="pk-erd-current">PK:</label>
+							<div class="col-sm-9">
+							<input id="pk-erd-current" type="checkbox" value="true"/>
+							</div>
+						</div>
+						<div class="form-group" style="width:100%">
+							<label class="control-label col-sm-3" for="nn-erd-current">NN:</label>
+							<div class="col-sm-9">
+							<input id="nn-erd-current"  type="checkbox" value="true"/>
+							</div>
+						</div>
+						<div class="form-group" style="width:100%">
+							<label class="control-label col-sm-3" for="ai-erd-current">AI:</label>
+							<div class="col-sm-9">
+							<input id="ai-erd-current" type="checkbox" value=""/>
+							</div>
+						</div>
+						<div class="heading">
+								<h3 style="border-top: 5px solid #03a9f4;">Foreign Key</h3>
+							</div>
+						<div class="form-group" style="width:100%">
+							<label class="control-label col-sm-3" for="fk-table-erd-current">Table:</label>
+							<div class="col-sm-9">
+								<input type="text" class="form-control" id="fk-table-erd-current" style="width:95%" disabled="disabled"/>
+							</div>
+						</div>
+						<div class="form-group" style="width:100%">
+							<label class="control-label col-sm-3" for="fk-refertable-erd-current"> Refer Table:</label>
+							<div class="col-sm-9">
+								<input type="text" class="form-control" id="fk-refertable-erd-current" style="width:95%" disabled="disabled"/>
+							</div>
+						</div>
+						<div class="form-group" style="width:100%">
+							<label class="control-label col-sm-4" for="fk-joincolumn-erd-current">Join Column:</label>
+							<div class="col-sm-8">
+								<input type="text" class="form-control" id="fk-joincolumn-erd-current" style="width:95%" disabled="disabled"/>
+							</div>
+						</div>
+					</form>
+
+				</div>
+			</div>
 			</div>
 		</div>
-	</div>
+	
 	
 </h:body>
 </html>

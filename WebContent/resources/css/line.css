@@ -1,13 +1,13 @@
-.axis line {
-  fill: none;
-  stroke: #ddd;
-  shape-rendering: crispEdges;
-  vector-effect: non-scaling-stroke;
-}
 
 #tableMode {
 	display: none;
 }
 #ERDMode{
 	display : block;
+}
+.mouseover-table{
+	stroke : red;
+}
+.mouseout-table{
+	stroke : #87CEFA;
 }
