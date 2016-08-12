@@ -73,7 +73,6 @@ InfoPanel.showColDetail = function(szColName) {
 	for(var i = 0; i < Table.instance.childs.length; i++) {
 		var col = Table.instance.childs[i];
 		if(szColName == col.columnName) {
-		  $("#btn-save").text("Update");
 		  
 		  $("#col-tempid-detail").val(col.tempId);
 			$("#col-name-detail").val(col.columnName);
