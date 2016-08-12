@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -111,7 +112,7 @@ public class ZipManager {
     }
 
     private void extractFile(ZipInputStream zipIn, String filePath) throws IOException {
-        BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filePath));
+        BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(new File(filePath)));
         byte[] bytesIn = new byte[4096];
         int read = 0;
         while ((read = zipIn.read(bytesIn)) != -1) {
