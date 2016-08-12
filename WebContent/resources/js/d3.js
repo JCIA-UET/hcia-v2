@@ -115,7 +115,7 @@ $(document).ready(function(){
 	   					 .attr("width", width)
 	   					 .attr("height", height)
 	   					 .style("fill", "#FFFFFF");
-	   var gSecond = gFirst.append("g");
+	   var gSecond = gFirst.append("g").attr("id","gSecond");
 	 
 	   function zoomed() {
 	    gSecond.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
@@ -180,8 +180,14 @@ $(document).ready(function(){
 						    						       .attr("pointer-events","none");
 						      }
 						      i++;
-						     })
-		   var line = gSecond.selectAll("line")
+						     });
+	   		drawLine(listRelationship);
+		 
+	   		
+	  };
+	  
+	  function drawLine(listR){
+		  var line = d3.select("#gSecond").selectAll("line")
 		    .data(listRelationship)
 		    .enter()
 		    .append("line")
@@ -209,8 +215,7 @@ $(document).ready(function(){
 		      
 		     });
 	   
-	   		
-	  };
+	  }
 
 	/*function: maxHeight
 	 * details: to return width of a rect2
@@ -329,6 +334,8 @@ $(document).ready(function(){
 	 * details: to handle event mouse click on the line in ERD
 	 * */
 	function mouse_onclick_line(d){
+		$('#new-fk').hide();
+		$('#default-fk').show();
 		$("#fk-table-erd-current").val(d.table);
 		$("#fk-refertable-erd-current").val(d.referTbl);
 		$('#btn-delete-rela').prop('disabled',false);
@@ -474,7 +481,6 @@ $(document).ready(function(){
 				}
 			}
 			Table.addColumn(tableCurrent,simpleCol);
-			console.log(RootNode.instance);
 		}
 	}
 	
@@ -509,7 +515,46 @@ $(document).ready(function(){
 	 * details: to handle event click to  button id="btn_ok_rela" in ERD mode
 	 * */
 	function onclick_btn_ok_rela(){
-		
+		 var en1 = $("#fk-table-erd-new").val();
+		 var en2 = $("#fk-refertable-erd-new").val();
+		 if(en1 == en2){
+		 }
+		 else {
+			 var i=0;
+			 for( i = 0 ; i < listRelationship.length ; i++){
+				 if((listRelationship[i].table == en1 && listRelationship[i].referTbl==en2)
+						 || (listRelationship[i].table == en2 && listRelationship[i].referTbl==en1)) 
+					 break;
+			 }
+			 if(i == listRelationship.length){
+				 var relationship = {};
+				 relationship.table = en1;
+				 relationship.referTbl = en2;
+				 relationship.column = en1+en2+"_ID";
+				 relationship.referColumn = en1+"_"+en2+"_ID";
+				 listRelationship.push(relationship);
+				 d3.selectAll(".line").remove();
+				 drawLine(listRelationship);
+				 var simpleCol = {
+							type: 			'fk',
+							columnName: 	en1+"_"+en2+"_ID",
+							dataType:		'varchar()',
+							notNull: 		false,
+							autoIncrement:	false,
+							rfTableName:	en1,
+							rfColName:		 en1+"_"+en2+"_ID"
+						};
+					var tableCurrent;
+					for(var i = 0 ; i < RootNode.instance.childs.length;i++){
+						if(en2 == RootNode.instance.childs[i].tableName){
+						    tableCurrent = RootNode.instance.childs[i];
+							break;
+						}
+					}
+					Table.addColumn(tableCurrent,simpleCol);
+					console.log(RootNode.instance);
+			 }
+		 }
 	}
 	
 	
