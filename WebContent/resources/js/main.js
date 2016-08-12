@@ -74,6 +74,10 @@ $(document).ready(function() {
 			.modal({ backdrop: 'static', keyboard: false })
 			.one("click", "#delete", function(){
 				InfoPanel.deleteColumn(Table.instance, colId, relatedList);
+				
+				// Recreate tree (remove deleted elements)
+				TreeView.recreateTree();
+				TreeView.expanseElement(Table.instance.tableName);
 		});
 	});
 	
@@ -123,6 +127,7 @@ $(document).ready(function() {
 			.one("click", "#delete", function(){
 				InfoPanel.deleteRela(Table.instance, colId, relatedList);
 				
+				// Recreate tree (remove deleted elements)
 				TreeView.recreateTree();
 				TreeView.expanseElement(Table.instance.tableName);
 		});
