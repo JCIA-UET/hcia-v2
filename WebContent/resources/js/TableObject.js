@@ -89,6 +89,7 @@ Table.addColumn = function(table, simpleCol) {
 		col.autoIncrement = simpleCol.autoIncrement;
 	}
 	
+	// Add new column to database
 	table.childs.push(col);
 	
 	if (simpleCol.type == "fk") {
@@ -96,7 +97,6 @@ Table.addColumn = function(table, simpleCol) {
 		var rfColName = simpleCol.rfColName;
 		
 		var rfTable = TablesList.findTableByName(rfTableName);
-		console.log(rfTable);
 		var rfColumn = Table.findColumnByName(rfTable, rfColName);
 		
 		/** First, create new mto **/
@@ -111,11 +111,11 @@ Table.addColumn = function(table, simpleCol) {
 		// Create MTO Relation
 		var generatedMTOTempId = TablesList.findMaximumTempId() + 1;
 		var mtoObj = {
-			tempId: 		generatedMTOTempId.toString(),
+			tempId: 		generatedMTOTempId,
 			json: 			"mto",
 			childs: 		null,
 			// What can I do with this????
-			hbmAttributes: 	null,
+			hbmAttributes: 	{},
 			javaName: 		rfColName,
 			referTable: 	mtoRfTable,
 			type: 			"Many-to-One",
@@ -123,32 +123,39 @@ Table.addColumn = function(table, simpleCol) {
 			referColumn: 	rfColumn
 		}
 		
-		table.childs.push(mtoObj);
-		
+		/** Second, create new otm **/
 		// Create refer Table for OTM
 		var otmRfTable = deepCopy(table);
 		otmRfTable.childs = null;
 		otmRfTable.hbmAttributes = null;
+		otmRfTable.javaName = null;
+		otmRfTable.catalog = null;
+		otmRfTable.xmlPath = null;
 		
-		// Create refer Column for OTM
+		// Create clone of primary key in OTM
 		var otmRfColumn = deepCopy(col);
 		otmRfColumn.hbmAttributes = {};
 		otmRfColumn.tempId = 0;
+		otmRfColumn.javaName = null;
 		otmRfColumn.dataType = null;
+		otmRfColumn.primaryKey = false;
+		otmRfColumn.autoIncrement = undefined;
 		
 		// Create OTM Relation
 		var generatedOTMTempId = TablesList.findMaximumTempId() + 1;
 		var otmObj = {
 			json: 			"otm",
 			childs: 		null,
-			hbmAttributes: 	null,
+			hbmAttributes: 	{},
 			tempId: 		generatedOTMTempId,
-			javaName: 		null,
+			javaName: 		"",
 			referTable: 	otmRfTable,
 			type: 			"One-to-Many",
 			foreignKey:		otmRfColumn
 		}
 		
+		/** Add mto and otm to database **/
+		table.childs.push(mtoObj);
 		rfTable.childs.push(otmObj);
 	}
 	return true;
