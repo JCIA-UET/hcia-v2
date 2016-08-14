@@ -118,6 +118,7 @@ public class JavaParser {
                                 PrimaryKeyNode referColumn = (PrimaryKeyNode) Helper.deepClone(child2);
                                 mto.setReferColumn(referColumn);
                                 ColumnNode fk = generateFkFromPk(referColumn);
+                                fk.setTempId(visitor.generateTempId());
                                 if (mto.getForeignKey().getColumnName() != null)
                                     fk.setColumnName(mto.getForeignKey().getColumnName());
                                 mto.setForeignKey(fk);

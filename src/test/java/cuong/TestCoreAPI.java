@@ -1,10 +1,8 @@
 package cuong;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import uet.jcia.entities.Column;
-import uet.jcia.entities.Relationship;
 import uet.jcia.entities.Table;
 import uet.jcia.entities.TreeNode;
 import uet.jcia.model.CoreAPI;
