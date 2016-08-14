@@ -9,6 +9,7 @@ TreeView.createTree = function() {
 	
 	// empty element before create new tree
 	treeComponent.empty();
+	FakeTable.list = [];
 	
 	// Create Table List
 	for(var i = 0; i < TablesList.instances.length; i++) {

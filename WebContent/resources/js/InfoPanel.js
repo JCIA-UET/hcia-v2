@@ -4,6 +4,7 @@ InfoPanel.displayCurrentTable = function() {
 	// Show table and detail area
 	$(".hcia-contentpanel").children("ul").show();
 	$(".tab-content").show();
+	$(".detail-wrap").hide();
 	
 	// reset all details of table
 	TableAction.resetDetails();
@@ -110,23 +111,25 @@ InfoPanel.addColumn = function(table, simpleCol) {
 
 InfoPanel.showRelaDetail = function(szColName) {
 	for(var i = 0; i < Table.instance.childs.length; i++) {
-		var element = Table.instance.childs[i];
-		var fkColName = (element.foreignKey != null) ? element.foreignKey.columnName : "";
-		var rfTableName = (element.referTable != null) ? element.referTable.tableName : "";
-		var rfColName = (element.referColumn != null) ? element.referColumn.columnName : "";
-			
-		if(szColName == fkColName) {
-		  $("#btn-save").text("Update");
+		if(szColName == Table.instance.childs[i].foreignKey.columnName) {
+			$("#btn-save").text("Update");
+		  
+			var element = Table.instance.childs[i];
+			var fkColName = (element.foreignKey != null) ? element.foreignKey.columnName : "";
+			var rfTableName = (element.referTable != null) ? element.referTable.tableName : "";
+			var rfColName = (element.referColumn != null) ? element.referColumn.columnName : "";
 
-		  $("#rela-tempid-detail").val(element.tempId);
-		  $("#rela-tableid-detail").val(Table.instance.tempId);
+			$("#rela-tempid-detail").val(element.tempId);
+			$("#rela-tableid-detail").val(Table.instance.tempId);
 			$("#rela-type-detail").val(element.type);
 			$("#rela-col-detail").val(fkColName);
 			
 			var refTblEl = document.getElementById('rela-rftable-detail');
+			refTblEl.options.length = 0;
+			console.log(FakeTable.list.length);
 			for (var i = 0; i < FakeTable.list.length; i++) {
 				var tbl = FakeTable.list[i];
-				refTblEl.options[i] = new Option(tbl.tblName, tbl.tblName);
+				refTblEl.options[refTblEl.options.length] = new Option(tbl.tblName, tbl.tblName);
 	      
 				if (tbl.tblName == rfTableName) {
 					refTblEl.selectedIndex = i;
