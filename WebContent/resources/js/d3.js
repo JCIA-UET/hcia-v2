@@ -1,10 +1,27 @@
-$(document).ready(
-  function() {
+$(document).ready(function(){
+	draw();
+	//jquery begin
+	$("#btn-delete-pro").click(onclick_btn_delete_pro);
+	$("#btn-delete-rela").click(onclick_btn_delete_rela);
+	$("#btn-add-pro").click(onclick_btn_add_pro);
+	$("#btn-add-rela").click(onclick_btn_add_rela);
+	$("#btn-ok-pro").click(onclick_btn_ok_pro);
+	$("#btn-cancel-pro").click(onclick_btn_cancel_pro);
+	$("#btn-ok-rela").click(onclick_btn_ok_rela);
+	$("#btn-cancel-rela").click(onclick_btn_cancel_rela);
+	
+});
+    var listRelationship;
+    var listTable ;
+    /* function : draw
+     * details: to draw ERD
+     * */
+  	function draw() {
+	var json = RootNode.instance;
 	var d3Obj = convert(RootNode.instance);
-	var listRelationship = d3Obj.relationships;
-
-	var listTable = d3Obj.tables;
-
+    listRelationship = d3Obj.relationships;
+    listTable = d3Obj.tables;
+	$("#btn-add-rela").prop('disabled',false);
 	var margin = {
 			top: -5,
 			right: -40,
@@ -98,7 +115,7 @@ $(document).ready(
 	   					 .attr("width", width)
 	   					 .attr("height", height)
 	   					 .style("fill", "#FFFFFF");
-	   var gSecond = gFirst.append("g");
+	   var gSecond = gFirst.append("g").attr("id","gSecond");
 	 
 	   function zoomed() {
 	    gSecond.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
@@ -150,8 +167,9 @@ $(document).ready(
 						       .attr("pointer-events","none");
 						      for(var j = 0 ; j < d.listColumn.length;j++){
 						    	  var textCol = gCurrent.append("text")
-						    	  						.text(d.listColumn[j].name+"("+d.listColumn[j].type+")")
+						    	  						.text(d.listColumn[j].name )
 						    	  						 .attr("y", "0.5em")
+						    	  						 .attr("class", "text"+name)
 						    	  						 .attr("id",d.name+d.listColumn[j].name)
 						    						       .attr("transform","translate(" + [5 + i * 200,31+j*20] + ")")
 						    						       .attr("text-anchor", "start")
@@ -162,14 +180,20 @@ $(document).ready(
 						    						       .attr("pointer-events","none");
 						      }
 						      i++;
-						     })
-		   var line = gSecond
-		    .selectAll("line")
+						     });
+	   		drawLine(listRelationship);
+		 
+	   		
+	  };
+	  
+	  function drawLine(listR){
+		  var line = d3.select("#gSecond").selectAll("line")
 		    .data(listRelationship)
 		    .enter()
 		    .append("line")
-		    .each(function() {
-		      var data = d3.select(this).data()[0];
+		    .each(function(d) {
+		      var data = d ;
+		      
 		      var pointOne = d3.select("#" + data.table).data()[0];
 		      var pointTwo = d3.select("#" + data.referTbl).data()[0];
 		      
@@ -178,6 +202,7 @@ $(document).ready(
 									        .attr( "x2",pointTwo.x + parseInt(d3.select("#rect" + data.referTbl).attr("x")))
 									        .attr("y2",pointTwo.y + d3.select("#rect2" + data.referTbl).attr("height") / 2)
 									       .attr("class", "line")
+									       .attr('id',"line"+d.table+d.referTbl)
 									       .attr("marker-end", "url(#arrowhead)")
 									       .attr("tableone", data.table)
 									       .attr("tabletwo", data.referTbl)
@@ -190,21 +215,26 @@ $(document).ready(
 		      
 		     });
 	   
-	   		//jquery begin
-	   		var s = $("#column-erd-curent").change(function(){
-	   			console.log(this);
-	   		})
-	  });
+	  }
 
+	/*function: maxHeight
+	 * details: to return width of a rect2
+	 * param : d - data of gCurrent
+	 * */
 	function maxHeight(d){
 		var max = 0;
 		for(var i = 0 ; i < d.listColumn.length ; i++){
-			if(d.listColumn[i].name.length + d.listColumn[i].type.length > max){
-				max = d.listColumn[i].name.length+d.listColumn[i].type.length ;
+			if(d.listColumn[i].name.length  > max){
+				max = d.listColumn[i].name.length ;
 			}
 		}
 		return max * 8 + 15;
 	}
+	
+	/* function : convert
+	 * details : to convert object Json from server to object json ERD
+	 * param : datajson - object json from server
+	 * */
 	function convert(datajson){
 		var result = {"tables":[], "relationships":[]};
 		for(var i = 0 ; i<datajson.childs.length; i++ ){
@@ -213,17 +243,17 @@ $(document).ready(
 			table.name = currentTable.tableName;
 			for(var j = 0 ; j < currentTable.childs.length ; j++){
 				var currentElement = currentTable.childs[j];
-				if (currentElement.json == "pk" || currentElement.json == "column"){
+				if ((currentElement.json == "pk" || currentElement.json == "column") && currentElement.foreignKey == false ){
 					var column = {};
 					column.name = currentElement.columnName;
 					column.type = currentElement.dataType;
 					column.length = currentElement.length;
 					column.primaryKey = currentElement.primaryKey;
 					column.notNull = currentElement.notNull;
-					column.foreignKey = currentElement.foreignKey;
 					column.unique = currentElement.unique;
 					if(currentElement.json == "pk"){
-					column.autoIncrement = currentElement.autoIncrement; }
+						column.autoIncrement = currentElement.autoIncrement;
+					}
 					table.listColumn.push(column);
 				}
 				if(currentElement.json == "otm"){
@@ -239,14 +269,27 @@ $(document).ready(
 		}
 		return result;
 	}
+	
+	/* function : moveover_table
+	 * details: to handle event mouse over on the table in ERD
+	 * */
 	function moveover_table(d,i){
 		  d3.select(this).attr("class"," mouseover-table");
 		  d3.select("#rect"+d.name).attr("class"," mouseover-table");
 	}
+	
+	/* function : moveout_table
+	 * details: to handle event mouse out on the table in ERD
+	 * */
 	function moveout_table(d,i){
 		 d3.select(this).attr("class"," mouseout-table");
 		  d3.select("#rect"+d.name).attr("class"," mouseout-table");
 	}
+	
+
+	/* function : mouse_onclick_table
+	 * details: to handle event mouse click on the table in ERD
+	 * */
 	function mouse_onclick_table(d,i){
 		$("#table-erd-current").val(d.name);
 		$(".option-column-erd").remove();
@@ -258,31 +301,269 @@ $(document).ready(
 		}
 		$("#column-erd-current").change(function(){
 			var value = $(this).val();
-			for(var i = 0 ; i < d.listColumn.length ; i++){
-				if(value == d.listColumn[i].name){
-					$("#typedata-erd-current").val(d.listColumn[i].type);
-					$("#pk-erd-current").prop('checked',d.listColumn[i].primaryKey);
-					$("#nn-erd-current").prop('checked',d.listColumn[i].notNull);
-					$("#ai-erd-current").prop('checked',false);
-				}
-			}
-		})
-		.change();
+			if(value != null)
+			$("#btn-delete-pro").prop("disabled",false);
+		}).change();
+		$("#btn-add-pro").prop("disabled",false);
 		d3.event.stopPropagation();
+	
 	}
+	
+
+	/* function : mouse_over_line
+	 * details: to handle event mouse over on the line in ERD
+	 * */
 	function mouse_over_line(d){
 		d3.select(this).attr('stroke',"red");
 		d3.select("#"+d.table+d.column).attr("fill","red");
 		d3.select("#"+d.referTbl+d.referColumn).attr("fill","red");
 	}
+	
+
+	/* function : mouse_out_line
+	 * details: to handle event mouse out on the line in ERD
+	 * */
 	function mouse_out_line(d){
 		d3.select(this).attr("stroke", "#808080");	
 		d3.select("#"+d.table+d.column).attr("fill","#000");
 		d3.select("#"+d.referTbl+d.referColumn).attr("fill","#000");
 	}
+	
+
+	/* function : move_onclick
+	 * details: to handle event mouse click on the line in ERD
+	 * */
 	function mouse_onclick_line(d){
+		$('#new-fk').hide();
+		$('#default-fk').show();
 		$("#fk-table-erd-current").val(d.table);
 		$("#fk-refertable-erd-current").val(d.referTbl);
-		$("#fk-joincolumn-erd-current").val(d.column);
+		$('#btn-delete-rela').prop('disabled',false);
+		d3.event.stopPropagation();
+	}
+	
+
+	/* function : onclick_btn_delete_pro
+	 * details: to handle event click to  button id="btn_delete_pro" in ERD mode
+	 * */
+	function onclick_btn_delete_pro(){
+		var table = $("#table-erd-current").val();
+		var columns = $('#column-erd-current').val();
+		for(var temp = 0 ; temp < columns.length ; temp++){
+			for(var i = 0 ; i < RootNode.instance.childs.length;i++){
+				if(table == RootNode.instance.childs[i].tableName){
+					var tableCurrent = RootNode.instance.childs[i];
+					for(var j = 0 ; j < tableCurrent.childs.length;j++){
+						if(tableCurrent.childs[j].json == "column")
+							if(tableCurrent.childs[j].columnName == columns[temp]){
+								 RootNode.instance.childs[i].childs.splice(j,1);
+								delete_data_d3(table,columns[temp]);
+								break;
+							}
+					}
+					break;
+				}
+			}
+		}
+		$("#btn-delete-pro").prop("disabled",true);
 		
 	}
+	// this function will be called on the below function ( onclick_btn_delete_pro )
+	function delete_data_d3(tableName,column){
+		var data = d3.select("#"+tableName).data()[0];
+		for(var i = 0 ; i < data.listColumn.length ; i++ ){
+			if(data.listColumn[i].name == column){
+				data.listColumn.splice(i,1);
+			}
+		}
+		redraw_rect(data,tableName);
+	}
+	
+	/* function : redraw
+	 * details : to redraw rect2 when we delete or add a property
+	 * */
+	function redraw_rect(data,tableName){
+		$(".option-column-erd").remove();
+		for(var i = 0 ; i < data.listColumn.length;i++){
+			$("#column-erd-current").append($("<option></option>")
+	                .attr("value",data.listColumn[i].name)
+	                .attr("class","option-column-erd")
+	                .text(data.listColumn[i].name));
+		}
+		d3.selectAll(".text"+tableName).remove();
+		d3.select("#rect2"+tableName).attr("height",data.listColumn.length*20);
+		for(var i = 0 ; i < data.listColumn.length ; i++){
+			d3.select("#"+tableName).append("text")
+				.text(data.listColumn[i].name )
+					 .attr("y", "0.5em")
+					 .attr("class", "text"+tableName)
+					 .attr("id",data.name+data.listColumn[i].name)
+			       .attr("transform","translate(" + [5 + parseInt(d3.select("#rect2"+tableName).attr("x")),31+i*20] + ")")
+			       .attr("text-anchor", "start")
+			       .attr("font-weight", 500).attr("font-family","Helvetica")
+			       .attr( "fill", "#000")
+			        .attr("font-size","12px")
+			       .attr("stroke", "none")
+			       .attr("pointer-events","none");
+		}
+	}
+	
+	
+	/* function : onclick_btn_delete_rela
+	 * details: to handle event click to  button id="btn_delete_rela" in ERD mode
+	 * */
+	function onclick_btn_delete_rela(){
+		var d = d3.select("#line"+$('#fk-table-erd-current').val()+$('#fk-refertable-erd-current').val()).data()[0];
+		d3.select('#line'+d.table+d.referTbl).remove();
+		$("#fk-table-erd-current").val(null);
+		$("#fk-refertable-erd-current").val(null);
+		var colId ;
+		var tableCurrent ;
+		for(var i = 0 ; i < RootNode.instance.childs.length;i++){
+			if(d.referTbl == RootNode.instance.childs[i].tableName){
+			    tableCurrent = RootNode.instance.childs[i];
+				for(var j = 0 ; j < tableCurrent.childs.length;j++){
+					if(tableCurrent.childs[j].json == "column")
+						if(tableCurrent.childs[j].foreignKey == true){
+							colId =  tableCurrent.childs[j].tempId;
+							break;
+						}
+				}
+				break;
+			}
+		}
+		var relatedList = TablesList.findRelatedElements(tableCurrent, colId);
+		InfoPanel.deleteRela(tableCurrent, colId, relatedList);
+		$('#btn-delete-rela').prop('disabled',true);
+	}
+	
+	/* function : onclick_btn_add_pro
+	 * details: to handle event click to  button id="btn_add_pro" in ERD mode
+	 * */
+	function onclick_btn_add_pro(){
+		$('#form-new-property').show();
+		$('#form-btn-default').hide();
+	}
+	
+	/* function : onclick_btn_ok_pro
+	 * details: to handle event click to  button id="btn_ok_pro" in ERD mode
+	 * */
+	function onclick_btn_ok_pro(){
+		var new_pro = $("#new-property").val();
+		if(new_pro == ""){
+			$("#new-property").focus();
+		}
+		else{
+			var tableName = $('#table-erd-current').val();
+			var data = d3.select("#"+tableName).data()[0];
+			var column = {};
+			column.name = $("#new-property").val().toUpperCase();
+			column.type = 'varchar()';
+			column.length = 0;
+			column.primaryKey = false;
+			column.notNull = false;
+			column.unique = false;
+			data.listColumn.push(column);
+			redraw_rect(data,tableName);
+			
+			var simpleCol = {
+					type: 			'nm',
+					columnName: 	$("#new-property").val().toUpperCase(),
+					dataType:		'varchar()',
+					notNull: 		false,
+					autoIncrement:	false,
+				};
+			var tableCurrent;
+			for(var i = 0 ; i < RootNode.instance.childs.length;i++){
+				if(tableName == RootNode.instance.childs[i].tableName){
+				    tableCurrent = RootNode.instance.childs[i];
+					break;
+				}
+			}
+			Table.addColumn(tableCurrent,simpleCol);
+		}
+	}
+	
+	/* function : onclick_btn_cancel_pro
+	 * details: to handle event click to  button id="btn_cancel_pro" in ERD mode
+	 * */
+	function onclick_btn_cancel_pro(){
+		$('#form-new-property').hide();
+		$('#form-btn-default').show();
+	}
+	
+	/* function : onclick_btn_add_rela
+	 * details: to handle event click to  button id="btn_add_rela" in ERD mode
+	 * */
+	function onclick_btn_add_rela(){
+		$('#default-fk').hide();
+		$('#new-fk').show();
+		if($('#fk-table-erd-new').val()==null){
+			for(var i = 0; i < listTable.length;i++){
+				$('#fk-table-erd-new').append($("<option></option>")
+		                .attr("value",listTable[i].name)
+		                .text(listTable[i].name));
+				$('#fk-refertable-erd-new').append($("<option></option>")
+		                .attr("value",listTable[i].name)
+		                .text(listTable[i].name));
+				
+			}
+		}
+	}
+
+	/* function : onclick_ok_cancel_rela
+	 * details: to handle event click to  button id="btn_ok_rela" in ERD mode
+	 * */
+	function onclick_btn_ok_rela(){
+		 var en1 = $("#fk-table-erd-new").val();
+		 var en2 = $("#fk-refertable-erd-new").val();
+		 if(en1 == en2){
+		 }
+		 else {
+			 var i=0;
+			 for( i = 0 ; i < listRelationship.length ; i++){
+				 if((listRelationship[i].table == en1 && listRelationship[i].referTbl==en2)
+						 || (listRelationship[i].table == en2 && listRelationship[i].referTbl==en1)) 
+					 break;
+			 }
+			 if(i == listRelationship.length){
+				 var relationship = {};
+				 relationship.table = en1;
+				 relationship.referTbl = en2;
+				 relationship.column = en1+en2+"_ID";
+				 relationship.referColumn = en1+"_"+en2+"_ID";
+				 listRelationship.push(relationship);
+				 d3.selectAll(".line").remove();
+				 drawLine(listRelationship);
+				 var simpleCol = {
+							type: 			'fk',
+							columnName: 	en1+"_"+en2+"_ID",
+							dataType:		'varchar()',
+							notNull: 		false,
+							autoIncrement:	false,
+							rfTableName:	en1,
+							rfColName:		 en1+"_"+en2+"_ID"
+						};
+					var tableCurrent;
+					for(var i = 0 ; i < RootNode.instance.childs.length;i++){
+						if(en2 == RootNode.instance.childs[i].tableName){
+						    tableCurrent = RootNode.instance.childs[i];
+							break;
+						}
+					}
+					Table.addColumn(tableCurrent,simpleCol);
+					console.log(RootNode.instance);
+			 }
+		 }
+	}
+	
+	
+	/* function : onclick_btn_cancel_rela
+	 * details: to handle event click to  button id="btn_cancel_rela" in ERD mode
+	 * */
+	function onclick_btn_cancel_rela(){
+		$('#new-fk').hide();
+		$('#default-fk').show();
+	}
+	
+	

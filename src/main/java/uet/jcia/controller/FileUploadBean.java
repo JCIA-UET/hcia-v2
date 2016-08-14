@@ -62,7 +62,13 @@ public class FileUploadBean implements Serializable {
 			
 			String fileDir = saveFile(is, fileName);
 			System.out.println("Saved file's directory: " + fileDir);
-			String parsedResultDir = core.parse(fileDir);
+			String parsedResultDir = null;
+			try {
+				parsedResultDir = core.parse(fileDir);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			System.out.println("Parsed original file's directory: " + parsedResultDir);
 			
 			if(parsedResultDir != null) {
@@ -82,6 +88,9 @@ public class FileUploadBean implements Serializable {
 			
 			exContext.redirect("index.xhtml");
 		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
