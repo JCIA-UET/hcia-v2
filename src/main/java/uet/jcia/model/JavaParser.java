@@ -67,10 +67,10 @@ public class JavaParser {
         RootNode root = new RootNode();
         List<TreeNode> children = new ArrayList<>();
         for (String sourcePath : sourcePaths) {
-            visitor.resetTable();
             char[] source = file2CharArr(sourcePath);
             TableNode table = parseSource(source);
-            children.add(table);
+            if (table != null)
+            	children.add(table);
         }
         root.setChilds(children);
         
