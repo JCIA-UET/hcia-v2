@@ -43,19 +43,12 @@ public class HASTVisitor extends ASTVisitor {
     
     public HASTVisitor() {
         cachedTables = new HashMap<>();
-        resetTable();
     }
     
     public long generateTempId() {
     	return tempId++;
     }
-    
-    public void resetTable() {
-        table = new TableNode();
-        children = new ArrayList<>();
-        table.setChilds(children);
-    }
-    
+       
     public TableNode getTable() {
         return table;
     }
@@ -89,6 +82,7 @@ public class HASTVisitor extends ASTVisitor {
         }
         
         if (!isEntity) {
+        	table = null;
             return false;
         }
         
@@ -105,6 +99,9 @@ public class HASTVisitor extends ASTVisitor {
             }
         }
         
+        table = new TableNode();
+        children = new ArrayList<>();
+        table.setChilds(children);
         table.setTableName(tableName);
         table.setClassName(className);
         table.setCatalog(catalog);
@@ -115,6 +112,7 @@ public class HASTVisitor extends ASTVisitor {
 
     @Override
     public boolean visit(MethodDeclaration node) {
+    	if (table == null) return false;
         List modifiers = node.modifiers();
         // get type of element
         String elementType = getElementType(modifiers);
