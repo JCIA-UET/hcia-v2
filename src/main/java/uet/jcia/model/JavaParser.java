@@ -74,6 +74,8 @@ public class JavaParser {
         }
         root.setChilds(children);
         
+        System.out.println("Root: " + root);
+        
         //!-------------------------------------------
         resolveRelationship(root);
         

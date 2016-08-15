@@ -293,8 +293,6 @@ function validateName() {
 	var spanElement = parentElement.children("span");
 	if(spanElement != null) spanElement.remove();
 	
-	
-	
 	if(tempColName == "") {
 		$("#validate-name-notice").css({'color':'#a94442'});
 		$("#col-input").css({'height':'325px'});
