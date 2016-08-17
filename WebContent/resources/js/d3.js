@@ -111,7 +111,7 @@ $(document).ready(function(){
 		   .append("path")
 		   .attr("d", "M0 5  L5 10 , M0 5  L5 0")
 		   .attr("stroke", "grey")
-		   .attr("stroke-fill",3)
+		   .attr("stroke-fill",1)
 		   .attr("fill","none");
 		var marker2 =   gFirst.append("defs").append("marker")
 		.attr("id", "oneMar")
@@ -136,6 +136,7 @@ $(document).ready(function(){
 	   }
 
 	   var i = 0;
+	   var k = 0;
 	   var face = gSecond.selectAll("g")
 	    				 .data(listTable)
 	    				 .enter()
@@ -151,7 +152,7 @@ $(document).ready(function(){
 						       .attr("id", 'rect' + name)
 						       .attr("class", 'rectxxx')
 						       .attr("x", i * 200)
-						       .attr("y","0")
+						       .attr("y",k*250)
 						       .attr("width",maxHeight(d))
 						       .attr("height",25 )
 						       .attr("fill","#98BFDA").attr("fill-opacity", 1)
@@ -160,7 +161,7 @@ $(document).ready(function(){
 						      .attr("id", 'rect2' + name)
 						      .attr("class", 'rectxxx')
 						      .attr("x", i * 200)
-						      .attr("y","25")
+						      .attr("y",25+k*250)
 						      .attr("width",maxHeight(d))
 						      .attr("height", d.listColumn.length*20)
 						      .attr("fill","white").attr("fill-opacity", .5)
@@ -172,7 +173,7 @@ $(document).ready(function(){
 						       .append("text")
 						       .text(d.name)
 						       .attr("y", "0.5em")
-						       .attr("transform","translate(" + [50 + i * 200,10] + ")")
+						       .attr("transform","translate(" + [50 + i * 200,10+k*250] + ")")
 						       .attr("text-anchor", "middle")
 						       .attr("font-weight", 700).attr("font-family","Helvetica")
 						       .attr("font-size","15px")
@@ -185,7 +186,7 @@ $(document).ready(function(){
 						    	  						 .attr("y", "0.5em")
 						    	  						 .attr("class", "text"+name)
 						    	  						 .attr("id",d.name+d.listColumn[j].name)
-						    						       .attr("transform","translate(" + [5 + i * 200,31+j*20] + ")")
+						    						       .attr("transform","translate(" + [5 + i * 200,31+j*20+k*250] + ")")
 						    						       .attr("text-anchor", "start")
 						    						       .attr("font-weight", 500).attr("font-family","Helvetica")
 						    						       .attr( "fill", "#000")
@@ -194,6 +195,10 @@ $(document).ready(function(){
 						    						       .attr("pointer-events","none");
 						      }
 						      i++;
+						      if(i == listTable.length/2){ 
+						    	  i=0;
+						    	  k++;
+						      }
 						     });
 	   		drawLine(listRelationship);
 		 
@@ -211,17 +216,25 @@ $(document).ready(function(){
 		      var pointOne = d3.select("#" + data.table).data()[0];
 		      var pointTwo = d3.select("#" + data.referTbl).data()[0];
 		      
-		      var lCurrent = d3.select(this).attr('x1',pointOne.x +	parseInt( d3.select("#rect2" + data.table).attr("width")))
-									        .attr("y1",pointOne.y + d3.select("#rect2" + data.table).attr("height") / 2)
-									        .attr( "x2",pointTwo.x + parseInt(d3.select("#rect" + data.referTbl).attr("x")))
-									        .attr("y2",pointTwo.y + d3.select("#rect2" + data.referTbl).attr("height") / 2)
+		      var x1 = pointOne.x +	parseInt( d3.select("#rect2" + data.table).attr("width"))
+				  +  parseInt(d3.select("#rect" + data.table).attr("x"));
+		      var y1 = pointOne.y + d3.select("#rect2" + data.table).attr("height") / 2
+		      			+  parseInt(d3.select("#rect" + data.table).attr("y"));
+		      
+		      var x2 = pointTwo.x + parseInt(d3.select("#rect" + data.referTbl).attr("x"));
+		      var y2 = pointTwo.y + d3.select("#rect2" + data.referTbl).attr("height") / 2
+		      						+ parseInt(d3.select("#rect" + data.referTbl).attr("y"));
+		      var lCurrent = d3.select(this).attr('x1',x1)
+									        .attr("y1",y1)
+									        .attr( "x2",x2)
+									        .attr("y2",y2)
 									       .attr("class", "line")
 									       .attr('id',"line"+d.table+d.referTbl)
 									       .attr("marker-start", "url(#oneMar)")
 									       .attr("marker-end", "url(#arrowhead)")
 									       .attr("tableone", data.table)
 									       .attr("tabletwo", data.referTbl)
-									       .attr("stroke-width", 4)
+									       .attr("stroke-width", 2)
 									       .attr("stroke", "#808080")
 									       .on("mouseover",mouse_over_line)
 									       .on("mouseout",mouse_out_line)
