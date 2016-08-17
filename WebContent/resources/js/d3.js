@@ -101,15 +101,29 @@ $(document).ready(function(){
 	   							  .attr("transform","translate(" + 0 + "," + 0 + ")")
 	   							  .style("background-color", "#F0F8FF");
 	   var gFirst = svg.append("g").attr("transform","translate(" + margin.left + "," + margin.right + ")").call(zoom);
-		var marker =   gFirst.append("defs").append("marker")
+		var marker1 =   gFirst.append("defs").append("marker")
 		   .attr("id", "arrowhead")
-		   .attr("refX",   3) /*must be smarter way to calculate shift*/
-		   .attr("refY", 2)
+		   .attr("refX",   5) /*must be smarter way to calculate shift*/
+		   .attr("refY", 5)
 		   .attr("markerWidth", 20)
 		   .attr("markerHeight", 20)
 		   .attr("orient", "auto")
 		   .append("path")
-		   .attr("d", "M 0,0 V 4 L6,2 Z");
+		   .attr("d", "M0 5  L5 10 , M0 5  L5 0")
+		   .attr("stroke", "grey")
+		   .attr("stroke-fill",3)
+		   .attr("fill","none");
+		var marker2 =   gFirst.append("defs").append("marker")
+		.attr("id", "oneMar")
+		.attr("refX", -8) /*must be smarter way to calculate shift*/
+		.attr("refY", 3)
+		.attr("markerWidth", 10)
+		.attr("markerHeight", 10)
+		.attr("orient", "auto")
+		.append("path")
+		.attr("d", 'M0 0  L0 -6 L1 -6 L1 6 L0 6 Z')
+		 .attr("stroke", "grey");
+		
 	   
 		var rect2 = gFirst.append("rect")
 	   					 .attr("width", width)
@@ -203,6 +217,7 @@ $(document).ready(function(){
 									        .attr("y2",pointTwo.y + d3.select("#rect2" + data.referTbl).attr("height") / 2)
 									       .attr("class", "line")
 									       .attr('id',"line"+d.table+d.referTbl)
+									       .attr("marker-start", "url(#oneMar)")
 									       .attr("marker-end", "url(#arrowhead)")
 									       .attr("tableone", data.table)
 									       .attr("tabletwo", data.referTbl)
@@ -301,8 +316,11 @@ $(document).ready(function(){
 		}
 		$("#column-erd-current").change(function(){
 			var value = $(this).val();
-			if(value != null)
-			$("#btn-delete-pro").prop("disabled",false);
+			if(value != null){
+				$("#btn-delete-pro").prop("disabled",false);
+				$('#form-new-property').hide();
+				$('#form-btn-default').show();
+			}
 		}).change();
 		$("#btn-add-pro").prop("disabled",false);
 		d3.event.stopPropagation();
@@ -414,6 +432,11 @@ $(document).ready(function(){
 	 * */
 	function onclick_btn_delete_rela(){
 		var d = d3.select("#line"+$('#fk-table-erd-current').val()+$('#fk-refertable-erd-current').val()).data()[0];
+		for(var i = 0 ; i < listRelationship.length ; i ++){
+			if(listRelationship[i].table == d.table && listRelationship[i].referTbl){
+				listRelationship.splice(i,1);
+			}
+		}
 		d3.select('#line'+d.table+d.referTbl).remove();
 		$("#fk-table-erd-current").val(null);
 		$("#fk-refertable-erd-current").val(null);
