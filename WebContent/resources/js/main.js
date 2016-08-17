@@ -8,18 +8,18 @@ $(document).ready(function() {
 			return "All your changes will be lost if you refresh, are you sure?";
 		};
 	}
-  
+	
+	// Prepare all need element
 	prepareData();
-	
 	if(TablesList.instances == null) return;
-	
-	TreeView.createTree();
-	
 	Table.instance = null;
+	$("#add-col-trigger").hide();
 	$(".hcia-contentpanel").children("ul").hide();
 	$(".tab-content").hide();
 	
-	createTableSelectList(document.getElementById("rftable-new-col"));
+	TreeView.createTree();
+	
+	createSelectedListOfTable(document.getElementById("rftable-new-col"));
 	showPKListByChosenTableName($("#rftable-new-col").val(), document.getElementById("rfcolumn-new-col"));
 	
 	// Click on table
@@ -31,9 +31,15 @@ $(document).ready(function() {
 		Table.instance = TablesList.findTableByName($(this).text());
 		
 		InfoPanel.displayCurrentTable();
+		
+		$("#add-col-trigger").show();
 	});
 	
+	$("#col-tab").click(function(){$(".detail-wrap").hide();});
+	$("#fk-tab").click(function(){$(".detail-wrap").hide();});
+	
 	$(".table-info").on("click", "tr", function(){
+		$(".detail-wrap").show();
 		InfoPanel.showColDetail($(this).children(":first").text());
 	});
 	
@@ -74,14 +80,16 @@ $(document).ready(function() {
 			.modal({ backdrop: 'static', keyboard: false })
 			.one("click", "#delete", function(){
 				InfoPanel.deleteColumn(Table.instance, colId, relatedList);
+				
+				// Recreate tree (remove deleted elements)
+				TreeView.recreateTree();
+				TreeView.expanseElement(Table.instance.tableName);
 		});
 	});
 	
 	$(".relationship-info").on("click", "tr", function(){
 		InfoPanel.showRelaDetail($(this).children().eq(1).text());
-		
-		TreeView.recreateTree();
-		TreeView.expanseElement(Table.instance.tableName);
+		$(".detail-wrap").show();
 	});
 	
 	$(".relationship-info").on("click", ".rmv-rela", function(){
@@ -123,6 +131,7 @@ $(document).ready(function() {
 			.one("click", "#delete", function(){
 				InfoPanel.deleteRela(Table.instance, colId, relatedList);
 				
+				// Recreate tree (remove deleted elements)
 				TreeView.recreateTree();
 				TreeView.expanseElement(Table.instance.tableName);
 		});
@@ -191,7 +200,7 @@ function prepareData() {
 	Relationship.loadAll();
 }
 
-function createTableSelectList(element) {
+function createSelectedListOfTable(element) {
 	if(TablesList.instances != null) {
 		for(var i = 0; i < TablesList.instances.length; i++) {
 			element.options[element.options.length]= new Option(TablesList.instances[i].tableName, TablesList.instances[i].tableName);
@@ -284,8 +293,6 @@ function validateName() {
 	var spanElement = parentElement.children("span");
 	if(spanElement != null) spanElement.remove();
 	
-	
-	
 	if(tempColName == "") {
 		$("#validate-name-notice").css({'color':'#a94442'});
 		$("#col-input").css({'height':'325px'});
@@ -360,6 +367,7 @@ function tranferMode(){
 	var element = document.getElementById('tableMode'),
     style = window.getComputedStyle(element);
     display = style.getPropertyValue('display');
+    console.log(display);
 	if(display == "none"){
 		$("#present-mode").text("Table Mode");
 		document.getElementById('tableMode').style.display ="block";

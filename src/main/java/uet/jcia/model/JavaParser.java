@@ -67,12 +67,14 @@ public class JavaParser {
         RootNode root = new RootNode();
         List<TreeNode> children = new ArrayList<>();
         for (String sourcePath : sourcePaths) {
-            visitor.resetTable();
             char[] source = file2CharArr(sourcePath);
             TableNode table = parseSource(source);
-            children.add(table);
+            if (table != null)
+            	children.add(table);
         }
         root.setChilds(children);
+        
+        System.out.println("Root: " + root);
         
         //!-------------------------------------------
         resolveRelationship(root);
@@ -118,6 +120,7 @@ public class JavaParser {
                                 PrimaryKeyNode referColumn = (PrimaryKeyNode) Helper.deepClone(child2);
                                 mto.setReferColumn(referColumn);
                                 ColumnNode fk = generateFkFromPk(referColumn);
+                                fk.setTempId(visitor.generateTempId());
                                 if (mto.getForeignKey().getColumnName() != null)
                                     fk.setColumnName(mto.getForeignKey().getColumnName());
                                 mto.setForeignKey(fk);

@@ -31,6 +31,8 @@ public class HASTVisitor extends ASTVisitor {
     private static final String SQL_OTM = "One-to-Many";
     private static final String SQL_MTO = "Many-to-One";
     
+    private static long tempId = 0L;
+    
     private TableNode table;
     private List<TreeNode> children;
     
@@ -41,15 +43,12 @@ public class HASTVisitor extends ASTVisitor {
     
     public HASTVisitor() {
         cachedTables = new HashMap<>();
-        resetTable();
     }
     
-    public void resetTable() {
-        table = new TableNode();
-        children = new ArrayList<>();
-        table.setChilds(children);
+    public long generateTempId() {
+    	return tempId++;
     }
-    
+       
     public TableNode getTable() {
         return table;
     }
@@ -64,7 +63,6 @@ public class HASTVisitor extends ASTVisitor {
         String tableName = null;
         String catalog = null;
         String className = null;
-        
         // check if class is a hibernate Entity
         boolean isEntity = false;
         boolean hasTableValues = false;
@@ -84,17 +82,15 @@ public class HASTVisitor extends ASTVisitor {
         }
         
         if (!isEntity) {
+        	table = null;
             return false;
-            
         }
         
         className = node.getName().getFullyQualifiedName();
         if (isEntity && !hasTableValues) {
             tableName = node.getName().getIdentifier();
-            
         } else if (isEntity && hasTableValues){
             for (MemberValuePair val : tableValues) {
-                
                 if (val.getName().toString().equals("name")) {
                     tableName = val.getValue().toString().replace("\"", "");
                 } else if (val.getName().toString().equals("catalog")) {
@@ -103,22 +99,24 @@ public class HASTVisitor extends ASTVisitor {
             }
         }
         
+        table = new TableNode();
+        children = new ArrayList<>();
+        table.setChilds(children);
         table.setTableName(tableName);
         table.setClassName(className);
         table.setCatalog(catalog);
-        
+        table.setTempId(generateTempId());
         cachedTables.put(className, table);
         return true;
     }
 
     @Override
     public boolean visit(MethodDeclaration node) {
+    	if (table == null) return false;
         List modifiers = node.modifiers();
-        
         // get type of element
         String elementType = getElementType(modifiers);
         Type returnType = node.getReturnType2();
-        
         if (elementType.equals(SQL_COLUMN)) {
             children.add(parseColumn(modifiers, returnType));
         } else if (elementType.equals(SQL_OTM)) {
@@ -128,7 +126,6 @@ public class HASTVisitor extends ASTVisitor {
         } else {
             return false;
         }
-        
         return true;
     }
     
@@ -138,7 +135,7 @@ public class HASTVisitor extends ASTVisitor {
         String referClassName = null;
         List<MemberValuePair> joinColumnValues = null;
         String fkColumnName = null;
-        
+
         // get foreign key column name
         for (Object modifier : modifiers) {
             if (modifier instanceof Annotation) {
@@ -149,13 +146,11 @@ public class HASTVisitor extends ASTVisitor {
                 }
             }
         }
-        
         for (MemberValuePair pair : joinColumnValues) {
             if (pair.getName().toString().equals("name")) {
                 fkColumnName = pair.getValue().toString().replace("\"", "");
             }
         }
-        
         // refer class here
         if (returnType.isSimpleType()) {
             referClassName = ((SimpleType)returnType).getName().getFullyQualifiedName();
@@ -164,12 +159,11 @@ public class HASTVisitor extends ASTVisitor {
         ColumnNode foreignKey = new ColumnNode();
         foreignKey.setForeignKey(true);
         foreignKey.setColumnName(fkColumnName);
-        
         TableNode referTable = new TableNode();
         referTable.setClassName(referClassName);
-        
         mto.setReferTable(referTable);
         mto.setForeignKey(foreignKey);
+        mto.setTempId(generateTempId());
         return mto;
     }
     
@@ -177,18 +171,6 @@ public class HASTVisitor extends ASTVisitor {
         OTMRelationshipNode otm = new OTMRelationshipNode();
         otm.setType(SQL_OTM);
         String referClassName = null;
-        
-        /*List<MemberValuePair> otmValues = null;
-        for (Object modifier : modifiers) {
-            if (modifier instanceof Annotation) {
-                Annotation anno = (Annotation) modifier;
-                if (anno.getTypeName().toString().equals("OneToMany")
-                        && anno instanceof NormalAnnotation) {
-                    otmValues = ((NormalAnnotation)anno).values();
-                }
-            }
-        }*/
-        
         // get type here
         if (returnType.isParameterizedType()) {
             ParameterizedType pReturnType = (ParameterizedType) returnType;
@@ -197,23 +179,21 @@ public class HASTVisitor extends ASTVisitor {
                 referClassName = ((SimpleType)argument).getName().getFullyQualifiedName();
             }
         }
-        
         TableNode referTable = new TableNode();
         referTable.setClassName(referClassName);
         otm.setReferTable(referTable);
+        otm.setTempId(generateTempId());
         return otm;
     }
     
     private ColumnNode parseColumn(List modifiers, Type returnType) {
         List<MemberValuePair> columnValues = null;
-        
         String columnName = null;
         String javaType = null;
         int length = 0;
         boolean isPK = false;
         boolean isUQ = false;
         boolean isNN = false;
-        
         // get column name, length, pk, uq, nn here
         for (Object modifier : modifiers) {
             if (modifier instanceof Annotation) {
@@ -226,7 +206,6 @@ public class HASTVisitor extends ASTVisitor {
                 }
             }
         }
-        
         for (MemberValuePair pair : columnValues) {
             if (pair.getName().toString().equals("name")) {
                 columnName = pair.getValue().toString().replace("\"", "");
@@ -240,27 +219,25 @@ public class HASTVisitor extends ASTVisitor {
                 isNN = true;
             }
         }
-        
         // get type here
         if (returnType.isPrimitiveType()) {
             javaType = ((PrimitiveType)returnType).getPrimitiveTypeCode().toString();
         } else if (returnType.isSimpleType()) {
             javaType = ((SimpleType)returnType).getName().getFullyQualifiedName();
         }
-        
         ColumnNode column = null;
         if (isPK) {
             column = new PrimaryKeyNode();
         } else {
             column = new ColumnNode();
         }
-        
         column.setColumnName(columnName);
         column.setDataType(Mappers.getHbmtoSql(javaType));
         column.setLength(length);
         column.setPrimaryKey(isPK);
         column.setUnique(isUQ);
         column.setNotNull(isNN);
+        column.setTempId(generateTempId());
         return column;
     }
     
