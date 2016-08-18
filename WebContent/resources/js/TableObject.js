@@ -6,7 +6,7 @@ function Table() {};
 
 /** Static property **/
 // Static instance for retrieving data
-Table.instance = {};
+Table.instance = null;
 
 /** Method **/
 Table.findColumnByName = function(table, szColumnName) {

@@ -17,6 +17,9 @@ $(document).ready(function(){
      * details: to draw ERD
      * */
   	function draw() {
+  	if(RootNode.instance == null)
+  		return;
+  	
 	var json = RootNode.instance;
 	var d3Obj = convert(RootNode.instance);
     listRelationship = d3Obj.relationships;

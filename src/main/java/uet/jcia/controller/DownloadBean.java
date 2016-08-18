@@ -34,7 +34,8 @@ public class DownloadBean {
 
 	@SuppressWarnings("unchecked")
 	public String createDownloadURL(String szJson) {
-		if(szJson == null) return null;
+		if(szJson == null || szJson.equalsIgnoreCase("")) return null;
+		System.out.println(szJson);
 		
 		FacesContext facesContext = FacesContext.getCurrentInstance();
 		ExternalContext exContext = facesContext.getExternalContext();

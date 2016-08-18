@@ -48,7 +48,7 @@
         		<h:panelGroup styleClass="rawdata-op-area">
 							<h:inputHidden binding="#{jsonData}" />
 						</h:panelGroup>
-						<h:commandLink styleClass="download-btn" onclick="getJsonData()" action="#{downloadBean.download(jsonData.value)}">
+						<h:commandLink styleClass="download-btn" onclick="return getJsonData();" action="#{downloadBean.download(jsonData.value)}">
 							<span class="glyphicon glyphicon-download"></span> Download
             </h:commandLink>
 				</h:form></li>
