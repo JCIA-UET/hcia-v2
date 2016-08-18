@@ -57,7 +57,7 @@ $(document).ready(function(){
 				            if (d.name == attrTableOne) {
 					             x1 = table1.x + parseInt(d3.select("#rect2" + attrTableOne).attr("width")) 
 					             				+ parseInt(d3.select("#rect2" + attrTableOne).attr("x"));
-					             y1 = table1.y + parseInt(d3.select("#rect2" + attrTableOne).attr("height"))/2 
+					             y1 = table1.y - 10
 					             				+ parseInt(d3.select("#rect2" + attrTableOne).attr("y"));
 					             x2 = table2.x + parseInt(d3.select("#rect2" + attrTableTwo).attr("x"));
 				
@@ -75,7 +75,7 @@ $(document).ready(function(){
 				            } else if (d.name == attrTableTwo) {
 				            	x2 = table2.x + parseInt(d3.select("#rect2" + attrTableTwo).attr("x"));
 				            	y2 = table2.y + parseInt(d3.select("#rect2" + attrTableTwo).attr("y")) 
-				            				  + parseInt(d3.select("#rect2" + attrTableTwo).attr("height"))/2 ;
+				            				  -10;
 				            	x1 = table1.x + parseInt(d3.select("#rect" + attrTableOne).attr("width")) 
 				            				+ parseInt(d3.select("#rect" + attrTableOne).attr("x"));
 					             if (x2 < x1) {
@@ -84,7 +84,8 @@ $(document).ready(function(){
 					             }
 				
 				            }
-				            d3.select(this).attr("x1",x1)
+				            d3.select(this).attr("points",x1+","+y1+" "+(x1+x2)/2+","+y1+" "+(x1+x2)/2+","+y2+" "+x2+","+y2)
+				            				.attr("x1",x1)
 				            			   .attr("y1",y1)
 				            			   .attr("x2",x2)
 				            			   .attr("y2",y2);
@@ -132,7 +133,7 @@ $(document).ready(function(){
 	   var gSecond = gFirst.append("g").attr("id","gSecond");
 	 
 	   function zoomed() {
-	    gSecond.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+		   gSecond.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
 	   }
 
 	   var i = 0;
@@ -153,19 +154,22 @@ $(document).ready(function(){
 						       .attr("class", 'rectxxx')
 						       .attr("x", i * 200)
 						       .attr("y",k*250)
-						       .attr("width",maxHeight(d))
+						       .attr("width",maxHeight(d)+10)
 						       .attr("height",25 )
 						       .attr("fill","#98BFDA").attr("fill-opacity", 1)
-						       .attr("stroke", "#87CEFA").attr("stroke-width", 3);
+						       .attr("stroke", "#87CEFA").attr("stroke-width", 3)
+						       .on('mouseover', moveover_table)
+						      .on('mouseout', moveout_table)
+						        .on('click',mouse_onclick_table);
 						      var table2 = gCurrent.append("rect")
 						      .attr("id", 'rect2' + name)
 						      .attr("class", 'rectxxx')
 						      .attr("x", i * 200)
 						      .attr("y",25+k*250)
-						      .attr("width",maxHeight(d))
+						      .attr("width",maxHeight(d)+10)
 						      .attr("height", d.listColumn.length*20)
 						      .attr("fill","white").attr("fill-opacity", .5)
-						      .attr("stroke", "#87CEFA").attr("stroke-width", 3)
+						      .attr("stroke", "#87CEFA").attr("stroke-width", 0)
 						      .on('mouseover', moveover_table)
 						      .on('mouseout', moveout_table)
 						      .on('click',mouse_onclick_table);
@@ -180,20 +184,9 @@ $(document).ready(function(){
 						       .attr("fill", "#000")
 						       .attr("stroke", "none")
 						       .attr("pointer-events","none");
-						      for(var j = 0 ; j < d.listColumn.length;j++){
-						    	  var textCol = gCurrent.append("text")
-						    	  						.text(d.listColumn[j].name )
-						    	  						 .attr("y", "0.5em")
-						    	  						 .attr("class", "text"+name)
-						    	  						 .attr("id",d.name+d.listColumn[j].name)
-						    						       .attr("transform","translate(" + [5 + i * 200,31+j*20+k*250] + ")")
-						    						       .attr("text-anchor", "start")
-						    						       .attr("font-weight", 500).attr("font-family","Helvetica")
-						    						       .attr( "fill", "#000")
-						    						        .attr("font-size","12px")
-						    						       .attr("stroke", "none")
-						    						       .attr("pointer-events","none");
-						      }
+						      draw_rect2(gCurrent,i,k,d);
+						      
+						      
 						      i++;
 						      if(i == listTable.length/2){ 
 						    	  i=0;
@@ -206,35 +199,36 @@ $(document).ready(function(){
 	  };
 	  
 	  function drawLine(listR){
-		  var line = d3.select("#gSecond").selectAll("line")
+		  var line = d3.select("#gSecond").selectAll("polyline")
 		    .data(listRelationship)
 		    .enter()
-		    .append("line")
+		    .append("polyline")
 		    .each(function(d) {
 		      var data = d ;
-		      
+		      console.log(data);
 		      var pointOne = d3.select("#" + data.table).data()[0];
 		      var pointTwo = d3.select("#" + data.referTbl).data()[0];
 		      
 		      var x1 = pointOne.x +	parseInt( d3.select("#rect2" + data.table).attr("width"))
 				  +  parseInt(d3.select("#rect" + data.table).attr("x"));
-		      var y1 = pointOne.y + d3.select("#rect2" + data.table).attr("height") / 2
+		      var y1 = pointOne.y + 10
 		      			+  parseInt(d3.select("#rect" + data.table).attr("y"));
 		      
 		      var x2 = pointTwo.x + parseInt(d3.select("#rect" + data.referTbl).attr("x"));
-		      var y2 = pointTwo.y + d3.select("#rect2" + data.referTbl).attr("height") / 2
+		      var y2 = pointTwo.y + 10
 		      						+ parseInt(d3.select("#rect" + data.referTbl).attr("y"));
-		      var lCurrent = d3.select(this).attr('x1',x1)
-									        .attr("y1",y1)
-									        .attr( "x2",x2)
-									        .attr("y2",y2)
-									       .attr("class", "line")
+		      var lCurrent = d3.select(this).attr("points",x1+","+y1+" "+(x1+x2)/2+","+y1+" "+(x1+x2)/2+","+y2+" "+x2+","+y2)
+									       .attr("x1",x1)
+				            			   .attr("y1",y1)
+				            			   .attr("x2",x2)
+				            			   .attr("y2",y2)
+		      								.attr("class", "line")
 									       .attr('id',"line"+d.table+d.referTbl)
 									       .attr("marker-start", "url(#oneMar)")
 									       .attr("marker-end", "url(#arrowhead)")
 									       .attr("tableone", data.table)
 									       .attr("tabletwo", data.referTbl)
-									       .attr("stroke-width", 2)
+									       .attr("style", "fill:none;stroke-width:3")
 									       .attr("stroke", "#808080")
 									       .on("mouseover",mouse_over_line)
 									       .on("mouseout",mouse_out_line)
@@ -244,6 +238,50 @@ $(document).ready(function(){
 		     });
 	   
 	  }
+	  
+	 function draw_rect2(gCurrent,i,k,d) {
+		 gCurrent.append("path")
+	       .attr("id","lined"+d.name)
+	       .attr("d", "M"+ i*200 +" "+ (k*250+25) +" L"+i*200+" "+(12+k*250+d.listColumn.length*30))
+	       .attr("stroke-width", 3)
+	       .attr("i",i)
+	       .attr("k",k)
+	       .attr("stroke", "#87CEFA");
+	       
+	      
+	      for(var j = 0 ; j < d.listColumn.length;j++){
+	    	  var textCol = gCurrent.append("rect")
+		      .attr("id", 'rect2' + d.mname)
+		      .attr("rx",10)
+		      .attr("ry",10)
+		      .attr("class", 'rectxxx'+d.name)
+		      .attr("x", i * 200 +10)
+		      .attr("y",30+k*250+j*30)
+		      .attr("width",maxHeight(d))
+		      .attr("height", 20)
+		      .attr("fill","white").attr("fill-opacity", .5)
+		      .attr("stroke", "#87CEFA").attr("stroke-width", 1)
+		      .on('mouseover', moveover_table)
+			  .on('mouseout', moveout_table)
+			  .on('click',mouse_onclick_table);
+	    	  						gCurrent.append("text")
+	    	  						.text(d.listColumn[j].name )
+	    	  						 .attr("y", "0.5em")
+	    	  						 .attr("class", "text"+d.name)
+	    	  						 .attr("id",d.name+d.listColumn[j].name)
+	    						       .attr("transform","translate(" + [60 + i * 200,38+j*30+k*250] + ")")
+	    						       .attr("text-anchor", "middle")
+	    						       .attr("font-weight", 500).attr("font-family","Helvetica")
+	    						       .attr( "fill", "#000")
+	    						        .attr("font-size","12px")
+	    						       .attr("stroke", "none")
+	    						       .attr("pointer-events","none");
+	    	  						 gCurrent.append("path")
+	  						       .attr("class","liner"+d.name)
+	  						       .attr("d", "M"+ i*200 +" "+ (k*250+40+j*30) +" L"+(i*200+10)+" "+ (k*250+40+j*30))
+	  						       .attr("stroke-width", 3)
+	  						       .attr("stroke", "#87CEFA");}
+	 }
 
 	/*function: maxHeight
 	 * details: to return width of a rect2
@@ -414,6 +452,7 @@ $(document).ready(function(){
 	 * details : to redraw rect2 when we delete or add a property
 	 * */
 	function redraw_rect(data,tableName){
+		d3.selectAll(".rectxxx"+tableName).remove();
 		$(".option-column-erd").remove();
 		for(var i = 0 ; i < data.listColumn.length;i++){
 			$("#column-erd-current").append($("<option></option>")
@@ -422,21 +461,18 @@ $(document).ready(function(){
 	                .text(data.listColumn[i].name));
 		}
 		d3.selectAll(".text"+tableName).remove();
-		d3.select("#rect2"+tableName).attr("height",data.listColumn.length*20);
-		for(var i = 0 ; i < data.listColumn.length ; i++){
-			d3.select("#"+tableName).append("text")
-				.text(data.listColumn[i].name )
-					 .attr("y", "0.5em")
-					 .attr("class", "text"+tableName)
-					 .attr("id",data.name+data.listColumn[i].name)
-			       .attr("transform","translate(" + [5 + parseInt(d3.select("#rect2"+tableName).attr("x")),31+i*20] + ")")
-			       .attr("text-anchor", "start")
-			       .attr("font-weight", 500).attr("font-family","Helvetica")
-			       .attr( "fill", "#000")
-			        .attr("font-size","12px")
-			       .attr("stroke", "none")
-			       .attr("pointer-events","none");
-		}
+		d3.select("#rect2"+tableName).attr("height",data.listColumn.length*30);
+		
+		
+		var i = parseInt(d3.select("#lined"+tableName).attr("i"));
+		var k = parseInt(d3.select("#lined"+tableName).attr("k"));
+		var gCurrent = d3.select("#"+tableName);
+		
+		
+		d3.select("#lined"+tableName).remove();
+		d3.selectAll(".liner"+tableName).remove();
+		
+		draw_rect2(gCurrent,i,k,data);
 	}
 	
 	
