@@ -40,61 +40,19 @@ $(document).ready(function(){
 				    .on("drag",function(d, i) {
 				      d.x += d3.event.dx;
 				      d.y += d3.event.dy;
+				      
 				      d3.select(this).attr("transform",function(d, i) {
-				         var dates = d3.selectAll(".line").each(
-				           function() {
-				            var attrTableOne = d3.select(this).attr("tableone");
-				            var attrTableTwo = d3.select(this).attr("tabletwo");
-				
-				            var table1 = d3.select("#" + attrTableOne).data()[0];
-				            var table2 = d3.select("#" + attrTableTwo).data()[0];
-				
-				            var x1 = parseInt(d3.select(this).attr("x1"));
-				            var y1 = parseInt(d3.select(this).attr("y1"));
-				            var x2 = parseInt(d3.select(this).attr("x2"));
-				            var y2 = parseInt(d3.select(this).attr("y2"));
-				
-				            if (d.name == attrTableOne) {
-					             x1 = table1.x + parseInt(d3.select("#rect2" + attrTableOne).attr("width")) 
-					             				+ parseInt(d3.select("#rect2" + attrTableOne).attr("x"));
-					             y1 = table1.y - 10
-					             				+ parseInt(d3.select("#rect2" + attrTableOne).attr("y"));
-					             x2 = table2.x + parseInt(d3.select("#rect2" + attrTableTwo).attr("x"));
-				
-				             if (x1 > x2) {
-					              x1 = x1 - parseInt(d3.select("#rect2" + attrTableOne).attr("width")) ;
-					              x2 = x2 + parseInt(d3.select("#rect2" + attrTableTwo).attr("width")) ;
-				             }
-//				             if (y1 < y2 && x1 + 100 > x2) {
-//				            	  x1 = table1.x + 50 + parseInt(d3.select("#rect" + attrTableOne).attr("x"));
-//				            	  y1 = table1.y + 100 + parseInt(d3.select("#rect" + attrTableOne).attr("y"));
-//					              x2 = table2.x + parseInt(d3.select("#rect" + attrTableTwo).attr("x")) + 50;
-//					              y2 = table2.y + parseInt(d3.select("#rect" + attrTableTwo).attr("y"));
-//				             }
-				
-				            } else if (d.name == attrTableTwo) {
-				            	x2 = table2.x + parseInt(d3.select("#rect2" + attrTableTwo).attr("x"));
-				            	y2 = table2.y + parseInt(d3.select("#rect2" + attrTableTwo).attr("y")) 
-				            				  -10;
-				            	x1 = table1.x + parseInt(d3.select("#rect" + attrTableOne).attr("width")) 
-				            				+ parseInt(d3.select("#rect" + attrTableOne).attr("x"));
-					             if (x2 < x1) {
-					              x2 = x2 + parseInt(d3.select("#rect2" + attrTableTwo).attr("width")) ;
-					              x1 = x1 - parseInt(d3.select("#rect2" + attrTableOne).attr("width")) ;
-					             }
-				
-				            }
-				            d3.select(this).attr("points",x1+","+y1+" "+(x1+x2)/2+","+y1+" "+(x1+x2)/2+","+y2+" "+x2+","+y2)
-				            				.attr("x1",x1)
-				            			   .attr("y1",y1)
-				            			   .attr("x2",x2)
-				            			   .attr("y2",y2);
+				         var dates = d3.selectAll(".line").filter(function(data){return d.name == data.table
+				        	 													      || d.name == data.referTbl}).each(
+				           function(dataLine) {
+				        	   var new_ps = redraw_line(d.name, dataLine.table , dataLine.referTbl);
+				        	   d3.select(this).attr("points",new_ps);
 				            })
 				
 				         return "translate(" + [d.x,d.y] + ")";
 				         });
 				     });
-	   var zoom = d3.behavior.zoom().scaleExtent([0.4, 3]).on("zoom", zoomed);
+	   var zoom = d3.behavior.zoom().scaleExtent([0.2, 3]).on("zoom", zoomed);
 
 	   var svg = d3.select("#ERD").append("svg")
 	   							  .attr("width",width)
@@ -204,30 +162,11 @@ $(document).ready(function(){
 		    .enter()
 		    .append("polyline")
 		    .each(function(d) {
-		      var data = d ;
-		      console.log(data);
-		      var pointOne = d3.select("#" + data.table).data()[0];
-		      var pointTwo = d3.select("#" + data.referTbl).data()[0];
-		      
-		      var x1 = pointOne.x +	parseInt( d3.select("#rect2" + data.table).attr("width"))
-				  +  parseInt(d3.select("#rect" + data.table).attr("x"));
-		      var y1 = pointOne.y + 10
-		      			+  parseInt(d3.select("#rect" + data.table).attr("y"));
-		      
-		      var x2 = pointTwo.x + parseInt(d3.select("#rect" + data.referTbl).attr("x"));
-		      var y2 = pointTwo.y + 10
-		      						+ parseInt(d3.select("#rect" + data.referTbl).attr("y"));
-		      var lCurrent = d3.select(this).attr("points",x1+","+y1+" "+(x1+x2)/2+","+y1+" "+(x1+x2)/2+","+y2+" "+x2+","+y2)
-									       .attr("x1",x1)
-				            			   .attr("y1",y1)
-				            			   .attr("x2",x2)
-				            			   .attr("y2",y2)
+		      var lCurrent = d3.select(this).attr("points",redraw_line(d.table,d.table,d.referTbl))
 		      								.attr("class", "line")
 									       .attr('id',"line"+d.table+d.referTbl)
 									       .attr("marker-start", "url(#oneMar)")
 									       .attr("marker-end", "url(#arrowhead)")
-									       .attr("tableone", data.table)
-									       .attr("tabletwo", data.referTbl)
 									       .attr("style", "fill:none;stroke-width:3")
 									       .attr("stroke", "#808080")
 									       .on("mouseover",mouse_over_line)
@@ -237,6 +176,60 @@ $(document).ready(function(){
 		      
 		     });
 	   
+	  }
+	  
+	  function redraw_line(table , tableone , tabletwo ){
+		 var result = "";
+		  
+		 var data1 = d3.select("#"+tableone).data()[0];
+		 var data2 = d3.select("#"+tabletwo).data()[0];
+		 
+		 var x1 = data1.x + parseInt(d3.select("#rect"+tableone).attr("x"));
+		 var y1 = data1.y + parseInt(d3.select("#rect"+tableone).attr("y"));
+		 var x2 = data2.x + parseInt(d3.select("#rect"+tabletwo).attr("x"));
+		 var y2 = data2.y + parseInt(d3.select("#rect"+tabletwo).attr("y"));
+		 
+		 var heigth1 = 20;
+		 var heigth2 = 20;
+		 var width1 = parseInt(d3.select("#rect"+tableone).attr("width"));
+		 var width2 = parseInt(d3.select("#rect"+tabletwo).attr("width"));
+		 
+		 if(y2  > y1 + 150 ){
+			 if(x2 < x1-width1/4){
+				 result = x1 + "," + (y1+10)+" "+ (x2+width2/2) +","+(y1+10)+" "+(x2+width2/2) +","+y2;
+			 }
+			 else if( (x1-width1/4 <= x2) &&(x2 <= x1+width1/4)){
+				 result = x1 + "," + (y1+10)+" "+ (x1-50) + "," + (y1+10)+" "+(x1-50) + "," + (y2+10)+" "+x2 + "," + (y2+10);
+			 }
+			 else {
+				 result = (x1+width1) + "," + (y1+10)+" "+ (x2+width2/2) +","+(y1+10)+" "+(x2+width2/2) +","+y2;
+			 }
+		 }
+		 else if( (y1 - 150 <= y2) && (y2<= y1 + 150)){
+			 if(x2 < x1-width1/4){
+				 result = x1 + "," + (y1+10)+" "+ ((x1+x2+width1)/2)+","+(y1+10)+" "+ ((x1+x2+width1)/2)+","+(y2+10)+ " " + (x2+width2)+"," + (y2+10);  
+			 }
+			 else if( (x1-width1/4 <= x2) &&(x2 <= x1+width1/4)){
+				 result = x1 + "," + (y1+10)+" "+ (x1-50) + "," + (y1+10)+" "+(x1-50) + "," + (y2+10)+" "+x2 + "," + (y2+10);
+			 }
+			 else {
+				 result = (x1+width1) + "," + (y1+10)+" "+ ((x1+x2+width1)/2)+","+(y1+10)+" "+ ((x1+x2+width1)/2)+","+(y2+10)+ " " +x2+"," + (y2+10);
+			 }
+			 
+		 }
+		 else if (y2 < y1-150){
+			 if(x2 < x1-width1/2){
+				 result = (x1+width1/2)+","+y1+" "+ (x1+width1/2)+","+(y2+10)+" "+ (x2+width2)+","+(y2+10);
+			 }
+			 else if( (x1-width1/2 <= x2) &&(x2 <= x1+width1/2)){
+				 result =  x1 + "," + (y1+10)+" "+ (x1-50) + "," + (y1+10)+" "+(x1-50) + "," + (y2+10)+" "+x2 + "," + (y2+10);
+			 }
+			 else {
+				 result = (x1+width1/2)+","+y1+" "+ (x1+width1/2)+","+(y2+10)+" "+ (x2)+","+(y2+10);
+			 }
+		 }
+		
+		 return result;
 	  }
 	  
 	 function draw_rect2(gCurrent,i,k,d) {
@@ -250,20 +243,20 @@ $(document).ready(function(){
 	       
 	      
 	      for(var j = 0 ; j < d.listColumn.length;j++){
+	    	  console.log(j);
 	    	  var textCol = gCurrent.append("rect")
-		      .attr("id", 'rect2' + d.mname)
 		      .attr("rx",10)
 		      .attr("ry",10)
-		      .attr("class", 'rectxxx'+d.name)
+		      .attr("class", 'rectxxx' + d.name)
 		      .attr("x", i * 200 +10)
 		      .attr("y",30+k*250+j*30)
 		      .attr("width",maxHeight(d))
 		      .attr("height", 20)
 		      .attr("fill","white").attr("fill-opacity", .5)
 		      .attr("stroke", "#87CEFA").attr("stroke-width", 1)
-		      .on('mouseover', moveover_table)
-			  .on('mouseout', moveout_table)
-			  .on('click',mouse_onclick_table);
+		      .on('mouseover', moveover_pp)
+			  .on('mouseout', moveout_pp)
+			  .on('click',mouse_onclick_pp);
 	    	  						gCurrent.append("text")
 	    	  						.text(d.listColumn[j].name )
 	    	  						 .attr("y", "0.5em")
@@ -378,6 +371,47 @@ $(document).ready(function(){
 	
 	}
 	
+	/* function : moveover_pp
+	 * details: to handle event mouse over on the table in ERD
+	 * */
+	function moveover_pp(d,i){
+		  d3.select(this).attr("class"," mouseover-table rectxxx"+d.name);
+		  d3.select("#rect"+d.name).attr("class"," mouseover-table");
+	}
+	
+	/* function : moveout_pp
+	 * details: to handle event mouse out on the table in ERD
+	 * */
+	function moveout_pp(d,i){
+		 d3.select(this).attr("class"," mouseout-table rectxxx"+d.name);
+		  d3.select("#rect"+d.name).attr("class"," mouseout-table");
+	}
+	
+
+	/* function : mouse_onclick_pp
+	 * details: to handle event mouse click on the table in ERD
+	 * */
+	function mouse_onclick_pp(d,i){
+		$("#table-erd-current").val(d.name);
+		$(".option-column-erd").remove();
+		for(var i = 0 ; i < d.listColumn.length;i++){
+			$("#column-erd-current").append($("<option></option>")
+	                .attr("value",d.listColumn[i].name)
+	                .attr("class","option-column-erd")
+	                .text(d.listColumn[i].name));
+		}
+		$("#column-erd-current").change(function(){
+			var value = $(this).val();
+			if(value != null){
+				$("#btn-delete-pro").prop("disabled",false);
+				$('#form-new-property').hide();
+				$('#form-btn-default').show();
+			}
+		}).change();
+		$("#btn-add-pro").prop("disabled",false);
+		d3.event.stopPropagation();
+	
+	}
 
 	/* function : mouse_over_line
 	 * details: to handle event mouse over on the line in ERD
@@ -445,6 +479,7 @@ $(document).ready(function(){
 				data.listColumn.splice(i,1);
 			}
 		}
+
 		redraw_rect(data,tableName);
 	}
 	
@@ -452,7 +487,7 @@ $(document).ready(function(){
 	 * details : to redraw rect2 when we delete or add a property
 	 * */
 	function redraw_rect(data,tableName){
-		d3.selectAll(".rectxxx"+tableName).remove();
+		
 		$(".option-column-erd").remove();
 		for(var i = 0 ; i < data.listColumn.length;i++){
 			$("#column-erd-current").append($("<option></option>")
@@ -471,8 +506,9 @@ $(document).ready(function(){
 		
 		d3.select("#lined"+tableName).remove();
 		d3.selectAll(".liner"+tableName).remove();
-		
+		d3.selectAll(".rectxxx"+tableName).remove();
 		draw_rect2(gCurrent,i,k,data);
+		
 	}
 	
 	
@@ -578,7 +614,6 @@ $(document).ready(function(){
 				$('#fk-refertable-erd-new').append($("<option></option>")
 		                .attr("value",listTable[i].name)
 		                .text(listTable[i].name));
-				
 			}
 		}
 	}
