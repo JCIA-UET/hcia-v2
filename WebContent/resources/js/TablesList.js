@@ -6,7 +6,7 @@ function RootNode() {};
 
 /** Static property **/
 //Static instance for retrieving data
-RootNode.instance = {};
+RootNode.instance = null;
 
 
 /****************************************
@@ -17,7 +17,7 @@ function TablesList() {};
 
 /** Static property **/
 // Static instance for retrieving data
-TablesList.instances = {};
+TablesList.instances = null;
 
 /** Method **/
 TablesList.convertStringToObject = function(rawData) {

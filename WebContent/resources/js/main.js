@@ -1,6 +1,8 @@
 $(document).ready(function() {
 	modalAction();
 	console.log($("#raw-data-ip").val());
+	console.log(TablesList.instances);
+	console.log(RootNode.instance);
 
 	// notify when user tries to refresh
 	if (TablesList.instances != null) {
@@ -358,10 +360,16 @@ function validateLength() {
 }
 
 function getJsonData() {
+	//console.log(TablesList.instances);
+	if(TablesList.instances == null) {
+		alert("Cannot download: No data found!");
+		return false;
+	}
+	
 	RootNode.instance.childs = TablesList.instances;
 	var rawData = JSON.stringify(RootNode.instance);
-	console.log("Raw Data: " + rawData);
 	$(".rawdata-op-area input[type=hidden]").val(rawData);
+	return true;
 }
 function tranferMode(){
 	var element = document.getElementById('tableMode'),
