@@ -15,6 +15,7 @@ import uet.jcia.entities.Table;
 import uet.jcia.entities.TreeNode;
 import uet.jcia.utils.Constants;
 import uet.jcia.utils.Helper;
+import uet.jcia.utils.HibernateHelper;
 
 public class CoreAPI {
     
@@ -107,6 +108,13 @@ public class CoreAPI {
     
     public String download(String tempPath) {
         return zm.compress(mapper.get(tempPath));
+    }
+    
+    public String generateCreationScript(String tempPath) {
+    	String extractedFolder = mapper.get(tempPath);
+    	List<String> hbmList = new ArrayList<>();
+    	fm.findFiles(extractedFolder, ".*\\.xml", hbmList);
+    	return HibernateHelper.generateDdl(hbmList);
     }
     
     public void updateData(TreeNode tableNode) {
