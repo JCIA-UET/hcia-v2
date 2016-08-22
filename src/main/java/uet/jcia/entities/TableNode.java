@@ -11,10 +11,19 @@ public class TableNode extends TreeNode {
     protected String catalog;
     
     protected String xmlPath;
+    protected String javaPath;
     
     public TableNode(){
     	
     }
+    
+    public String getJavaPath() {
+		return javaPath;
+	}
+    
+    public void setJavaPath(String javaPath) {
+		this.javaPath = javaPath;
+	}
     
     public String getCatalog() {
         return catalog;

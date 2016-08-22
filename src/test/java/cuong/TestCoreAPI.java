@@ -1,5 +1,6 @@
 package cuong;
 
+import java.io.File;
 import java.util.List;
 
 import uet.jcia.entities.Column;
@@ -15,7 +16,15 @@ public class TestCoreAPI {
     public static void main(String[] args) throws Exception {
 //        testZip();
 //        testXml();
-    	testJava();
+//    	testJava();
+    	fileTest();
+    }
+    
+    public static void fileTest() {
+    	File javaFile = new File("temp\\upload\\classicmodels.java");
+    	System.out.println(javaFile.getParentFile().getAbsolutePath());
+    	String fileName = javaFile.getName().replace(".java", ".hbm.xml");
+    	System.out.println(fileName);
     }
     
     public static void testJava() throws Exception {
