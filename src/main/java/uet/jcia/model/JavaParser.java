@@ -69,8 +69,10 @@ public class JavaParser {
         for (String sourcePath : sourcePaths) {
             char[] source = file2CharArr(sourcePath);
             TableNode table = parseSource(source);
-            if (table != null)
+            if (table != null) {
+            	table.setJavaPath(sourcePath);
             	children.add(table);
+            }
         }
         root.setChilds(children);
         

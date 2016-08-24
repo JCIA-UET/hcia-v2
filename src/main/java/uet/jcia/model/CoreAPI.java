@@ -1,17 +1,12 @@
 package uet.jcia.model;
 
 import java.io.File;
-import java.nio.file.Files;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-
-import uet.jcia.entities.Column;
-import uet.jcia.entities.Table;
 import uet.jcia.entities.TreeNode;
 import uet.jcia.utils.Constants;
 import uet.jcia.utils.Helper;
@@ -110,11 +105,24 @@ public class CoreAPI {
         return zm.compress(mapper.get(tempPath));
     }
     
-    public String generateCreationScript(String tempPath) {
+    public String generateCreationScript(String tempPath) throws IOException {
     	String extractedFolder = mapper.get(tempPath);
+    	List<String> javaList = new ArrayList<>();
+    	fm.findFiles(extractedFolder, ".*\\.java", javaList);
+    	for (String javaPath : javaList) {
+    		File javaFile = new File(javaPath);
+    		String parentPath = javaFile.getParentFile().getAbsolutePath();
+    		String fileName = javaFile.getName().replaceAll("\\.java", ".hbm.xml");
+    		File hbmFile = new File(parentPath + File.separator + fileName);
+    		if (!hbmFile.exists())
+    			hbmFile.createNewFile();
+    	}
+    	
     	List<String> hbmList = new ArrayList<>();
-    	fm.findFiles(extractedFolder, ".*\\.xml", hbmList);
-    	return HibernateHelper.generateDdl(hbmList);
+    	fm.findFiles(extractedFolder, ".*\\.java", hbmList);
+    	String sql = HibernateHelper.generateDdl(hbmList); 
+    	System.out.println(sql);
+    	return sql;
     }
     
     public void updateData(TreeNode tableNode) {
