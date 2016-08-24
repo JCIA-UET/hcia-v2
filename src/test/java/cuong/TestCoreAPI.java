@@ -23,7 +23,7 @@ public class TestCoreAPI {
         System.out.println("[temp data] " + resultPath);
         
         TreeNode rootNode = api.getParsedData(resultPath);
-        System.out.println(JsonHelper.toJsonString(rootNode));
+        //System.out.println(JsonHelper.toJsonString(rootNode));
     }
     
     /*public static void testZip() {
