@@ -59,8 +59,6 @@ public class Inverser {
             return ;
         }
         
-        System.out.println(tableNode);
-        
         try {
             DocumentBuilder builder = dbFactory.newDocumentBuilder();
             Document doc = builder.newDocument();

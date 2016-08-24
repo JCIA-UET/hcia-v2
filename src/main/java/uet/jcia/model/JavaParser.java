@@ -71,6 +71,8 @@ public class JavaParser {
             TableNode table = parseSource(source);
             if (table != null) {
             	table.setJavaPath(sourcePath);
+            	String xmlPath = sourcePath.replace(".java", ".hbm.xml");
+            	table.setXmlPath(xmlPath);
             	children.add(table);
             }
         }

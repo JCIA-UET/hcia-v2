@@ -73,17 +73,12 @@ public class FileUploadBean implements Serializable {
 			
 			if(parsedResultDir != null) {
 				String sessionid = session.getId();
-
-				String logKey = sessionid + "log";
-				List<String> changeLog = new ArrayList<>();
-				File tempFile = new File(parsedResultDir);
-				changeLog.add(tempFile.getName());
-				exContext.getSessionMap().put(logKey, changeLog);
 				
-				String originDirKey = sessionid + "origindir";
-				exContext.getSessionMap().put(originDirKey, parsedResultDir);
+				String parseDirKey = sessionid + "parsedir";
+				exContext.getSessionMap().put(parseDirKey, parsedResultDir);
 				
-				
+				String localDirKey = sessionid + "localdir";
+				exContext.getSessionMap().put(localDirKey, fileDir);
 			}
 			
 			exContext.redirect("index.xhtml");

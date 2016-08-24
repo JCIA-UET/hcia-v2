@@ -44,14 +44,26 @@
       <ul class="nav navbar-nav">
       	
         <li><label id="upload-trigger"><span class="glyphicon glyphicon-upload"></span> Upload</label></li>
-        <li><h:form id="dl-form">
-        		<h:panelGroup styleClass="rawdata-op-area">
-							<h:inputHidden binding="#{jsonData}" />
+        <li>
+        	<h:form id="dl-form">
+        		<h:panelGroup styleClass="rawdata-dl-area">
+							<h:inputHidden binding="#{jsonDlData}" />
 						</h:panelGroup>
-						<h:commandLink styleClass="download-btn" onclick="return getJsonData();" action="#{downloadBean.download(jsonData.value)}">
+        		<h:commandLink styleClass="download-btn" onclick="return getJsonDataToDL();" action="#{downloadBean.downloadXML(jsonDlData.value)}">
 							<span class="glyphicon glyphicon-download"></span> Download
             </h:commandLink>
-				</h:form></li>
+					</h:form>
+				</li>
+				<li>
+					<h:form id="gensql-form" name="gensql-form">
+						<h:panelGroup styleClass="rawdata-sql-area">
+							<h:inputHidden binding="#{jsonGenData}" />
+						</h:panelGroup>
+						<h:commandLink styleClass="gensql-btn" onclick="return getJsonDataToGenSQL();" action="#{downloadBean.downloadSQLScript(jsonGenData.value)}">
+							<span class="glyphicon glyphicon-download"></span> Generate SQL Script
+            </h:commandLink>
+					</h:form>
+				</li>
 			  
       </ul>
       <!-- right side menu -->
@@ -284,8 +296,7 @@
 			</div>
 		</div>
 	</div>
-	
-	
+
 	<!-- Notice Modal -->
 	<div class="modal fade" id="addColModal" role="dialog">
 		<div class="modal-dialog">
@@ -367,6 +378,8 @@
 			</div>
 		</div>
 	</div>
+	
+	<!-- ERD Mode -->
 	<div class="container-fluid" id="ERDMode">
 		<div class="row">
 			<div class="col-lg-9">

@@ -359,7 +359,7 @@ function validateLength() {
 	}
 }
 
-function getJsonData() {
+function getJsonDataToDL() {
 	//console.log(TablesList.instances);
 	if(TablesList.instances == null) {
 		alert("Cannot download: No data found!");
@@ -368,9 +368,24 @@ function getJsonData() {
 	
 	RootNode.instance.childs = TablesList.instances;
 	var rawData = JSON.stringify(RootNode.instance);
-	$(".rawdata-op-area input[type=hidden]").val(rawData);
+	$(".rawdata-dl-area input[type=hidden]").val(rawData);
 	return true;
 }
+
+function getJsonDataToGenSQL() {
+	//console.log(TablesList.instances);
+	if(TablesList.instances == null) {
+		alert("Cannot download: No data found!");
+		return false;
+	}
+	
+	RootNode.instance.childs = TablesList.instances;
+	var rawData = JSON.stringify(RootNode.instance);
+	$(".rawdata-sql-area input[type=hidden]").val(rawData);
+	$("#scriptModal").modal("show");
+	return true;
+}
+
 function tranferMode(){
 	var element = document.getElementById('tableMode'),
     style = window.getComputedStyle(element);

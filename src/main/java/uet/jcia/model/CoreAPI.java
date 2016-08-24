@@ -109,6 +109,7 @@ public class CoreAPI {
     	String extractedFolder = mapper.get(tempPath);
     	List<String> javaList = new ArrayList<>();
     	fm.findFiles(extractedFolder, ".*\\.java", javaList);
+    	System.out.println(javaList);
     	for (String javaPath : javaList) {
     		File javaFile = new File(javaPath);
     		String parentPath = javaFile.getParentFile().getAbsolutePath();
@@ -119,7 +120,7 @@ public class CoreAPI {
     	}
     	
     	List<String> hbmList = new ArrayList<>();
-    	fm.findFiles(extractedFolder, ".*\\.java", hbmList);
+    	fm.findFiles(extractedFolder, ".*\\.hbm.xml", hbmList);
     	String sql = HibernateHelper.generateDdl(hbmList); 
     	System.out.println(sql);
     	return sql;

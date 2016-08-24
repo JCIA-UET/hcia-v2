@@ -39,7 +39,7 @@ public class TreeBean implements Serializable {
 		//String jsonKey = sessionid + "json";
 		//String jsonData = (String) session.getAttribute(jsonKey);
 		
-		String dirKey = sessionid + "origindir";
+		String dirKey = sessionid + "parsedir";
 		String parsedDir = (String) session.getAttribute(dirKey);
 		
 		if(parsedDir != null) {

@@ -3,6 +3,7 @@ package uet.jcia.controller;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -18,65 +19,44 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import uet.jcia.entities.RootNode;
 import uet.jcia.entities.TreeNode;
 import uet.jcia.model.CoreAPI;
+import uet.jcia.utils.Constants;
 
 @ManagedBean
 @SessionScoped
 public class DownloadBean {
+	private String sqlScript;
 	private String rawData;
 	
+	// Getters
+	public String getSqlScript() {
+		return sqlScript;
+	}
 	public String getRawData() {
 		return rawData;
 	}
-
+	
+	// Setters
+	public void setSqlScript(String script) {
+		this.sqlScript = script;
+	}
 	public void setRawData(String rawData) {
 		this.rawData = rawData;
 	}
-
+	
+	// Methods
 	@SuppressWarnings("unchecked")
-	public String createDownloadURL(String szJson) {
-		if(szJson == null || szJson.equalsIgnoreCase("")) return null;
-		System.out.println(szJson);
-		
-		FacesContext facesContext = FacesContext.getCurrentInstance();
-		ExternalContext exContext = facesContext.getExternalContext();
-		CoreAPI api = new CoreAPI();
-		HttpSession session = (HttpSession) exContext.getSession(false);
-		
-		
-		try {
-			ObjectMapper mapper = new ObjectMapper();
-			RootNode root = mapper.readValue(szJson, RootNode.class);
-			
-			if(root != null) {
-				for(TreeNode table : root.getChilds()) {
-					api.updateData(table);
-				}
-				
-				String sessionid = session.getId();
-				String resultDirKey = sessionid + "origindir";
-				String resultDir = (String) session.getAttribute(resultDirKey);
-				return api.download(resultDir);
-			}
-			return null;	
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return null;
-		}
-	}
+	
 
-	public void download(String szJson) {
+	public void downloadXML(String szJson) {
 		FacesContext fc = FacesContext.getCurrentInstance();
 	    ExternalContext ec = fc.getExternalContext();
 
-	    String downloadURL = createDownloadURL(szJson);
-	    
-	    if(downloadURL != null) {
-	    
-		    System.out.println("Download file: " + downloadURL);
-			File file = new File(downloadURL);
+	    String downloadPath = createDownloadPath(szJson);
+	    if(downloadPath != null) {
+		    System.out.println("Download file: " + downloadPath);
+			File file = new File(downloadPath);
 			String fileName = file.getName();
-			String contentType = ec.getMimeType(downloadURL);
+			String contentType = ec.getMimeType(downloadPath);
 			int contentLength = (int) file.length();
 		    
 		    ec.responseReset();
@@ -106,5 +86,150 @@ public class DownloadBean {
 				e.printStackTrace();
 			}
 	    }
+	}
+	
+	public void downloadSQLScript(String szJson) {
+		FacesContext fc = FacesContext.getCurrentInstance();
+	    ExternalContext ec = fc.getExternalContext();
+	    
+	    System.out.println("Creating script file's path");
+	    String scriptPath = createSQLScriptPath(szJson);
+	    System.out.println("Done. Script file's path: " + scriptPath);
+	    
+	}
+	
+	private String createSQLScriptPath(String szJson) {
+		FacesContext fc = FacesContext.getCurrentInstance();
+	    ExternalContext ec = fc.getExternalContext();
+	    HttpSession session = (HttpSession) ec.getSession(false);
+	    
+	    System.out.println("JSON: " + szJson);
+	    String script = generateSQLScript(szJson);
+	    if(script != null) {
+	    	String sessionid = session.getId();
+	    	String scriptFilePath = Constants.TEMP_SOURCE_FOLDER + File.separator + "script-" + sessionid + ".txt";
+	    	System.out.println("File: " + scriptFilePath);
+	    	try {
+	    		File scriptFile = new File(scriptFilePath);
+				FileOutputStream fos = new FileOutputStream(scriptFile);
+				
+				// if file doesnt exists, then create it
+				if (!scriptFile.exists()) {
+					scriptFile.createNewFile();
+				}
+				
+				// get the content in bytes
+				byte[] contentInBytes = script.getBytes();
+				
+				fos.write(contentInBytes);
+				fos.flush();
+				fos.close();
+				
+				return scriptFilePath;
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	    }
+		return null;	
+	}
+	
+	private String createDownloadPath(String szJson) {
+		if(szJson == null || szJson.equalsIgnoreCase("")) return null;
+		
+		FacesContext facesContext = FacesContext.getCurrentInstance();
+		ExternalContext exContext = facesContext.getExternalContext();
+		CoreAPI api = new CoreAPI();
+		HttpSession session = (HttpSession) exContext.getSession(false);
+			
+		updateJsonToNode(szJson);
+				
+		String sessionid = session.getId();
+		String parseDirKey = sessionid + "parsedir";
+		String parseDir = (String) session.getAttribute(parseDirKey);
+		return api.download(parseDir);
+	}
+	
+	private String generateSQLScript(String szJson) {
+		FacesContext facesContext = FacesContext.getCurrentInstance();
+		ExternalContext exContext = facesContext.getExternalContext();
+		CoreAPI api = new CoreAPI();
+		
+		HttpSession session = (HttpSession) exContext.getSession(false);
+		String sessionid = session.getId();
+		
+		String parseDirKey = sessionid + "parsedir";
+		String parseDir = (String) session.getAttribute(parseDirKey);
+		
+		updateJsonToNode(szJson);
+		
+		try {
+			String sql = api.generateCreationScript(parseDir);
+			if (sql == null || sql.equals("")) {
+				return null;
+			}
+			else return sql;
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	private void makeDownloadAction(FacesContext fc, ExternalContext ec, String filePath) {
+		if(filePath != null) {
+		    System.out.println("Script file: " + filePath);
+			File file = new File(filePath);
+			String fileName = file.getName();
+			String contentType = ec.getMimeType(filePath);
+			int contentLength = (int) file.length();
+		    
+		    ec.responseReset();
+		    ec.setResponseContentType(contentType);
+		    ec.setResponseContentLength(contentLength);
+		    ec.setResponseHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
+		    
+		    try {
+				OutputStream os = ec.getResponseOutputStream();
+				InputStream fis = new FileInputStream(file);
+				byte[] buffer = new byte[2048];
+				int i = -1;
+				while ((i = fis.read(buffer)) != -1) {
+					os.write(buffer, 0, i);
+				}
+				
+				os.flush();
+				fis.close();
+				os.close();
+				
+				fc.responseComplete();
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	    }
+	}
+	private void updateJsonToNode(String szJson) {
+		CoreAPI api = new CoreAPI();
+		
+		try {
+			ObjectMapper mapper = new ObjectMapper();
+			RootNode root = mapper.readValue(szJson, RootNode.class);
+		
+			if(root != null) {
+				for(TreeNode table : root.getChilds()) {
+					api.updateData(table);
+				}
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }
