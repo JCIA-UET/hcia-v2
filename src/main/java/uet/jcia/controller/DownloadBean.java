@@ -44,58 +44,14 @@ public class DownloadBean {
 	}
 	
 	// Methods
-	@SuppressWarnings("unchecked")
-	
-
 	public void downloadXML(String szJson) {
-		FacesContext fc = FacesContext.getCurrentInstance();
-	    ExternalContext ec = fc.getExternalContext();
-
 	    String downloadPath = createDownloadPath(szJson);
-	    if(downloadPath != null) {
-		    System.out.println("Download file: " + downloadPath);
-			File file = new File(downloadPath);
-			String fileName = file.getName();
-			String contentType = ec.getMimeType(downloadPath);
-			int contentLength = (int) file.length();
-		    
-		    ec.responseReset();
-		    ec.setResponseContentType(contentType);
-		    ec.setResponseContentLength(contentLength);
-		    ec.setResponseHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
-		    
-		    try {
-				OutputStream os = ec.getResponseOutputStream();
-				InputStream fis = new FileInputStream(file);
-				byte[] buffer = new byte[2048];
-				int i = -1;
-				while ((i = fis.read(buffer)) != -1) {
-					os.write(buffer, 0, i);
-				}
-				
-				os.flush();
-				fis.close();
-				os.close();
-				
-				fc.responseComplete();
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-	    }
+	    makeDownloadAction(downloadPath);
 	}
 	
 	public void downloadSQLScript(String szJson) {
-		FacesContext fc = FacesContext.getCurrentInstance();
-	    ExternalContext ec = fc.getExternalContext();
-	    
-	    System.out.println("Creating script file's path");
 	    String scriptPath = createSQLScriptPath(szJson);
-	    System.out.println("Done. Script file's path: " + scriptPath);
-	    
+	    makeDownloadAction(scriptPath);
 	}
 	
 	private String createSQLScriptPath(String szJson) {
@@ -105,6 +61,7 @@ public class DownloadBean {
 	    
 	    System.out.println("JSON: " + szJson);
 	    String script = generateSQLScript(szJson);
+	    
 	    if(script != null) {
 	    	String sessionid = session.getId();
 	    	String scriptFilePath = Constants.TEMP_SOURCE_FOLDER + File.separator + "script-" + sessionid + ".txt";
@@ -179,7 +136,10 @@ public class DownloadBean {
 		return null;
 	}
 	
-	private void makeDownloadAction(FacesContext fc, ExternalContext ec, String filePath) {
+	private void makeDownloadAction(String filePath) {
+		FacesContext fc = FacesContext.getCurrentInstance();
+		ExternalContext ec = fc.getExternalContext();
+		
 		if(filePath != null) {
 		    System.out.println("Script file: " + filePath);
 			File file = new File(filePath);

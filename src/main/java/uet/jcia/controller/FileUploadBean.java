@@ -6,8 +6,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
@@ -16,12 +14,12 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.validator.ValidatorException;
-import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
 
-import uet.jcia.entities.TreeNode;
 import uet.jcia.model.CoreAPI;
 import uet.jcia.utils.Constants;
+import uet.jcia.utils.CookieHelper;
+import uet.jcia.utils.Helper;
 
 @ManagedBean(name="fileUploadBean")
 @SessionScoped
@@ -51,7 +49,6 @@ public class FileUploadBean implements Serializable {
 	public void upload() {
 		FacesContext facesContext = FacesContext.getCurrentInstance();
 		ExternalContext exContext = facesContext.getExternalContext();
-	    HttpSession session = (HttpSession) exContext.getSession(true);
 
 		CoreAPI core = new CoreAPI();
 
@@ -62,23 +59,23 @@ public class FileUploadBean implements Serializable {
 			
 			String fileDir = saveFile(is, fileName);
 			System.out.println("Saved file's directory: " + fileDir);
-			String parsedResultDir = null;
+			String tempDataPath = null;
+			
 			try {
-				parsedResultDir = core.parse(fileDir);
+				tempDataPath = core.parse(fileDir);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			System.out.println("Parsed original file's directory: " + parsedResultDir);
 			
-			if(parsedResultDir != null) {
-				String sessionid = session.getId();
+			if(tempDataPath != null) {
+				String parseDirKey = "parsedir";
+				exContext.getSessionMap().put(parseDirKey, tempDataPath);
 				
-				String parseDirKey = sessionid + "parsedir";
-				exContext.getSessionMap().put(parseDirKey, parsedResultDir);
-				
-				String localDirKey = sessionid + "localdir";
+				String localDirKey = "localdir";
 				exContext.getSessionMap().put(localDirKey, fileDir);
+				
+				CookieHelper.setCookie("temp-data", Helper.getFileName(tempDataPath));
 			}
 			
 			exContext.redirect("index.xhtml");
