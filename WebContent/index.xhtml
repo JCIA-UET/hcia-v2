@@ -35,6 +35,7 @@
   <h:outputScript name="js/d3.js" />
   
 </h:head>
+<f:event listener="#{cookieBean.loadSavedSession}" type="preRenderView" />
 <h:body>
 	
   <!-- Navigation -->

@@ -5,6 +5,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
@@ -28,6 +29,48 @@ public class Helper {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+    
+    public static String prepareSessionFolder(String sessionid) throws Exception{
+    	String sessionFolder = null;
+    	
+    	if (sessionid != null && !sessionid.equals("")) {
+    		sessionFolder = Constants.TEMP_SOURCE_FOLDER + File.separator + sessionid;
+        	File ctnerFile = new File(sessionFolder);
+        	
+        	if (!ctnerFile.isDirectory()) {
+        		if (!ctnerFile.mkdirs()) {
+        			throw new Exception("Error creating container folder");
+        		}
+        	}
+        	
+        	return sessionFolder;
+        }
+        else {
+        	return Constants.TEMP_SOURCE_FOLDER;
+        }
+    }
+    
+    public static String findFile(String containerPath, String fileName) throws Exception {
+    	File ctnerFile = new File(containerPath);
+    	File[] listFile = ctnerFile.listFiles(new FilenameFilter() {
+    		public boolean accept(File dir, String name) {
+    			return name.startsWith(fileName);
+    		}
+    	});
+    	
+    	if (listFile.length > 1) {
+    		throw new Exception("There are more than one folder with name: " + fileName);
+    	}
+    	else if (listFile.length == 0) {
+    		return null;
+    	}
+    	else return listFile[0].getAbsolutePath();
+    }
+    
+    public static String getFileName(String path) {
+    	int index = path.lastIndexOf("\\");
+    	return path.substring(index + 1);
     }
     
     public static Object deepClone(Object object) {
