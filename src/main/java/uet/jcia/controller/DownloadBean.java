@@ -104,8 +104,7 @@ public class DownloadBean {
 			
 		updateJsonToNode(szJson);
 				
-		String sessionid = session.getId();
-		String parseDirKey = sessionid + "parsedir";
+		String parseDirKey = "parsedir";
 		String parseDir = (String) session.getAttribute(parseDirKey);
 		return api.download(parseDir);
 	}
@@ -116,9 +115,8 @@ public class DownloadBean {
 		CoreAPI api = new CoreAPI();
 		
 		HttpSession session = (HttpSession) exContext.getSession(false);
-		String sessionid = session.getId();
 		
-		String parseDirKey = sessionid + "parsedir";
+		String parseDirKey = "parsedir";
 		String parseDir = (String) session.getAttribute(parseDirKey);
 		
 		updateJsonToNode(szJson);

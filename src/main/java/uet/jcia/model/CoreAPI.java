@@ -102,6 +102,7 @@ public class CoreAPI {
     }
     
     public String download(String tempPath) {
+    	System.out.println(tempPath);
         return zm.compress(mapper.get(tempPath));
     }
     
