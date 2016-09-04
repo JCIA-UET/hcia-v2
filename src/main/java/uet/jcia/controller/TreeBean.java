@@ -62,7 +62,8 @@ public class TreeBean implements Serializable {
 //				
 //			setJsonData(jsonData);
 //		}
-		
+		FacesContext facesContext = FacesContext.getCurrentInstance();
+		ExternalContext exContext = facesContext.getExternalContext();
 		CoreAPI api = new CoreAPI();
 		
 		String dataFileName = null;
@@ -72,7 +73,11 @@ public class TreeBean implements Serializable {
 		
 		if (dataFileName != null) {
 			String fullDataPath = Constants.TEMP_SOURCE_FOLDER + File.separator + dataFileName;
-			String parseDirKey = "parsedir";
+
+			HttpSession session = (HttpSession) exContext.getSession(false);
+			String sessionid = session.getId();
+			String parseDirKey = sessionid + "parsedir";
+			
 			setSessionProp(parseDirKey, fullDataPath);
 			
 			TreeNode root = api.getParsedData(fullDataPath);
@@ -117,18 +122,18 @@ public class TreeBean implements Serializable {
 		storage.saveMap(mapper);
 	}
 	
-	private void loadSavedSession(ComponentSystemEvent event) {
-		String dataFileName = null;
-		
-		dataFileName = getDataFileNameFromCookie();
-		System.out.println("Temp path: " + dataFileName);
-		
-		if (dataFileName != null) {
-			String fullDataPath = Constants.TEMP_SOURCE_FOLDER + File.separator + dataFileName;
-			String parseDirKey = "parsedir";
-			setSessionProp(parseDirKey, fullDataPath);
-		}
-	}
+//	private void loadSavedSession(ComponentSystemEvent event) {
+//		String dataFileName = null;
+//		
+//		dataFileName = getDataFileNameFromCookie();
+//		System.out.println("Temp path: " + dataFileName);
+//		
+//		if (dataFileName != null) {
+//			String fullDataPath = Constants.TEMP_SOURCE_FOLDER + File.separator + dataFileName;
+//			String parseDirKey = "parsedir";
+//			setSessionProp(parseDirKey, fullDataPath);
+//		}
+//	}
 	
 	private String getDataFileNameFromCookie() {
 		Cookie[] userCookie = CookieHelper.getAllCookies();

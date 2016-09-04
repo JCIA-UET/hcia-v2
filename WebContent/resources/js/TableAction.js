@@ -31,6 +31,20 @@ TableAction.save = function() {
 	InfoPanel.displayCurrentTable();
 }
 
+TableAction.setFocus = function(parentElement, chosenElement) {
+	var childrenElement = $(parentElement).children();
+	console.log(childrenElement.length);
+	for (var i = 0; i < childrenElement.length; i++) {
+		$(childrenElement[i]).removeAttr("style");
+		
+		if (chosenElement == childrenElement[i]) {
+			$(childrenElement[i]).css({"backgroundColor": "#949494"});
+			$(childrenElement[i]).css({"color":"#fff"});
+			$(childrenElement[i]).css({"cursor":"pointer"});
+		}
+	}
+}
+
 function updateRelationship() {
 	var relTempId = $("#rela-tempid-detail").val();
 	if (relTempId == "")

@@ -1,7 +1,6 @@
-window.onbeforeunload = function() {
-	$("#dl-form\\:hidden-btn").click();
-	return undefined;
-}
+window.onbeforeunload = function(e) {
+	return message = "If you changed your data, please click Save button to save all your changes. Or your data will be lost!";
+};
 
 $(document).ready(function() {
 	modalAction();
@@ -9,13 +8,16 @@ $(document).ready(function() {
 	console.log(TablesList.instances);
 	console.log(RootNode.instance);
 	
-//	$(window).bind('beforeunload', function(e) {
-//		$("#dl-form\\:hidden-btn").click();
-//	});
-	
 	// Prepare all need element
 	prepareData();
-	if(TablesList.instances == null) return;
+	
+	// Hide unnecessary action can make server crash
+	if(TablesList.instances == null) {
+		$(".download-btn").hide();
+		$(".gensql-btn").hide();
+		$("#save-form\\:save-btn").hide();
+	}
+
 	Table.instance = null;
 	$("#add-col-trigger").hide();
 	$(".hcia-contentpanel").children("ul").hide();
@@ -26,7 +28,8 @@ $(document).ready(function() {
 	createSelectedListOfTable(document.getElementById("rftable-new-col"));
 	showPKListByChosenTableName($("#rftable-new-col").val(), document.getElementById("rfcolumn-new-col"));
 	
-	// Click on table
+	/** Tree Click Events **/
+	// Table Click Event
 	$('.hcia-treepanel').on("click", ".tree-toggle", function() {
 		resetPanelValue();
 		
@@ -39,14 +42,26 @@ $(document).ready(function() {
 		$("#add-col-trigger").show();
 	});
 	
+	// Column Click Event
+	$('.hcia-treepanel').on("click", ".tree-node", function() {
+		var columnName = $(this).text();
+		$(".detail-wrap").show();
+		InfoPanel.showColDetail(columnName);
+	});
+	
 	$("#col-tab").click(function(){$(".detail-wrap").hide();});
 	$("#fk-tab").click(function(){$(".detail-wrap").hide();});
 	
+	/** Table Click Events **/
+	// Row Click Event
 	$(".table-info").on("click", "tr", function(){
+		var parent = $(this).parent();
+		TableAction.setFocus(parent, this);
 		$(".detail-wrap").show();
 		InfoPanel.showColDetail($(this).children(":first").text());
 	});
 	
+	// Remove Icon Click Event
 	$(".table-info").on("click", ".rmv-col", function(){
 		
 		var colId = $(this).parent().children('input').val();
@@ -92,11 +107,16 @@ $(document).ready(function() {
 		});
 	});
 	
+	/** Relationship Table Click Events **/
+	// Row Click Event
 	$(".relationship-info").on("click", "tr", function(){
+		var parent = $(this).parent();
+		TableAction.setFocus(parent, this);
 		InfoPanel.showRelaDetail($(this).children().eq(1).text());
 		$(".detail-wrap").show();
 	});
 	
+	// Remove Icon Click Event
 	$(".relationship-info").on("click", ".rmv-rela", function(){
 		var colId = $(this).parent().children('input').val();
 		$("#related-none").html("");
@@ -142,6 +162,7 @@ $(document).ready(function() {
 		});
 	});
 	
+	/** Add Column Dialog Event **/
 	$("#type-new-col").change(function(){
 		var colType = $("#type-new-col").val();
 		resetCreatedColFormValue();
@@ -385,7 +406,20 @@ function getJsonDataToGenSQL() {
 	RootNode.instance.childs = TablesList.instances;
 	var rawData = JSON.stringify(RootNode.instance);
 	$(".rawdata-sql-area input[type=hidden]").val(rawData);
-	$("#scriptModal").modal("show");
+	return true;
+}
+
+function getJsonDataToSave() {
+	//console.log(TablesList.instances);
+	if(TablesList.instances == null) {
+		alert("Cannot download: No data found!");
+		return false;
+	}
+	
+	RootNode.instance.childs = TablesList.instances;
+	var rawData = JSON.stringify(RootNode.instance);
+	$(".rawdata-save-area input[type=hidden]").val(rawData);
+	alert("Saved!");
 	return true;
 }
 

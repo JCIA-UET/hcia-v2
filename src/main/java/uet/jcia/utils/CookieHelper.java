@@ -9,7 +9,6 @@ public class CookieHelper {
 	
 	public static void setCookie(String name, String value) {
 		FacesContext facesContext = FacesContext.getCurrentInstance();
-		HttpServletRequest request = (HttpServletRequest) facesContext.getExternalContext().getRequest();
 		
 		Cookie cookie = getCookie(name);
 		

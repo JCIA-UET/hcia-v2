@@ -52,9 +52,6 @@
         		<h:commandLink styleClass="download-btn" onclick="return getJsonDataToDL();" action="#{downloadBean.downloadXML(jsonDlData.value)}">
 							<span class="glyphicon glyphicon-download"></span> Download
             </h:commandLink>
-            <h:commandButton id="hidden-btn" onclick="return getJsonDataToDL();" action="#{treeBean.updateTreeData(jsonDlData.value)}" style="display:none;">
-            	<f:ajax execute="dl-form" render="@none" />
-            </h:commandButton>
 					</h:form>
 				</li>
 				<li>
@@ -63,7 +60,18 @@
 							<h:inputHidden binding="#{jsonGenData}" />
 						</h:panelGroup>
 						<h:commandLink styleClass="gensql-btn" onclick="return getJsonDataToGenSQL();" action="#{downloadBean.downloadSQLScript(jsonGenData.value)}">
-							<span class="glyphicon glyphicon-download"></span> Generate SQL Script
+							<span class="glyphicon glyphicon-database"></span> Generate SQL Script
+            </h:commandLink>
+					</h:form>
+				</li>
+				<li>
+					<h:form id="save-form" name="save-form">
+						<h:panelGroup styleClass="rawdata-save-area">
+							<h:inputHidden binding="#{jsonSaveData}" />
+						</h:panelGroup>
+						<h:commandLink id="save-btn" onclick="return getJsonDataToSave();" action="#{treeBean.updateTreeData(jsonSaveData.value)}">
+							<span class="glyphicon glyphicon-floppy-save"></span> Save
+            	<f:ajax execute="save-form" render="@none" />
             </h:commandLink>
 					</h:form>
 				</li>

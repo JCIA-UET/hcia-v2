@@ -23,6 +23,6 @@ FakeTable.updateColList = function() {
   var refTblEl = document.getElementById('rela-rftable-detail');
   var refColEl = document.getElementById('rela-rfcol-detail');
   var selectedTable = refTblEl.options[refTblEl.selectedIndex].value;
-  var pkName = FakeTable.getFkByTbl(selectedTable);
+  var pkName = FakeTable.getPkByTbl(selectedTable);
   refColEl.options[0] = new Option(pkName, pkName);
 }

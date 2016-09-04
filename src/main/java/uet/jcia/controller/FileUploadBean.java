@@ -14,6 +14,7 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.validator.ValidatorException;
+import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
 
 import uet.jcia.model.CoreAPI;
@@ -69,11 +70,10 @@ public class FileUploadBean implements Serializable {
 			}
 			
 			if(tempDataPath != null) {
-				String parseDirKey = "parsedir";
+				HttpSession session = (HttpSession) exContext.getSession(false);
+				String sessionid = session.getId();
+				String parseDirKey = sessionid + "parsedir";
 				exContext.getSessionMap().put(parseDirKey, tempDataPath);
-				
-				String localDirKey = "localdir";
-				exContext.getSessionMap().put(localDirKey, fileDir);
 				
 				CookieHelper.setCookie("data", Helper.getFileName(tempDataPath));
 			}
