@@ -1,15 +1,17 @@
+window.onbeforeunload = function() {
+	$("#dl-form\\:hidden-btn").click();
+	return undefined;
+}
+
 $(document).ready(function() {
 	modalAction();
 	console.log($("#raw-data-ip").val());
 	console.log(TablesList.instances);
 	console.log(RootNode.instance);
-
-	// notify when user tries to refresh
-	if (TablesList.instances != null) {
-		window.onbeforeunload = function() {
-			return "All your changes will be lost if you refresh, are you sure?";
-		};
-	}
+	
+//	$(window).bind('beforeunload', function(e) {
+//		$("#dl-form\\:hidden-btn").click();
+//	});
 	
 	// Prepare all need element
 	prepareData();
@@ -46,6 +48,7 @@ $(document).ready(function() {
 	});
 	
 	$(".table-info").on("click", ".rmv-col", function(){
+		
 		var colId = $(this).parent().children('input').val();
 		$("#related-none").html("");
 		$("#related-column").html("");
@@ -390,7 +393,6 @@ function tranferMode(){
 	var element = document.getElementById('tableMode'),
     style = window.getComputedStyle(element);
     display = style.getPropertyValue('display');
-    console.log(display);
 	if(display == "none"){
 		$("#present-mode").text("Table Mode");
 		document.getElementById('tableMode').style.display ="block";

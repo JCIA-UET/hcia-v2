@@ -7,9 +7,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -63,7 +60,8 @@ public class FileManager {
         }
     }
     
-    public List<Table> readTables(String filePath) {
+    @SuppressWarnings("unchecked")
+	public List<Table> readTables(String filePath) {
         try {
             FileInputStream fis = new FileInputStream(filePath);
             ObjectInputStream ois = new ObjectInputStream(fis);
@@ -82,7 +80,8 @@ public class FileManager {
         return null;
     }
 
-    public HashMap<String, Document> readDocumentsHash(String filePath) {
+    @SuppressWarnings("unchecked")
+	public HashMap<String, Document> readDocumentsHash(String filePath) {
         try {
             FileInputStream fis = new FileInputStream(filePath);
             ObjectInputStream ois = new ObjectInputStream(fis);
@@ -154,5 +153,4 @@ public class FileManager {
         
         return null;
     }
-    
 }

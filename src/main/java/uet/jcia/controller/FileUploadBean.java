@@ -75,7 +75,7 @@ public class FileUploadBean implements Serializable {
 				String localDirKey = "localdir";
 				exContext.getSessionMap().put(localDirKey, fileDir);
 				
-				CookieHelper.setCookie("temp-data", Helper.getFileName(tempDataPath));
+				CookieHelper.setCookie("data", Helper.getFileName(tempDataPath));
 			}
 			
 			exContext.redirect("index.xhtml");

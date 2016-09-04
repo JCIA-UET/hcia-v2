@@ -1,5 +1,6 @@
 package uet.jcia.model;
 
+import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -19,6 +20,7 @@ public class CoreAPI {
     private Parser parser = new Parser();
     private JavaParser jParser = new JavaParser();
     private Inverser inverser = new Inverser();
+    private MapStorage storage = new MapStorage();
     
     
     // mapping between temp file and extracted folder
@@ -26,6 +28,10 @@ public class CoreAPI {
     
     // mapping between temp file and document file
     private static HashMap<String, String> tempDocumentMapper = new HashMap<>();
+    
+    public CoreAPI() {
+		mapper = storage.loadMap();
+    }
     
     public String parse(String uploadPath) throws Exception {
         TreeNode rootNode = null;
@@ -73,6 +79,7 @@ public class CoreAPI {
             
         }
         
+        storage.saveMap(mapper);
         return resultPath;
     }
     
@@ -93,6 +100,7 @@ public class CoreAPI {
         mapper.put(resultPath, sourceFolder);
         tempDocumentMapper.put(resultPath, documentPath);
         
+        storage.saveMap(mapper);
         return resultPath;
     }
     
@@ -102,7 +110,7 @@ public class CoreAPI {
     }
     
     public String download(String tempPath) {
-    	System.out.println(tempPath);
+    	System.out.println("Temp path: " + mapper.get(tempPath));
         return zm.compress(mapper.get(tempPath));
     }
     

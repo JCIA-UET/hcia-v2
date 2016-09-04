@@ -57,7 +57,8 @@ public class HASTVisitor extends ASTVisitor {
         return cachedTables.get(className);
     }
     
-    @Override
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+	@Override
     public boolean visit(TypeDeclaration node) {
         List modifiers = node.modifiers();
         String tableName = null;
@@ -110,7 +111,8 @@ public class HASTVisitor extends ASTVisitor {
         return true;
     }
 
-    @Override
+    @SuppressWarnings("rawtypes")
+	@Override
     public boolean visit(MethodDeclaration node) {
     	if (table == null) return false;
         List modifiers = node.modifiers();
@@ -129,7 +131,8 @@ public class HASTVisitor extends ASTVisitor {
         return true;
     }
     
-    private MTORelationshipNode parseMto(List modifiers, Type returnType) {
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+	private MTORelationshipNode parseMto(List modifiers, Type returnType) {
         MTORelationshipNode mto = new MTORelationshipNode();
         mto.setType(SQL_MTO);
         String referClassName = null;
@@ -167,7 +170,8 @@ public class HASTVisitor extends ASTVisitor {
         return mto;
     }
     
-    private OTMRelationshipNode parseOtm(List modifiers, Type returnType) {
+    @SuppressWarnings("rawtypes")
+	private OTMRelationshipNode parseOtm(List modifiers, Type returnType) {
         OTMRelationshipNode otm = new OTMRelationshipNode();
         otm.setType(SQL_OTM);
         String referClassName = null;
@@ -186,7 +190,8 @@ public class HASTVisitor extends ASTVisitor {
         return otm;
     }
     
-    private ColumnNode parseColumn(List modifiers, Type returnType) {
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+	private ColumnNode parseColumn(List modifiers, Type returnType) {
         List<MemberValuePair> columnValues = null;
         String columnName = null;
         String javaType = null;
@@ -245,7 +250,8 @@ public class HASTVisitor extends ASTVisitor {
      * Table, Column, MTO, OTM
      * @return
      */
-    private String getElementType(List modifiers) {
+    @SuppressWarnings("rawtypes")
+	private String getElementType(List modifiers) {
         for (Object modifier : modifiers) {
             if (modifier instanceof Annotation) {
                 Annotation annotation = (Annotation) modifier;

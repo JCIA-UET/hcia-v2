@@ -35,15 +35,14 @@
   <h:outputScript name="js/d3.js" />
   
 </h:head>
-<f:event listener="#{cookieBean.loadSavedSession}" type="preRenderView" />
+<!-- <f:event listener="#{cookieBean.loadSavedSession}" type="preRenderView" /> -->
 <h:body>
-	
+
   <!-- Navigation -->
   <nav class="navbar">
     <div class="headerbar-container">
       <!-- left side menu -->
       <ul class="nav navbar-nav">
-      	
         <li><label id="upload-trigger"><span class="glyphicon glyphicon-upload"></span> Upload</label></li>
         <li>
         	<h:form id="dl-form">
@@ -53,6 +52,9 @@
         		<h:commandLink styleClass="download-btn" onclick="return getJsonDataToDL();" action="#{downloadBean.downloadXML(jsonDlData.value)}">
 							<span class="glyphicon glyphicon-download"></span> Download
             </h:commandLink>
+            <h:commandButton id="hidden-btn" onclick="return getJsonDataToDL();" action="#{treeBean.updateTreeData(jsonDlData.value)}" style="display:none;">
+            	<f:ajax execute="dl-form" render="@none" />
+            </h:commandButton>
 					</h:form>
 				</li>
 				<li>

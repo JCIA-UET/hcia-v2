@@ -18,7 +18,6 @@ public class CookieHelper {
 		}
 		else {
 			cookie = new Cookie(name, value);
-			cookie.setPath(request.getContextPath());
 		}
 		
 		cookie.setMaxAge(60*60*24*365*10);
@@ -48,11 +47,11 @@ public class CookieHelper {
 		
 		Cookie[] userCookie = request.getCookies();
 		
-		if (userCookie != null && userCookie.length > 0) {
-			for (int i = 0; i < userCookie.length; i++) {
-				System.out.println("Cookie name: " + userCookie[i].getName() + " | Value: " + userCookie[i].getValue());
-			}
-		}
+//		if (userCookie != null && userCookie.length > 0) {
+//			for (int i = 0; i < userCookie.length; i++) {
+//				System.out.println("Cookie name: " + userCookie[i].getName() + " | Value: " + userCookie[i].getValue());
+//			}
+//		}
 		
 		return userCookie;
 	}

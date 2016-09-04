@@ -20,6 +20,7 @@ import uet.jcia.entities.RootNode;
 import uet.jcia.entities.TreeNode;
 import uet.jcia.model.CoreAPI;
 import uet.jcia.utils.Constants;
+import uet.jcia.utils.JsonHelper;
 
 @ManagedBean
 @SessionScoped
@@ -95,6 +96,7 @@ public class DownloadBean {
 	}
 	
 	private String createDownloadPath(String szJson) {
+		System.out.println(szJson);
 		if(szJson == null || szJson.equalsIgnoreCase("")) return null;
 		
 		FacesContext facesContext = FacesContext.getCurrentInstance();
@@ -102,7 +104,8 @@ public class DownloadBean {
 		CoreAPI api = new CoreAPI();
 		HttpSession session = (HttpSession) exContext.getSession(false);
 			
-		updateJsonToNode(szJson);
+		RootNode root = JsonHelper.convertJsonToRootNode(szJson);
+		updateRootNode(root);
 				
 		String parseDirKey = "parsedir";
 		String parseDir = (String) session.getAttribute(parseDirKey);
@@ -119,7 +122,8 @@ public class DownloadBean {
 		String parseDirKey = "parsedir";
 		String parseDir = (String) session.getAttribute(parseDirKey);
 		
-		updateJsonToNode(szJson);
+		RootNode root = JsonHelper.convertJsonToRootNode(szJson);
+		updateRootNode(root);
 		
 		try {
 			String sql = api.generateCreationScript(parseDir);
@@ -139,7 +143,6 @@ public class DownloadBean {
 		ExternalContext ec = fc.getExternalContext();
 		
 		if(filePath != null) {
-		    System.out.println("Script file: " + filePath);
 			File file = new File(filePath);
 			String fileName = file.getName();
 			String contentType = ec.getMimeType(filePath);
@@ -173,21 +176,11 @@ public class DownloadBean {
 			}
 	    }
 	}
-	private void updateJsonToNode(String szJson) {
+	
+	private void updateRootNode(RootNode root) {
 		CoreAPI api = new CoreAPI();
-		
-		try {
-			ObjectMapper mapper = new ObjectMapper();
-			RootNode root = mapper.readValue(szJson, RootNode.class);
-		
-			if(root != null) {
-				for(TreeNode table : root.getChilds()) {
-					api.updateData(table);
-				}
-			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		if(root != null)
+			for(TreeNode table : root.getChilds()) api.updateData(table);
 	}
+	
 }
