@@ -19,9 +19,6 @@ TableAction.resetDetails = function() {
 	$("#rela-col-detail").val("");
 	$("#rela-rftable-detail").val("");
 	$("#rela-rfcol-detail").val("");
-
-	// reset button save
-	$("#btn-save").text("Save");
 }
 
 TableAction.save = function() {

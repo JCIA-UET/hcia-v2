@@ -22,13 +22,33 @@ $(document).ready(function() {
 	$("#add-col-trigger").hide();
 	$(".hcia-contentpanel").children("ul").hide();
 	$(".tab-content").hide();
+	$('.transfer-nav').hide();
 	
 	TreeView.createTree();
 	
 	createSelectedListOfTable(document.getElementById("rftable-new-col"));
 	showPKListByChosenTableName($("#rftable-new-col").val(), document.getElementById("rfcolumn-new-col"));
 	
-	/** Tree Click Events **/
+	/** Nav Events **/
+	// Toogle Click Event
+	$('.toggle-nav').click(function() {
+		$('.navbar').slideToggle("200");
+		$('.transfer-nav').slideToggle("200");
+	});
+	
+	/*// Nav Mouse Over Event
+	$('.navbar').mouseover(function() {
+		console.log("over");
+	});
+	
+	// Nav Mouse Out Event
+	$('.navbar').mouseout(function() {
+		console.log("out");
+		$('.navbar').slideUp("200");
+		$('.toggle-nav').slideDown("200");
+	});*/
+	
+	/** Tree Events **/
 	// Table Click Event
 	$('.hcia-treepanel').on("click", ".tree-toggle", function() {
 		resetPanelValue();
@@ -308,6 +328,16 @@ function modalAction() {
 	})
 }
 
+function navMouseOver() {
+	
+}
+
+function navMouseOut() {
+	console.log("out");
+	$('.navbar').slideUp("200");
+	$('.toogle-nav').slideDown("200");
+}
+
 function validateName() {
 	var reg = new RegExp("^[0-9]");
 	var tempColName = $("#name-new-col").val();
@@ -429,10 +459,12 @@ function tranferMode(){
     display = style.getPropertyValue('display');
 	if(display == "none"){
 		$("#mode").text("Table Mode");
+		$(".transfer-nav").attr('title', 'To ERD Mode');
 		document.getElementById('tableMode').style.display ="block";
 		document.getElementById('ERDMode').style.display ="none";
 	}else{
 		$("#mode").text("ERD Mode");
+		$(".transfer-nav").attr('title', 'To Table Mode');
 		document.getElementById('tableMode').style.display ="none";
 		document.getElementById('ERDMode').style.display ="block";
 	}

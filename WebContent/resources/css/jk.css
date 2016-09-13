@@ -1,16 +1,52 @@
 body {
-  background-color: #efefef;
+  background-color: #7acef4;
   overflow :hidden;
 }
 .headerbar-container {
 	padding-right: 15px;
 }
 .navbar {
-  background: #446cb3;
+  background: #0583bb;
   border: 0;
   border-radius: 0px;
-  margin-bottom: 10px;
+  margin-bottom: 0px;
+  max-height: 45px;
+  min-height: 45px;
 }
+
+.toggle-nav {
+    background-color: #0583bb;
+    border-bottom-left-radius: 7px;
+    border-bottom-right-radius: 7px;
+    border-top: 1px solid;
+    color: #fff;
+    font-size: 16px;
+    height: 30px;
+    margin-bottom: 5px;
+    margin-left: 5px;
+    padding-top: 5px;
+    text-align: center;
+    width: 30px;
+    cursor: pointer;
+}
+
+.transfer-nav {
+    background-color: #0583bb;
+    border-bottom-left-radius: 7px;
+    border-bottom-right-radius: 7px;
+    border-top: 1px solid;
+    color: #fff;
+    font-size: 16px;
+    height: 30px;
+    margin-bottom: 5px;
+    margin-right: 5px;
+    padding-top: 5px;
+    text-align: center;
+    width: 30px;
+    cursor: pointer;
+    float: right;
+}
+
 
 label {
 	max-width: 100%;
@@ -27,12 +63,12 @@ p {
 
 .navbar-nav > li > form > a, #upload-trigger, .navbar-nav > label, #present-mode {
 	height: 100%;
-	padding: 13px 27px 15px;
+	padding: 10px 15px 13px;
   border-right: 1px solid rgba(0, 0, 0, 0.1);
   color: white;
   display: inline-block;
-  font-weight: 700;
-  font-size: 16px;
+  font-size: 15px;
+  font-weight: 600;
   text-decoration: none;
   cursor: pointer;
 
@@ -48,14 +84,15 @@ p {
 
 #second-nav-icon {
 	height: 100%;
-	display: inline-block;
-	font-size: 16px;
+	padding: 10px 15px 13px;
+  border-right: 1px solid rgba(0, 0, 0, 0.1);
+  color: white;
+  display: inline-block;
+  font-size: 15px;
+  font-weight: 600;
   text-decoration: none;
-  padding: 13px 10px 15px 15px;
-  background-color: #446cb3;
-  color:#fff;
-  border-left: 1px solid rgba(0, 0, 0, 0.1);
   cursor: pointer;
+  background-color: #21759b;
 }
 
 #second-nav-icon > span {
@@ -63,7 +100,7 @@ p {
 }
 
 .navbar-nav > li > form > a:hover, #second-nav-icon:hover, #upload-trigger:hover, #present-mode:hover {
-  color:#446cb3;
+  color:#0583bb;
 }
 
 .nav > li > form > a:hover, #second-nav-icon:hover, #upload-trigger:hover, #present-mode:hover {
@@ -89,18 +126,16 @@ p {
 }
 
 .hcia-treepanel {
-  height: 90vh;
+  height: 100vh;
   padding: 20px 0px 0px 20px;
   background-color: #ffffff;
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
   overflow-y: auto;
 }
 
 .hcia-contentpanel {
-  height: 90vh;
+  height: 100vh;
   padding: 0px 10px 0px 10px;
   background-color: #ffffff;
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
 .tab-content {
@@ -142,7 +177,7 @@ p {
 }
 
 .hcia-tblaction {
-  position: absolute;
+  position: fixed;
   right: 25px;
   bottom: 16px;
 }
@@ -164,10 +199,9 @@ p {
 }
 
 #option-panel{
-  height: 90vh;
+  height: 100vh;
   padding: 20px 0px 0px 20px;
   background-color: #ffffff;
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
   overflow-y: auto;
   margin-left:0px;
 }
