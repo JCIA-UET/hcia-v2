@@ -17,6 +17,8 @@ import javax.faces.validator.ValidatorException;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
 
+import uet.jcia.dao.Account;
+import uet.jcia.dao.AccountManager;
 import uet.jcia.model.CoreAPI;
 import uet.jcia.utils.Constants;
 import uet.jcia.utils.CookieHelper;
@@ -28,8 +30,8 @@ public class FileUploadBean implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private Part file;
-
 	private boolean validPass;
+	private AccountManager ac = new AccountManager();
 
 	public boolean isValidPass() {
 		return validPass;
@@ -72,10 +74,15 @@ public class FileUploadBean implements Serializable {
 			if(tempDataPath != null) {
 				HttpSession session = (HttpSession) exContext.getSession(false);
 				String sessionid = session.getId();
-				String parseDirKey = sessionid + "parsedir";
-				exContext.getSessionMap().put(parseDirKey, tempDataPath);
+				String dataName = Helper.getFileName(tempDataPath);
 				
-				CookieHelper.setCookie("data", Helper.getFileName(tempDataPath));
+				String parseDirKey = sessionid + "data";
+				exContext.getSessionMap().put(parseDirKey,dataName);
+				
+				String username = (String) session.getAttribute(sessionid + "username");
+				
+				Account acc = ac.getAccountByUsername(username);
+				ac.setDataToAccount(dataName, acc);
 			}
 			
 			exContext.redirect("index.xhtml");

@@ -35,7 +35,7 @@
   <h:outputScript name="js/d3.js" />
   
 </h:head>
-<!-- <f:event listener="#{cookieBean.loadSavedSession}" type="preRenderView" /> -->
+	<f:event listener="#{userBean.loadExistUser}" type="preRenderView" />
 <h:body>
 
   <!-- Navigation -->
@@ -50,7 +50,7 @@
 							<h:inputHidden binding="#{jsonDlData}" />
 						</h:panelGroup>
         		<h:commandLink styleClass="download-btn" onclick="return getJsonDataToDL();" action="#{downloadBean.downloadXML(jsonDlData.value)}">
-							<span class="glyphicon glyphicon-download"></span> Download
+							<span class="glyphicon glyphicon-download-alt"></span> Download
             </h:commandLink>
 					</h:form>
 				</li>
@@ -60,7 +60,7 @@
 							<h:inputHidden binding="#{jsonGenData}" />
 						</h:panelGroup>
 						<h:commandLink styleClass="gensql-btn" onclick="return getJsonDataToGenSQL();" action="#{downloadBean.downloadSQLScript(jsonGenData.value)}">
-							<span class="glyphicon glyphicon-database"></span> Generate SQL Script
+							<span class="glyphicon glyphicon-save-file"></span> Generate SQL Script
             </h:commandLink>
 					</h:form>
 				</li>
@@ -77,14 +77,34 @@
 				</li>
 			  
       </ul>
+      
+      <!-- <ul class="nav navbar-nav">
+      	<li id="present-mode" onclick="tranferMode()">Table Mode</li>
+      </ul> -->
+      
       <!-- right side menu -->
-      <ul class="nav navbar-nav navbar-right">
-        <li id="present-mode">Table Mode</li>
-        <li><label id="switch-mode-icon" onclick="tranferMode()">
-			  	<span class="glyphicon glyphicon-transfer"></span>
-			  </label></li>
+      <ul class="nav navbar-nav navbar-right dropdown">
+	    	<label id="second-nav-icon" class="dropdown-toggle" data-toggle="dropdown">
+	    		Welcome, #{treeBean.username}
+	      	<span class="glyphicon glyphicon-chevron-down"></span>
+	      </label>
+				<ul class="dropdown-menu">
+				  <li>
+				  	<h:form id="logout-form">
+				  		<h:commandLink action="#{userBean.doLogout}">
+				  			<span class="glyphicon glyphicon-log-out"></span>
+				  			Logout
+				  		</h:commandLink>
+				  	</h:form></li>
+				</ul>
+      	<li id="present-mode" onclick="tranferMode()">
+      		<label>
+	      		<span class="glyphicon glyphicon-transfer"></span>
+	      		<span id="mode">ERD Mode</span>
+	      	</label>
+      	</li>
       </ul>
-    </div>
+      </div>
   </nav>
 
   <div class="container-fluid hcia-container" id="tableMode">

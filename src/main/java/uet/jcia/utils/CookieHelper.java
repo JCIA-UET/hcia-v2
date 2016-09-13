@@ -54,4 +54,15 @@ public class CookieHelper {
 		
 		return userCookie;
 	}
+	
+	public static void expireCookie(String name) {
+		FacesContext facesContext = FacesContext.getCurrentInstance();
+		Cookie cookie = getCookie(name);
+		
+		if (cookie == null) return;
+		else cookie.setMaxAge(0);
+		
+		HttpServletResponse response = (HttpServletResponse) facesContext.getExternalContext().getResponse();
+	    response.addCookie(cookie);
+	}
 }

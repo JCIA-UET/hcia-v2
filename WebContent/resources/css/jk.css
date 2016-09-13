@@ -12,10 +12,6 @@ body {
   margin-bottom: 10px;
 }
 
-#switch-mode-icon {
-	border-left: 1px solid rgba(0, 0, 0, 0.1);
-}
-
 label {
 	max-width: 100%;
 	margin-bottom: 0px;
@@ -29,7 +25,7 @@ p {
 	margin: 0;
 }
 
-.navbar-nav > li > form > a, #switch-mode-icon, #upload-trigger {
+.navbar-nav > li > form > a, #upload-trigger, .navbar-nav > label, #present-mode {
 	height: 100%;
 	padding: 13px 27px 15px;
   border-right: 1px solid rgba(0, 0, 0, 0.1);
@@ -38,6 +34,7 @@ p {
   font-weight: 700;
   font-size: 16px;
   text-decoration: none;
+  cursor: pointer;
 
   -o-transition:color 0.2s ease-out, background 0.2s ease-in;
   -ms-transition:color 0.2s ease-out, background 0.2s ease-in;
@@ -45,23 +42,48 @@ p {
   -webkit-transition:color 0.2s ease-out, background 0.2s ease-in;
 }
 
-#present-mode {
+#present-mode > label {
+	cursor: pointer;
+}
+
+#second-nav-icon {
 	height: 100%;
 	display: inline-block;
 	font-size: 16px;
   text-decoration: none;
-  padding: 13px 27px 15px;
+  padding: 13px 10px 15px 15px;
   background-color: #446cb3;
   color:#fff;
+  border-left: 1px solid rgba(0, 0, 0, 0.1);
+  cursor: pointer;
 }
 
-.navbar-nav > li > form > a:hover, #switch-mode-icon:hover, #upload-trigger:hover {
+#second-nav-icon > span {
+	font-size: 12px;
+}
+
+.navbar-nav > li > form > a:hover, #second-nav-icon:hover, #upload-trigger:hover, #present-mode:hover {
   color:#446cb3;
 }
 
-.nav > li > form > a:hover, #switch-mode-icon:hover, #upload-trigger:hover {
+.nav > li > form > a:hover, #second-nav-icon:hover, #upload-trigger:hover, #present-mode:hover {
 	background-color:#fff;
 }
+
+#logout-form > a {
+	padding: 2px 1em 2px 28px;
+	color: #111;
+}
+
+#logout-form > a:hover {
+	text-decoration: none;
+	color: #111;
+}
+
+#logout-form:hover {
+	background-color: #d7d7d8;
+}
+
 .hcia-container {
   padding: 0px 10px 0px 10px;
 }

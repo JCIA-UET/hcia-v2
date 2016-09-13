@@ -107,9 +107,12 @@ public class DownloadBean {
 		RootNode root = JsonHelper.convertJsonToRootNode(szJson);
 		updateRootNode(root);
 				
-		String parseDirKey = "parsedir";
-		String parseDir = (String) session.getAttribute(parseDirKey);
-		return api.download(parseDir);
+		String dataKey = session.getId() + "data";
+		String dataName = (String) session.getAttribute(dataKey);
+		String fullDataPath = Constants.TEMP_SOURCE_FOLDER + File.separator + dataName;
+		System.out.println("Prepare for download: " + fullDataPath);
+		
+		return api.download(fullDataPath);
 	}
 	
 	private String generateSQLScript(String szJson) {
@@ -119,14 +122,16 @@ public class DownloadBean {
 		
 		HttpSession session = (HttpSession) exContext.getSession(false);
 		
-		String parseDirKey = "parsedir";
-		String parseDir = (String) session.getAttribute(parseDirKey);
+		String dataKey = session.getId() + "data";
+		String dataName = (String) session.getAttribute(dataKey);
+		System.out.println("Prepare for download: " + dataName);
+		String fullDataPath = Constants.TEMP_SOURCE_FOLDER + File.separator + dataName;
 		
 		RootNode root = JsonHelper.convertJsonToRootNode(szJson);
 		updateRootNode(root);
 		
 		try {
-			String sql = api.generateCreationScript(parseDir);
+			String sql = api.generateCreationScript(fullDataPath);
 			if (sql == null || sql.equals("")) {
 				return null;
 			}

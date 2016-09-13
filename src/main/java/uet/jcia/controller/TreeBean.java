@@ -1,33 +1,29 @@
 package uet.jcia.controller;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
+import javax.faces.bean.SessionScoped;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
-import javax.faces.event.ComponentSystemEvent;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpSession;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
+import uet.jcia.dao.Account;
+import uet.jcia.dao.AccountManager;
 import uet.jcia.entities.RootNode;
 import uet.jcia.entities.TreeNode;
 import uet.jcia.model.CoreAPI;
 import uet.jcia.model.FileManager;
 import uet.jcia.model.MapStorage;
 import uet.jcia.utils.Constants;
-import uet.jcia.utils.CookieHelper;
 import uet.jcia.utils.Helper;
 import uet.jcia.utils.JsonHelper;
 
 @ManagedBean
-@ViewScoped
+@SessionScoped
 public class TreeBean implements Serializable {
 
 	/**
@@ -35,7 +31,17 @@ public class TreeBean implements Serializable {
 	 */
 	private static final long serialVersionUID = 6525378828188254901L;
 	private String jsonData;
+	private String username;
+	private AccountManager ac = new AccountManager();
 	
+	
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
 
 	public String getJsonData() {
 		return jsonData;
@@ -46,39 +52,28 @@ public class TreeBean implements Serializable {
 	}
 
 	public TreeBean() {
-//		FacesContext facesContext = FacesContext.getCurrentInstance();
-//		ExternalContext exContext = facesContext.getExternalContext();
-//		CoreAPI api = new CoreAPI();
-//
-//		HttpSession session = (HttpSession) exContext.getSession(false);
-//		
-//		String dirKey = "parsedir";
-//		String parsedDir = (String) session.getAttribute(dirKey);
-//		
-//		if(parsedDir != null) {
-//			System.out.println("Current temp path: " + parsedDir);
-//			TreeNode root = api.getParsedData(parsedDir);
-//			String jsonData = JsonHelper.convertNodeToJson(root);
-//				
-//			setJsonData(jsonData);
-//		}
 		FacesContext facesContext = FacesContext.getCurrentInstance();
 		ExternalContext exContext = facesContext.getExternalContext();
+		
+		HttpSession session = (HttpSession) exContext.getSession(false);
+		String sessionid = session.getId();
+		
 		CoreAPI api = new CoreAPI();
 		
 		String dataFileName = null;
-		dataFileName = getDataFileNameFromCookie();
+		dataFileName = (String) session.getAttribute(sessionid + "data");
+		String username = (String) session.getAttribute(sessionid + "username");
+	    String szAlive = (String) session.getAttribute(sessionid + "alive");
+		System.out.println("Tree bean: Username: " + username + ", alive: " + szAlive + ", Data: " + dataFileName);
 		
-		System.out.println("Temp path: " + dataFileName);
+		if (dataFileName == null) {
+			Account acc = ac.getAccountByUsername(username);
+			setUsername(acc.getUsername());
+			dataFileName = ac.getAccountDataById(acc.getId());
+		}
 		
 		if (dataFileName != null) {
 			String fullDataPath = Constants.TEMP_SOURCE_FOLDER + File.separator + dataFileName;
-
-			HttpSession session = (HttpSession) exContext.getSession(false);
-			String sessionid = session.getId();
-			String parseDirKey = sessionid + "parsedir";
-			
-			setSessionProp(parseDirKey, fullDataPath);
 			
 			TreeNode root = api.getParsedData(fullDataPath);
 			String jsonData = JsonHelper.convertNodeToJson(root);
@@ -88,15 +83,22 @@ public class TreeBean implements Serializable {
 	}
 
 	public void updateTreeData(String json) {
-		System.out.println("JSON: " + json);
+		FacesContext facesContext = FacesContext.getCurrentInstance();
+		ExternalContext exContext = facesContext.getExternalContext();
+		HttpSession session = (HttpSession) exContext.getSession(false);
+		String sessionid = session.getId();
 		
-		String crtTempPath = CookieHelper.getCookie("data").getValue();
-		crtTempPath = Constants.TEMP_SOURCE_FOLDER + File.separator + crtTempPath;
+		String username = (String) session.getAttribute(sessionid + "username");
+		Account acc = ac.getAccountByUsername(username);
+		String crtDataName = ac.getAccountDataById(acc.getId());
+		
+		String crtTempPath = Constants.TEMP_SOURCE_FOLDER + File.separator + crtDataName;
 		System.out.println("Current temp path: " + crtTempPath);
 		RootNode root = JsonHelper.convertJsonToRootNode(json);
 		
 		MapStorage storage = new MapStorage();
 		HashMap<String, String> mapper = storage.loadMap();
+		
 		for(Entry<String, String> e : mapper.entrySet()) {
 			String key = e.getKey();
 			String value = e.getValue();
@@ -108,45 +110,17 @@ public class TreeBean implements Serializable {
 				String tempPath = fm.saveTempData(root);
 				System.out.println("Create new tempPath: " + tempPath);
 				
-				String tempKey = Helper.getFileName(tempPath);
+				String simpleDataName = Helper.getFileName(tempPath);
 				mapper.put(tempPath, value);
 				
-				setSessionProp("parsedir", tempPath);
+				setSessionProp(sessionid + "data", simpleDataName);
 				System.out.println("[Create new map] Key: " + tempPath + " | Value: " + value);
 				
-				CookieHelper.setCookie("data", tempKey);
-				
+				ac.setDataToAccount(simpleDataName, acc);
 				break;
 			}
 		}
 		storage.saveMap(mapper);
-	}
-	
-//	private void loadSavedSession(ComponentSystemEvent event) {
-//		String dataFileName = null;
-//		
-//		dataFileName = getDataFileNameFromCookie();
-//		System.out.println("Temp path: " + dataFileName);
-//		
-//		if (dataFileName != null) {
-//			String fullDataPath = Constants.TEMP_SOURCE_FOLDER + File.separator + dataFileName;
-//			String parseDirKey = "parsedir";
-//			setSessionProp(parseDirKey, fullDataPath);
-//		}
-//	}
-	
-	private String getDataFileNameFromCookie() {
-		Cookie[] userCookie = CookieHelper.getAllCookies();
-		
-		if (userCookie != null && userCookie.length > 0) {
-			for (int i = 0; i < userCookie.length; i++) {
-				if (userCookie[i].getName().equals("data")) {
-					return userCookie[i].getValue();
-				}
-			}
-		}
-		
-		return null;
 	}
 	
 	private void setSessionProp(String key, String value) {

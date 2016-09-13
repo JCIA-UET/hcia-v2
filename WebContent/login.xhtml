@@ -1,0 +1,36 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
+  
+<h:head>
+  <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>HCIA</title>
+
+  <h:outputScript library="webjars" name="jquery/2.1.4/jquery.min.js" />
+   
+  <h:outputStylesheet name="css/login.css" />
+</h:head>
+
+<h:body>
+  <div class="login-page">
+  <div class="form">
+    <h:form id="login-form">
+    	<h:message style="color:red" for="login-form"/>
+      <h:inputText  p:placeholder="Username" value="#{userBean.username}"/>
+  		<h:inputSecret  p:placeholder="Password" value="#{userBean.password}"/>
+      
+      <h:commandButton action="#{userBean.doLogin}" value="login">
+  			<f:ajax execute="login-form" render="login-form" />
+  		</h:commandButton>
+  		
+      <p class="create-message">Not registered? <a href="register.xhtml">Create an account</a></p>
+    </h:form>
+  </div>
+</div>
+</h:body>
+</html>
