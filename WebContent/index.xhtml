@@ -106,17 +106,17 @@
       </ul>
       </div>
   </nav>
-  <div>
+  <!-- <div>
   	<span class="toggle-nav glyphicon glyphicon-cog"></span>
   	<span class="transfer-nav glyphicon glyphicon-transfer" onclick="tranferMode()"
   					data-toggle="tooltip" title="To Table Mode"></span>
-  </div>
+  </div> -->
 
   <div class="container-fluid hcia-container" id="tableMode">
     <!-- tree of tables -->
     <div class="col-md-2">
     	<!-- Get raw data from backing bean -->
-    	<input type="hidden" id="raw-data-ip" value="#{treeBean.jsonData}"/>
+    	<input type="hidden" id="raw-data-ip" value="#{treeBean.renderJson()}"/>
       <div class="hcia-treepanel">
       	<!-- Tree View -->
         <ul id="tree-root" class="nav">

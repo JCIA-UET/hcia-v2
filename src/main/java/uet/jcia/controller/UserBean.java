@@ -44,7 +44,6 @@ public class UserBean {
 	    String sessionid = session.getId();
 		try {
 			if (ac.authenticate(username, password)) {
-				//HttpSession session = (HttpSession) ec.getSession(true);
 				ec.getSessionMap().put(sessionid + "username", username);
 				ec.getSessionMap().put(sessionid + "alive", "true");
 				
@@ -153,7 +152,8 @@ public class UserBean {
     		String szAlive = (String) session.getAttribute(sessionid + "alive");
     		System.out.println("Current session properties: username: " + username + ", szAlive: " + szAlive);
     		System.out.println("Load data: " + acc.getData());
-    		if (username == null && szAlive == null) {
+    		if (username == null) {
+    			System.out.println("Load existed user: " + acc.getUsername());
     			this.username = username;
 	    		ec.getSessionMap().put(sessionid + "username", acc.getUsername());
 	    		ec.getSessionMap().put(sessionid + "alive", "true");

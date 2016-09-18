@@ -11,10 +11,10 @@ import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpSession;
 
-import uet.jcia.dao.Account;
-import uet.jcia.dao.AccountManager;
 import uet.jcia.entities.RootNode;
 import uet.jcia.entities.TreeNode;
+import uet.jcia.dao.Account;
+import uet.jcia.dao.AccountManager;
 import uet.jcia.model.CoreAPI;
 import uet.jcia.model.FileManager;
 import uet.jcia.model.MapStorage;
@@ -56,32 +56,39 @@ public class TreeBean implements Serializable {
 		ExternalContext exContext = facesContext.getExternalContext();
 		
 		HttpSession session = (HttpSession) exContext.getSession(false);
+		String sessionid = session.getId();	
+
+		String username = (String) session.getAttribute(sessionid + "username");
+		
+		Account acc = ac.getAccountByUsername(username);
+		setUsername(acc.getUsername());
+	}
+	
+	public String renderJson() {
+		FacesContext facesContext = FacesContext.getCurrentInstance();
+		ExternalContext exContext = facesContext.getExternalContext();
+		
+		HttpSession session = (HttpSession) exContext.getSession(false);
 		String sessionid = session.getId();
 		
 		CoreAPI api = new CoreAPI();
 		
-		String dataFileName = null;
-		dataFileName = (String) session.getAttribute(sessionid + "data");
-		String username = (String) session.getAttribute(sessionid + "username");
-	    String szAlive = (String) session.getAttribute(sessionid + "alive");
-		System.out.println("Tree bean: Username: " + username + ", alive: " + szAlive + ", Data: " + dataFileName);
+		String dataFileName = (String) session.getAttribute(sessionid + "data");
 		
+		Account acc = ac.getAccountByUsername(username);
 		if (dataFileName == null) {
-			Account acc = ac.getAccountByUsername(username);
-			setUsername(acc.getUsername());
 			dataFileName = ac.getAccountDataById(acc.getId());
+			exContext.getSessionMap().put(sessionid + "data", dataFileName);
 		}
-		
-		if (dataFileName != null) {
-			String fullDataPath = Constants.TEMP_SOURCE_FOLDER + File.separator + dataFileName;
-			
-			TreeNode root = api.getParsedData(fullDataPath);
-			String jsonData = JsonHelper.convertNodeToJson(root);
-				
-			setJsonData(jsonData);
-		}
-	}
 
+		String fullDataPath = Constants.TEMP_SOURCE_FOLDER + File.separator + dataFileName;
+		
+		TreeNode root = api.getParsedData(fullDataPath);
+		String jsonData = JsonHelper.convertNodeToJson(root);
+			
+		setJsonData(jsonData);
+		return jsonData;
+	}
 	public void updateTreeData(String json) {
 		FacesContext facesContext = FacesContext.getCurrentInstance();
 		ExternalContext exContext = facesContext.getExternalContext();

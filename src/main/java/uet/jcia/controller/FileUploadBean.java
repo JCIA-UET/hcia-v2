@@ -52,6 +52,9 @@ public class FileUploadBean implements Serializable {
 	public void upload() {
 		FacesContext facesContext = FacesContext.getCurrentInstance();
 		ExternalContext exContext = facesContext.getExternalContext();
+		
+		HttpSession session = (HttpSession) exContext.getSession(false);
+		String sessionid = session.getId();
 
 		CoreAPI core = new CoreAPI();
 
@@ -71,19 +74,14 @@ public class FileUploadBean implements Serializable {
 				e.printStackTrace();
 			}
 			
-			if(tempDataPath != null) {
-				HttpSession session = (HttpSession) exContext.getSession(false);
-				String sessionid = session.getId();
-				String dataName = Helper.getFileName(tempDataPath);
+			String dataName = Helper.getFileName(tempDataPath);
+			System.out.println("dataname: " + dataName);
+			exContext.getSessionMap().put(sessionid + "data", dataName);
+			
+			String username = (String) session.getAttribute(sessionid + "username");
 				
-				String parseDirKey = sessionid + "data";
-				exContext.getSessionMap().put(parseDirKey,dataName);
-				
-				String username = (String) session.getAttribute(sessionid + "username");
-				
-				Account acc = ac.getAccountByUsername(username);
-				ac.setDataToAccount(dataName, acc);
-			}
+			Account acc = ac.getAccountByUsername(username);
+			ac.setDataToAccount(dataName, acc);
 			
 			exContext.redirect("index.xhtml");
 		} catch (IOException e) {
@@ -104,8 +102,8 @@ public class FileUploadBean implements Serializable {
 		if (file.getSize() == 0) {
 			msg = new FacesMessage("File is required to upload.");
 			msg.setSeverity(FacesMessage.SEVERITY_ERROR);
-		} else if (!fileName.endsWith("zip") && !fileName.endsWith("hbm.xml")) {
-			msg = new FacesMessage("Allowed extensions: zip, hbm.xml");
+		} else if (!fileName.endsWith("zip") && !fileName.endsWith("hbm.xml") && !fileName.endsWith(".java")) {
+			msg = new FacesMessage("Allowed extensions: zip, hbm.xml, java");
 			msg.setSeverity(FacesMessage.SEVERITY_ERROR);
 		}
 

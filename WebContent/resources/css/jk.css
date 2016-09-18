@@ -1,5 +1,5 @@
 body {
-  background-color: #7acef4;
+  background-color: #dedede;
   overflow :hidden;
 }
 .headerbar-container {
@@ -9,7 +9,7 @@ body {
   background: #0583bb;
   border: 0;
   border-radius: 0px;
-  margin-bottom: 0px;
+  margin-bottom: 5px;
   max-height: 45px;
   min-height: 45px;
 }

@@ -14,8 +14,6 @@ import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpSession;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import uet.jcia.entities.RootNode;
 import uet.jcia.entities.TreeNode;
 import uet.jcia.model.CoreAPI;
@@ -106,9 +104,11 @@ public class DownloadBean {
 			
 		RootNode root = JsonHelper.convertJsonToRootNode(szJson);
 		updateRootNode(root);
-				
-		String dataKey = session.getId() + "data";
-		String dataName = (String) session.getAttribute(dataKey);
+		
+		String sessionid = session.getId();
+		String dataName = (String) session.getAttribute(sessionid + "data");
+		String username = (String) session.getAttribute(sessionid + "username");
+		System.out.println("Download bean: Username: " + username + ", dataname: " + dataName);
 		String fullDataPath = Constants.TEMP_SOURCE_FOLDER + File.separator + dataName;
 		System.out.println("Prepare for download: " + fullDataPath);
 		
