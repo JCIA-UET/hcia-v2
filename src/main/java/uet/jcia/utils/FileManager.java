@@ -151,4 +151,9 @@ public class FileManager {
         
         return null;
     }
+    
+    public static String generateFolderName() {
+        return Constants.TEMP_SOURCE_FOLDER + File.separator
+                + "upload-src-" + Helper.DATE_FORMATER.format(new Date());
+    }
 }

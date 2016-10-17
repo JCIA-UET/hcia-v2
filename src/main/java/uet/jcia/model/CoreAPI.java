@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import uet.jcia.constant.CoreApiConst;
 import uet.jcia.data.node.TreeNode;
 import uet.jcia.model.parser.HbmParser;
 import uet.jcia.model.parser.JavaParser;
@@ -31,39 +32,37 @@ public class CoreAPI {
     public CoreAPI() {
         mapper = storage.loadMap();
     }
-    
+
     public String parse(String uploadPath) throws Exception {
         TreeNode rootNode = null;
         String resultPath = null;
 
         // user uploads xml or java file
-        if (uploadPath.matches(".*\\.xml") || uploadPath.matches(".*\\.java")) {
-            Date date = new Date();
-            String dstDir =  Constants.TEMP_SOURCE_FOLDER + File.separator
-                    + "upload-src-" + Helper.DATE_FORMATER.format(date);
+        if (uploadPath.matches(CoreApiConst.XML_FILE_REGX) || uploadPath.matches(CoreApiConst.JAVA_FILE_REGX)) {
+            String dstDir = FileManager.generateFolderName();
             File uploadedFile = new File(uploadPath);
             String dstPath = dstDir + File.separator + uploadedFile.getName();
             // copy file to generated folder
             Helper.copyFile(uploadPath, dstPath);
 
             // select parser's type
-            if (uploadPath.matches(".*\\.xml")) {
+            if (dstPath.matches(CoreApiConst.XML_FILE_REGX)) {
                 parser = new HbmParser();
-            } else if (uploadPath.matches(".*\\.java")) {
+            } else if (dstPath.matches(CoreApiConst.JAVA_FILE_REGX)) {
                 parser = new JavaParser();
             }
             // do parse
-            rootNode = parser.parseSingleFile(uploadPath);
+            rootNode = parser.parseSingleFile(dstPath);
             // save result
             resultPath = fm.saveTempData(rootNode);
             mapper.put(resultPath, dstDir);
             
-        } else if (uploadPath.matches(".*\\.zip")) { // user uploads a zip file
+        } else if (uploadPath.matches(CoreApiConst.ZIP_FILE_REGX)) { // user uploads a zip file
             String extractedFolder = zm.unzip(uploadPath);
             List<String> xmlList = new ArrayList<>();
             List<String> javaList = new ArrayList<>();
-            fm.findFiles(extractedFolder, ".*\\.xml", xmlList);
-            fm.findFiles(extractedFolder, ".*\\.java", javaList);
+            fm.findFiles(extractedFolder, CoreApiConst.XML_FILE_REGX, xmlList);
+            fm.findFiles(extractedFolder, CoreApiConst.JAVA_FILE_REGX, javaList);
             
             if (!xmlList.isEmpty() && !javaList.isEmpty()) {
                 // prevent user to upload both java and hbm files
@@ -90,7 +89,7 @@ public class CoreAPI {
         
         List<String> xmlList = new ArrayList<>();
         fm.findFiles(
-                sourceFolder, ".*\\.xml", xmlList);
+                sourceFolder, CoreApiConst.XML_FILE_REGX, xmlList);
 
         rootNode = parser.parse(xmlList);
         resultPath = fm.saveTempData(rootNode);
@@ -113,19 +112,19 @@ public class CoreAPI {
     public String generateCreationScript(String tempPath) throws IOException {
         String extractedFolder = mapper.get(tempPath);
         List<String> javaList = new ArrayList<>();
-        fm.findFiles(extractedFolder, ".*\\.java", javaList);
+        fm.findFiles(extractedFolder, CoreApiConst.JAVA_FILE_REGX, javaList);
 
         for (String javaPath : javaList) {
             File javaFile = new File(javaPath);
             String parentPath = javaFile.getParentFile().getAbsolutePath();
-            String fileName = javaFile.getName().replaceAll("\\.java", ".hbm.xml");
+            String fileName = javaFile.getName().replaceAll(CoreApiConst.JAVA_EXT_REGX, CoreApiConst.HBM_EXT);
             File hbmFile = new File(parentPath + File.separator + fileName);
             if (!hbmFile.exists())
                 hbmFile.createNewFile();
         }
 
         List<String> hbmList = new ArrayList<>();
-        fm.findFiles(extractedFolder, ".*\\.hbm.xml", hbmList);
+        fm.findFiles(extractedFolder, CoreApiConst.HBM_FILE_REGX, hbmList);
         String sql = HibernateHelper.generateDdl(hbmList); 
         System.out.println(sql);
         return sql;
