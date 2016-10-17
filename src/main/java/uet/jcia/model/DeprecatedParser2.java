@@ -18,7 +18,7 @@ import uet.jcia.entities.Column;
 import uet.jcia.entities.Relationship;
 import uet.jcia.entities.Table;
 import uet.jcia.utils.Helper;
-import uet.jcia.utils.Mappers;
+import uet.jcia.utils.SqlTypeMapper;
 
 public class DeprecatedParser2 {
     
@@ -242,7 +242,7 @@ public class DeprecatedParser2 {
         Element columnElement = (Element) idElement.getElementsByTagName("column").item(0);
         primaryKey.setName(columnElement.getAttribute("name"));
         primaryKey.setLength(columnElement.getAttribute("length"));
-        primaryKey.setType(Mappers.getHbmtoSql(idElement.getAttribute("type")));
+        primaryKey.setType(SqlTypeMapper.getHbmtoSql(idElement.getAttribute("type")));
         
         primaryKey.setPrimaryKey(true);
         primaryKey.setNotNull(true);
@@ -272,7 +272,7 @@ public class DeprecatedParser2 {
         Element columnElement = (Element) propertyElement.getElementsByTagName("column").item(0);
         field.setName(columnElement.getAttribute("name"));
         field.setLength(columnElement.getAttribute("length"));
-        field.setType(Mappers.getHbmtoSql(propertyElement.getAttribute("type")));
+        field.setType(SqlTypeMapper.getHbmtoSql(propertyElement.getAttribute("type")));
 
         if ("true".equals(columnElement.getAttribute("not-null"))) {
             field.setNotNull(true);

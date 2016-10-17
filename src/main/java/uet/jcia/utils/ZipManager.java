@@ -1,4 +1,4 @@
-package uet.jcia.model;
+package uet.jcia.utils;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -12,9 +12,6 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
-
-import uet.jcia.utils.Constants;
-import uet.jcia.utils.Helper;
 
 public class ZipManager {
 

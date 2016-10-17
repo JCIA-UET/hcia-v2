@@ -7,10 +7,10 @@ import java.util.List;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import uet.jcia.entities.ColumnNode;
-import uet.jcia.entities.TableNode;
-import uet.jcia.entities.TreeNode;
-import uet.jcia.model.Parser;
+import uet.jcia.core.parser.HbmParser;
+import uet.jcia.data.node.ColumnNode;
+import uet.jcia.data.node.TableNode;
+import uet.jcia.data.node.TreeNode;
 import uet.jcia.utils.TreeDataHelper;
 
 public class TestImprovedParser {
@@ -24,9 +24,9 @@ public class TestImprovedParser {
         xmlList.add("src/main/resources/sample-data/OrderItem.hbm.xml");
         xmlList.add("src/main/resources/sample-data/Product.hbm.xml");
 //        
-        Parser parser = new Parser();
+        HbmParser parser = new HbmParser();
         
-        TreeNode rootNode = parser.parseXmlList(xmlList);
+        TreeNode rootNode = parser.parse(xmlList);
         
         System.out.println(rootNode);
         

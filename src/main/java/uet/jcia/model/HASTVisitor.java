@@ -5,24 +5,29 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.persistence.AttributeOverrides;
+
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.Annotation;
+import org.eclipse.jdt.core.dom.ArrayInitializer;
 import org.eclipse.jdt.core.dom.MemberValuePair;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.NormalAnnotation;
 import org.eclipse.jdt.core.dom.ParameterizedType;
 import org.eclipse.jdt.core.dom.PrimitiveType;
 import org.eclipse.jdt.core.dom.SimpleType;
+import org.eclipse.jdt.core.dom.SingleMemberAnnotation;
 import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
-import uet.jcia.entities.ColumnNode;
-import uet.jcia.entities.MTORelationshipNode;
-import uet.jcia.entities.OTMRelationshipNode;
-import uet.jcia.entities.PrimaryKeyNode;
-import uet.jcia.entities.TableNode;
-import uet.jcia.entities.TreeNode;
-import uet.jcia.utils.Mappers;
+import uet.jcia.data.node.ColumnNode;
+import uet.jcia.data.node.CompositePkNode;
+import uet.jcia.data.node.MTORelationshipNode;
+import uet.jcia.data.node.OTMRelationshipNode;
+import uet.jcia.data.node.PrimaryKeyNode;
+import uet.jcia.data.node.TableNode;
+import uet.jcia.data.node.TreeNode;
+import uet.jcia.utils.SqlTypeMapper;
 
 public class HASTVisitor extends ASTVisitor {
     
@@ -30,6 +35,8 @@ public class HASTVisitor extends ASTVisitor {
     private static final String SQL_COLUMN = "Column";
     private static final String SQL_OTM = "One-to-Many";
     private static final String SQL_MTO = "Many-to-One";
+    private static final String EMBEDDED_ID = "EmbeddedId";
+	private static final Object ATTRIBUTE_OVERRIDES = "AttributeOverrides";
     
     private static long tempId = 0L;
     
@@ -57,7 +64,6 @@ public class HASTVisitor extends ASTVisitor {
         return cachedTables.get(className);
     }
     
-    @SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
     public boolean visit(TypeDeclaration node) {
         List modifiers = node.modifiers();
@@ -111,7 +117,6 @@ public class HASTVisitor extends ASTVisitor {
         return true;
     }
 
-    @SuppressWarnings("rawtypes")
 	@Override
     public boolean visit(MethodDeclaration node) {
     	if (table == null) return false;
@@ -125,13 +130,46 @@ public class HASTVisitor extends ASTVisitor {
             children.add(parseOtm(modifiers, returnType));
         } else if (elementType.equals(SQL_MTO)) {
             children.add(parseMto(modifiers, returnType));
+        } else if (elementType.equals(EMBEDDED_ID)) {
+            children.add(parseEmbeddedId(modifiers));
         } else {
             return false;
         }
         return true;
     }
-    
-    @SuppressWarnings({ "rawtypes", "unchecked" })
+
+	private TreeNode parseEmbeddedId(List modifiers) {
+		for (Object modifier : modifiers) {
+			if (modifier instanceof SingleMemberAnnotation
+					&& ((SingleMemberAnnotation) modifier).getTypeName().toString().equals(ATTRIBUTE_OVERRIDES)) {
+				
+				SingleMemberAnnotation anno = (SingleMemberAnnotation) modifier;
+				if (anno.getValue() instanceof ArrayInitializer) {
+					ArrayInitializer attArr = (ArrayInitializer) anno.getValue();
+					List children = attArr.expressions();
+					CompositePkNode compositePk = new CompositePkNode();
+					for (Object child : children) {
+						if (child instanceof NormalAnnotation) {
+							ColumnNode fk = new ColumnNode();
+							String columnName = "";
+							for (Object p : ((NormalAnnotation) child).values()) {
+								MemberValuePair pair = (MemberValuePair) p;
+								if (pair.getName().toString().equals("name")) {
+									columnName = pair.getValue().toString().replace("\"", "");
+								}
+							}
+							fk.setColumnName(columnName);
+							compositePk.getFkList().add(fk);
+						}
+					}
+					return compositePk;
+				}
+				
+			}
+		}
+		return null;
+	}
+
 	private MTORelationshipNode parseMto(List modifiers, Type returnType) {
         MTORelationshipNode mto = new MTORelationshipNode();
         mto.setType(SQL_MTO);
@@ -170,7 +208,6 @@ public class HASTVisitor extends ASTVisitor {
         return mto;
     }
     
-    @SuppressWarnings("rawtypes")
 	private OTMRelationshipNode parseOtm(List modifiers, Type returnType) {
         OTMRelationshipNode otm = new OTMRelationshipNode();
         otm.setType(SQL_OTM);
@@ -190,7 +227,6 @@ public class HASTVisitor extends ASTVisitor {
         return otm;
     }
     
-    @SuppressWarnings({ "rawtypes", "unchecked" })
 	private ColumnNode parseColumn(List modifiers, Type returnType) {
         List<MemberValuePair> columnValues = null;
         String columnName = null;
@@ -237,7 +273,8 @@ public class HASTVisitor extends ASTVisitor {
             column = new ColumnNode();
         }
         column.setColumnName(columnName);
-        column.setDataType(Mappers.getHbmtoSql(javaType));
+        column.setJavaName(columnName);
+        column.setDataType(SqlTypeMapper.getHbmtoSql(javaType));
         column.setLength(length);
         column.setPrimaryKey(isPK);
         column.setUnique(isUQ);
@@ -250,12 +287,13 @@ public class HASTVisitor extends ASTVisitor {
      * Table, Column, MTO, OTM
      * @return
      */
-    @SuppressWarnings("rawtypes")
 	private String getElementType(List modifiers) {
         for (Object modifier : modifiers) {
             if (modifier instanceof Annotation) {
                 Annotation annotation = (Annotation) modifier;
-                if (annotation.getTypeName().toString().equals("Entity")) {
+                if (annotation.getTypeName().toString().equals(EMBEDDED_ID)) {
+                    return EMBEDDED_ID;
+                } else if (annotation.getTypeName().toString().equals("Entity")) {
                     return SQL_TABLE;
                 } else if (annotation.getTypeName().toString().equals("Column")) {
                     return SQL_COLUMN;

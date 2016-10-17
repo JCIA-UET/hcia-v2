@@ -1,6 +1,5 @@
 package uet.jcia.model;
 
-import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -8,20 +7,22 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-import uet.jcia.entities.TreeNode;
+import uet.jcia.core.parser.HbmParser;
+import uet.jcia.data.node.TreeNode;
 import uet.jcia.utils.Constants;
+import uet.jcia.utils.FileManager;
 import uet.jcia.utils.Helper;
 import uet.jcia.utils.HibernateHelper;
+import uet.jcia.utils.ZipManager;
 
 public class CoreAPI {
     
     private ZipManager zm = new ZipManager();
     private FileManager fm = new FileManager();
-    private Parser parser = new Parser();
+    private HbmParser parser = new HbmParser();
     private JavaParser jParser = new JavaParser();
     private Inverser inverser = new Inverser();
     private MapStorage storage = new MapStorage();
-    
     
     // mapping between temp file and extracted folder
     private static HashMap<String, String> mapper = new HashMap<>(); 
@@ -66,7 +67,7 @@ public class CoreAPI {
             if (!xmlList.isEmpty() && !javaList.isEmpty()) {
             	throw new Exception("can not parse both java and xml at the same time");
             } else if (!xmlList.isEmpty()) {
-            	rootNode = parser.parseXmlList(xmlList);
+            	rootNode = parser.parse(xmlList);
             } else if (!javaList.isEmpty()) {
             	rootNode = jParser.parseJavaList(javaList);
             }
@@ -93,7 +94,7 @@ public class CoreAPI {
         fm.findFiles(
                 sourceFolder, ".*\\.xml", xmlList);
 
-        rootNode = parser.parseXmlList(xmlList);
+        rootNode = parser.parse(xmlList);
         resultPath = fm.saveTempData(rootNode);
         String documentPath = fm.saveDocumentsHash(parser.getCachedDocument());
         

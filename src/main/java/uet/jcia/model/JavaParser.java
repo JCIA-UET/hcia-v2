@@ -14,14 +14,15 @@ import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 
-import uet.jcia.entities.ColumnNode;
-import uet.jcia.entities.MTORelationshipNode;
-import uet.jcia.entities.OTMRelationshipNode;
-import uet.jcia.entities.PrimaryKeyNode;
-import uet.jcia.entities.RelationshipNode;
-import uet.jcia.entities.RootNode;
-import uet.jcia.entities.TableNode;
-import uet.jcia.entities.TreeNode;
+import uet.jcia.data.node.ColumnNode;
+import uet.jcia.data.node.CompositePkNode;
+import uet.jcia.data.node.MTORelationshipNode;
+import uet.jcia.data.node.OTMRelationshipNode;
+import uet.jcia.data.node.PrimaryKeyNode;
+import uet.jcia.data.node.RelationshipNode;
+import uet.jcia.data.node.RootNode;
+import uet.jcia.data.node.TableNode;
+import uet.jcia.data.node.TreeNode;
 import uet.jcia.utils.Helper;
 import uet.jcia.utils.JsonHelper;
 
@@ -29,8 +30,7 @@ public class JavaParser {
     
     public static final String[] SAMPLE_TEST =
     {
-            "I:\\Dropbox\\Workspace\\hcia-v2\\src\\test\\java\\cuong\\data\\javasample\\Customer.java",
-            "I:\\Dropbox\\Workspace\\hcia-v2\\src\\test\\java\\cuong\\data\\javasample\\Employee.java",
+            "F:\\Workspace\\hcia-v2\\src\\test\\java\\cuong\\data\\javasample\\Payment.java"
     };
 
     private HASTVisitor visitor;
@@ -78,10 +78,9 @@ public class JavaParser {
         }
         root.setChilds(children);
         
-        System.out.println("Root: " + root);
-        
         //!-------------------------------------------
         resolveRelationship(root);
+        resolveCompositeId(root);
         
         return root;
     }
@@ -139,12 +138,41 @@ public class JavaParser {
         }
     }
     
+    public void resolveCompositeId(RootNode root) {
+    	for (TreeNode table : root.getChilds()) {
+    		for (TreeNode child : table.getChilds()) {
+    			if (child instanceof CompositePkNode) {
+    				CompositePkNode cp = (CompositePkNode) child;
+    				List<ColumnNode> tempFks = new ArrayList<>();
+    				for (ColumnNode fk : cp.getFkList()) {
+    					ColumnNode compositeIdColumn = getColumnNodeByName(table, fk.getColumnName());
+    					if (compositeIdColumn != null) {
+    						tempFks.add(compositeIdColumn);
+    					}
+    				}
+    				cp.setFkList(tempFks);
+    			}
+    		}
+    		
+    	}
+    }
+    
+    private ColumnNode getColumnNodeByName(TreeNode table, String columnName) {
+    	for (TreeNode child : table.getChilds())
+    		if (child instanceof ColumnNode) {
+    			ColumnNode column = (ColumnNode) child;
+    			if (column.getColumnName() != null && column.getColumnName().equals(columnName)) {
+    				return column;
+    			}
+    		}
+    	return null;
+    }
+    
     private ColumnNode generateFkFromPk(PrimaryKeyNode pk) {
         ColumnNode fk = new ColumnNode();
         fk.setColumnName(pk.getColumnName());
         fk.setDataType(pk.getDataType());
         fk.setLength(pk.getLength());
-        
         fk.setForeignKey(true);
         return fk;
     }

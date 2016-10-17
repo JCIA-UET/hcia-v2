@@ -1,4 +1,4 @@
-package uet.jcia.model;
+package uet.jcia.core.parser;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -16,42 +16,25 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import uet.jcia.entities.ColumnNode;
-import uet.jcia.entities.MTORelationshipNode;
-import uet.jcia.entities.OTMRelationshipNode;
-import uet.jcia.entities.PrimaryKeyNode;
-import uet.jcia.entities.RootNode;
-import uet.jcia.entities.TableNode;
-import uet.jcia.entities.TreeNode;
+import uet.jcia.constant.HbmConst;
+import uet.jcia.data.node.ColumnNode;
+import uet.jcia.data.node.MTORelationshipNode;
+import uet.jcia.data.node.OTMRelationshipNode;
+import uet.jcia.data.node.PrimaryKeyNode;
+import uet.jcia.data.node.RootNode;
+import uet.jcia.data.node.TableNode;
+import uet.jcia.data.node.TreeNode;
 import uet.jcia.utils.Helper;
-import uet.jcia.utils.Mappers;
+import uet.jcia.utils.SqlTypeMapper;
 import uet.jcia.utils.TreeDataHelper;
 
-public class Parser {
+public class HbmParser implements Parser {
     
     private long tempIdGenerator = 0;
     
-    public static final String ONE_TO_ONE = "one-to-one";
-    public static final String ONE_TO_MANY = "one-to-many";
-    public static final String MANY_TO_ONE = "many-to-one";
-
-    public static final String HBM_HIBERNATE_MAPPING = "hibernate-mapping";
-    public static final String HBM_CLASS = "class";
-    
-    public static final String HBM_ID = "id";
-    public static final String HBM_GENERATOR = "generator";
-    public static final String HBM_PROPERTY = "property";
-    public static final String HBM_SET = "set";
-    public static final String HBM_COLUMN = "column";
-    public static final String HBM_ONE_TO_MANY = "one-to-many";
-    public static final String HBM_MANY_TO_ONE = "many-to-one";
-    
-    public static final String HBM_ATT_TEMP_ID = "tempid";
-    public static final String HBM_ATT_NAME = "name";
-    public static final String HBM_ATT_TABLE = "table";
-    
     private static DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-    
+
+    // prevent validating hbms
     static {
         try {
             dbFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false);
@@ -71,20 +54,18 @@ public class Parser {
     private HashMap<String, PrimaryKeyNode> pkNameMapper;
     
     
-    public Parser(){
+    public HbmParser(){
         cachedDocument = new HashMap<>();
         tableNameMapper = new HashMap<>();
         classNameMapper = new HashMap<>();
         pkNameMapper = new HashMap<>();
     }
-    
-    public TreeNode parseXmlList(List<String> xmlList){
-        
-//        System.out.println("[Parser] starting...");
+
+    public TreeNode parse(List<String> xmlList){
 
         TreeNode root = new RootNode();
         List<TreeNode> tableNodes = new ArrayList<>();
-        
+
         for(String xml : xmlList){
             List<TableNode> parsedResult = parseXmlFile(xml);
             for (TableNode tableNode : parsedResult) {
@@ -94,8 +75,7 @@ public class Parser {
             }
             
         }
-        
-//        System.out.println("[Parser] add relationships...");
+
         for (TreeNode tblNode : tableNodes) {
             List<TreeNode> childNodes = tblNode.getChilds();
             for (int j = 0; j < childNodes.size(); j++) {
@@ -146,8 +126,7 @@ public class Parser {
                 }
             }
         }
-        
-//        System.out.println("[Parser] done!");
+
         root.setChilds(tableNodes);
         root.setTempId(-1);
         return root;
@@ -157,7 +136,7 @@ public class Parser {
     public TreeNode parseXml(String xmlPath){
         List<String> xmlList = new ArrayList<>();
         xmlList.add(xmlPath);
-        return parseXmlList(xmlList);
+        return parse(xmlList);
     }
     
     
@@ -166,13 +145,8 @@ public class Parser {
         try {
             File xmlFile = new File(xmlPath);
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-            
-            System.out.println("[Parser] parsing [" + xmlPath + "]....");
             Document doc = dBuilder.parse(xmlFile);
             doc.getDocumentElement().normalize();
-            System.out.println("[Parser] parsed....");
-            
-            System.out.println("[Parser] analylising....");
             // invalid hbm xml must contain hibernate-mapping tag
             if (doc.getElementsByTagName("hibernate-mapping").getLength() == 0) {
                 return result;
@@ -181,7 +155,7 @@ public class Parser {
             // map xmlPath and document
             cachedDocument.put(xmlPath, doc);
             
-            NodeList listClass = doc.getElementsByTagName("class");
+            NodeList listClass = doc.getElementsByTagName(HbmConst.TAG_CLASS);
             
             // parse class tag
             for(int temp = 0; temp < listClass.getLength(); temp++){
@@ -196,8 +170,6 @@ public class Parser {
 //                table.setLinkedElement((Element)classNode);
                 result.add(table);
             }
-            
-            System.out.println("[Parser] analylised....");
             return result;
             
         } catch (Exception e) {
@@ -211,8 +183,8 @@ public class Parser {
         Element classElement = (Element)classNode;
         
         // attribute for class tag
-        String className = classElement.getAttribute("name");
-        String tableName = classElement.getAttribute("table");
+        String className = classElement.getAttribute(HbmConst.ATT_NAME);
+        String tableName = classElement.getAttribute(HbmConst.ATT_TABLE);
         tableNode.setClassName(className);
         tableNode.setTableName(tableName);
         
@@ -224,7 +196,7 @@ public class Parser {
         List<TreeNode> childElements = new ArrayList<>();
         
         // get primary key
-        Node idNode = classElement.getElementsByTagName("id").item(0);
+        Node idNode = classElement.getElementsByTagName(HbmConst.TAG_ID).item(0);
         if (idNode != null){
             NamedNodeMap pkAttrs = idNode.getAttributes();
             PrimaryKeyNode primaryKey = parseIdTag(idNode);
@@ -239,7 +211,7 @@ public class Parser {
         }
         
         // get normal columns
-        NodeList propertyNodes = classElement.getElementsByTagName("property");
+        NodeList propertyNodes = classElement.getElementsByTagName(HbmConst.TAG_PROPERTY);
         for (int temp = 0; temp < propertyNodes.getLength(); temp++){
             Node propertyNode = propertyNodes.item(temp);
             
@@ -252,7 +224,7 @@ public class Parser {
         }
         
         // get n-1 relationships
-        NodeList mtoNodes = classElement.getElementsByTagName("many-to-one");
+        NodeList mtoNodes = classElement.getElementsByTagName(HbmConst.TAG_MANY_TO_ONE);
         for(int temp = 0; temp < mtoNodes.getLength(); temp++){
             Node mtoNode = mtoNodes.item(temp);
             
@@ -265,7 +237,7 @@ public class Parser {
         }
         
         // get 1-n relationships
-        NodeList setNodes = classElement.getElementsByTagName("set");
+        NodeList setNodes = classElement.getElementsByTagName(HbmConst.TAG_SET);
         for(int temp = 0; temp < setNodes.getLength(); temp++){
             Node setNode = setNodes.item(temp);
             
@@ -289,24 +261,24 @@ public class Parser {
         // add temp id
         long tempId = generateId();
         primaryKey.setTempId(tempId);
-        idElement.setAttribute(HBM_ATT_TEMP_ID, Long.toString(tempId));
+        idElement.setAttribute(HbmConst.ATT_TEMP_ID, Long.toString(tempId));
         
         // get attributes
-        Element columnElement = (Element) idElement.getElementsByTagName("column").item(0);
-        String lengthStr = columnElement.getAttribute("length");
+        Element columnElement = (Element) idElement.getElementsByTagName(HbmConst.TAG_COLUMN).item(0);
+        String lengthStr = columnElement.getAttribute(HbmConst.ATT_LENGTH);
         if (!lengthStr.isEmpty()) {
             primaryKey.setLength(Integer.parseInt(lengthStr));
         }
         
-        primaryKey.setJavaName(idElement.getAttribute("name"));
-        primaryKey.setColumnName(columnElement.getAttribute("name"));
-        primaryKey.setDataType(Mappers.getHbmtoSql(idElement.getAttribute("type")));
+        primaryKey.setJavaName(idElement.getAttribute(HbmConst.ATT_NAME));
+        primaryKey.setColumnName(columnElement.getAttribute(HbmConst.ATT_NAME));
+        primaryKey.setDataType(SqlTypeMapper.getHbmtoSql(idElement.getAttribute(HbmConst.ATT_TYPE)));
         primaryKey.setPrimaryKey(true);
         primaryKey.setNotNull(true);
         
         // get generator
-        Element generatorNode = (Element) idElement.getElementsByTagName("generator").item(0);
-        if ("increment".equals(generatorNode.getAttribute("class"))){
+        Element generatorNode = (Element) idElement.getElementsByTagName(HbmConst.TAG_GENERATOR).item(0);
+        if ("increment".equals(generatorNode.getAttribute(HbmConst.ATT_CLASS))){
             primaryKey.setAutoIncrement(true);
         }
         
@@ -320,18 +292,18 @@ public class Parser {
         // set temp id
         long tempId = generateId();
         field.setTempId(tempId);
-        propertyElement.setAttribute(HBM_ATT_TEMP_ID, Long.toString(tempId));
+        propertyElement.setAttribute(HbmConst.ATT_TEMP_ID, Long.toString(tempId));
 
         // get attributes
-        Element columnElement = (Element) propertyElement.getElementsByTagName("column").item(0);
+        Element columnElement = (Element) propertyElement.getElementsByTagName(HbmConst.TAG_COLUMN).item(0);
         String lengthStr = columnElement.getAttribute("length");
         if (!lengthStr.isEmpty()) {
             field.setLength(Integer.parseInt(lengthStr));
         }
 
-        field.setJavaName(propertyElement.getAttribute("name"));
-        field.setColumnName(columnElement.getAttribute("name"));
-        field.setDataType(Mappers.getHbmtoSql(propertyElement.getAttribute("type")));
+        field.setJavaName(propertyElement.getAttribute(HbmConst.ATT_NAME));
+        field.setColumnName(columnElement.getAttribute(HbmConst.ATT_NAME));
+        field.setDataType(SqlTypeMapper.getHbmtoSql(propertyElement.getAttribute("type")));
 
         String notNull = columnElement.getAttribute("not-null");
         if ("true".equals(notNull)) {
@@ -348,23 +320,23 @@ public class Parser {
         // set temp id
         long tempId = generateId();
         relationship.setTempId(tempId);
-        mtoElement.setAttribute(HBM_ATT_TEMP_ID, Long.toString(tempId));
+        mtoElement.setAttribute(HbmConst.ATT_TEMP_ID, Long.toString(tempId));
         
         // get attributes
         TableNode referTable = new TableNode();
         PrimaryKeyNode referColumn = new PrimaryKeyNode();
 
-        String referClass = mtoElement.getAttribute("class");
+        String referClass = mtoElement.getAttribute(HbmConst.ATT_CLASS);
         referTable.setClassName(referClass);
 
-        Element columnElement = (Element) mtoElement.getElementsByTagName("column").item(0);
-        String referColumName = columnElement.getAttribute("name");
+        Element columnElement = (Element) mtoElement.getElementsByTagName(HbmConst.TAG_COLUMN).item(0);
+        String referColumName = columnElement.getAttribute(HbmConst.ATT_NAME);
         referColumn.setColumnName(referColumName);
         
-        relationship.setJavaName(mtoElement.getAttribute("name"));
+        relationship.setJavaName(mtoElement.getAttribute(HbmConst.ATT_NAME));
         relationship.setReferTable(referTable);
         relationship.setReferColumn(referColumn);
-        relationship.setType("Many-to-One");
+        relationship.setType(HbmConst.TAG_MANY_TO_ONE);
 
         return relationship; 
     }
@@ -376,24 +348,24 @@ public class Parser {
         // get temp id
         long tempId = generateId();
         relationship.setTempId(tempId);
-        setElement.setAttribute(HBM_ATT_TEMP_ID, Long.toString(tempId));
+        setElement.setAttribute(HbmConst.ATT_TEMP_ID, Long.toString(tempId));
         
         // get attributes
         TableNode referTable = new TableNode();
         ColumnNode foreignKey = new ColumnNode();
         
-        Element keyElement = (Element) setElement.getElementsByTagName("key").item(0);
-        Element columnElement = (Element) keyElement.getElementsByTagName("column").item(0);
-        Element otmElement = (Element)setElement.getElementsByTagName("one-to-many").item(0);
+        Element keyElement = (Element) setElement.getElementsByTagName(HbmConst.TAG_KEY).item(0);
+        Element columnElement = (Element) keyElement.getElementsByTagName(HbmConst.TAG_COLUMN).item(0);
+        Element otmElement = (Element)setElement.getElementsByTagName(HbmConst.TAG_ONE_TO_MANY).item(0);
         
-        foreignKey.setColumnName(columnElement.getAttribute("name"));
-        referTable.setTableName(setElement.getAttribute("table"));
-        referTable.setClassName(otmElement.getAttribute("class"));
+        foreignKey.setColumnName(columnElement.getAttribute(HbmConst.ATT_NAME));
+        referTable.setTableName(setElement.getAttribute(HbmConst.ATT_TABLE));
+        referTable.setClassName(otmElement.getAttribute(HbmConst.ATT_CLASS));
         
-        relationship.setJavaName(setElement.getAttribute("name"));
+        relationship.setJavaName(setElement.getAttribute(HbmConst.ATT_NAME));
         relationship.setReferTable(referTable);
         relationship.setForeignKey(foreignKey);
-        relationship.setType("One-to-Many");
+        relationship.setType(HbmConst.TAG_ONE_TO_MANY);
         
         return relationship;
     }

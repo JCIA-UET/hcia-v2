@@ -5,8 +5,8 @@ import java.io.IOException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import uet.jcia.entities.RootNode;
-import uet.jcia.entities.TreeNode;
+import uet.jcia.data.node.RootNode;
+import uet.jcia.data.node.TreeNode;
 import uet.jcia.model.CoreAPI;
 
 public class JsonHelper {

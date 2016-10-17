@@ -1,4 +1,4 @@
-package uet.jcia.entities;
+package uet.jcia.data.node;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -21,7 +21,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
     @JsonSubTypes.Type(value=RootNode.class, name="rootnode"),
     @JsonSubTypes.Type(value=PrimaryKeyNode.class, name="pk"),
     @JsonSubTypes.Type(value=MTORelationshipNode.class, name="mto"),
-	@JsonSubTypes.Type(value=OTMRelationshipNode.class, name="otm")
+	@JsonSubTypes.Type(value=OTMRelationshipNode.class, name="otm"),
+    @JsonSubTypes.Type(value=CompositePkNode.class, name="compositepk")
 })
 public abstract class TreeNode implements Serializable{
 	private static final long serialVersionUID = 1318575025108283976L;

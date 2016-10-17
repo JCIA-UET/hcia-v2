@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import uet.jcia.entities.TableNode;
+import uet.jcia.data.node.TableNode;
 import uet.jcia.model.CoreAPI;
 
 public class JSONConvertTest {
