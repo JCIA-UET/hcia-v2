@@ -8,11 +8,11 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.xml.sax.SAXException;
 
-import uet.jcia.core.parser.HbmParser;
-import uet.jcia.core.parser.Parser;
 import uet.jcia.data.node.TreeNode;
 import uet.jcia.entities.Table;
 import uet.jcia.model.DeprecatedParser2;
+import uet.jcia.model.parser.HbmParser;
+import uet.jcia.model.parser.Parser;
 import uet.jcia.utils.JsonHelper;
 
 public class TestParser {

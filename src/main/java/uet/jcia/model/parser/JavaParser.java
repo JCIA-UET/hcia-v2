@@ -1,4 +1,4 @@
-package uet.jcia.model;
+package uet.jcia.model.parser;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -23,10 +23,11 @@ import uet.jcia.data.node.RelationshipNode;
 import uet.jcia.data.node.RootNode;
 import uet.jcia.data.node.TableNode;
 import uet.jcia.data.node.TreeNode;
+import uet.jcia.model.HASTVisitor;
 import uet.jcia.utils.Helper;
 import uet.jcia.utils.JsonHelper;
 
-public class JavaParser {
+public class JavaParser implements Parser{
     
     public static final String[] SAMPLE_TEST =
     {
@@ -43,45 +44,35 @@ public class JavaParser {
         JavaParser parser = new JavaParser();
         RootNode root = parser.parse(Arrays.asList(SAMPLE_TEST));
         System.out.println(JsonHelper.toJsonString(root));
-//        System.out.println(root);
     }
     
-    public RootNode parseJavaList(List<String> javaList) {
-    	try {
-			return parse(javaList);
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-    	return null;
-    }
-    
-    public RootNode parseJavaFile(String path) {
+    public RootNode parseSingleFile(String path) {
     	List<String> javaList = new ArrayList<>();
     	javaList.add(path);
-    	return parseJavaList(javaList);
+    	return parse(javaList);
     }
     
-    public RootNode parse(List<String> sourcePaths) throws IllegalArgumentException, IOException {
+    public RootNode parse(List<String> sourcePaths) {
         RootNode root = new RootNode();
         List<TreeNode> children = new ArrayList<>();
-        for (String sourcePath : sourcePaths) {
-            char[] source = file2CharArr(sourcePath);
-            TableNode table = parseSource(source);
-            if (table != null) {
-            	table.setJavaPath(sourcePath);
-            	String xmlPath = sourcePath.replace(".java", ".hbm.xml");
-            	table.setXmlPath(xmlPath);
-            	children.add(table);
+        try {
+            for (String sourcePath : sourcePaths) {
+                char[] source = file2CharArr(sourcePath);
+                TableNode table = parseSource(source);
+                if (table != null) {
+                	table.setJavaPath(sourcePath);
+                	String xmlPath = sourcePath.replace(".java", ".hbm.xml");
+                	table.setXmlPath(xmlPath);
+                	children.add(table);
+                }
             }
+        } catch (IllegalArgumentException | IOException e) {
+            e.printStackTrace();
         }
         root.setChilds(children);
-        
         //!-------------------------------------------
         resolveRelationship(root);
         resolveCompositeId(root);
-        
         return root;
     }
     

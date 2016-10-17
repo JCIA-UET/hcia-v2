@@ -7,8 +7,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-import uet.jcia.core.parser.HbmParser;
 import uet.jcia.data.node.TreeNode;
+import uet.jcia.model.parser.HbmParser;
+import uet.jcia.model.parser.JavaParser;
+import uet.jcia.model.parser.Parser;
 import uet.jcia.utils.Constants;
 import uet.jcia.utils.FileManager;
 import uet.jcia.utils.Helper;
@@ -19,19 +21,15 @@ public class CoreAPI {
     
     private ZipManager zm = new ZipManager();
     private FileManager fm = new FileManager();
-    private HbmParser parser = new HbmParser();
-    private JavaParser jParser = new JavaParser();
+    private Parser parser = new HbmParser();
     private Inverser inverser = new Inverser();
     private MapStorage storage = new MapStorage();
     
     // mapping between temp file and extracted folder
     private static HashMap<String, String> mapper = new HashMap<>(); 
     
-    // mapping between temp file and document file
-    private static HashMap<String, String> tempDocumentMapper = new HashMap<>();
-    
     public CoreAPI() {
-		mapper = storage.loadMap();
+        mapper = storage.loadMap();
     }
     
     public String parse(String uploadPath) throws Exception {
@@ -48,16 +46,19 @@ public class CoreAPI {
             // copy file to generated folder
             Helper.copyFile(uploadPath, dstPath);
 
+            // select parser's type
             if (uploadPath.matches(".*\\.xml")) {
-            	rootNode = parser.parseXml(dstPath);
+                parser = new HbmParser();
             } else if (uploadPath.matches(".*\\.java")) {
-            	rootNode = jParser.parseJavaFile(dstPath);
+                parser = new JavaParser();
             }
-            
+            // do parse
+            rootNode = parser.parseSingleFile(uploadPath);
+            // save result
             resultPath = fm.saveTempData(rootNode);
             mapper.put(resultPath, dstDir);
             
-        } else if (uploadPath.matches(".*\\.zip")) {
+        } else if (uploadPath.matches(".*\\.zip")) { // user uploads a zip file
             String extractedFolder = zm.unzip(uploadPath);
             List<String> xmlList = new ArrayList<>();
             List<String> javaList = new ArrayList<>();
@@ -65,19 +66,17 @@ public class CoreAPI {
             fm.findFiles(extractedFolder, ".*\\.java", javaList);
             
             if (!xmlList.isEmpty() && !javaList.isEmpty()) {
-            	throw new Exception("can not parse both java and xml at the same time");
-            } else if (!xmlList.isEmpty()) {
-            	rootNode = parser.parse(xmlList);
-            } else if (!javaList.isEmpty()) {
-            	rootNode = jParser.parseJavaList(javaList);
+                // prevent user to upload both java and hbm files
+                throw new Exception("can not parse both java and xml at the same time");
+            } else if (!javaList.isEmpty()) { // use java parser
+                parser = new JavaParser();
+                rootNode = parser.parse(javaList);
+            } else if (!xmlList.isEmpty()) { // use hbm parser
+                parser = new HbmParser();
+                rootNode = parser.parse(xmlList);
             }
-            
             resultPath = fm.saveTempData(rootNode);
-            String documentPath = fm.saveDocumentsHash(parser.getCachedDocument());
-            
             mapper.put(resultPath, extractedFolder);
-            tempDocumentMapper.put(resultPath, documentPath);
-            
         }
         
         storage.saveMap(mapper);
@@ -86,7 +85,6 @@ public class CoreAPI {
     
     public String refresh(String tempPath) {
         String sourceFolder = mapper.get(tempPath);
-        
         TreeNode rootNode;
         String resultPath = null;
         
@@ -96,11 +94,8 @@ public class CoreAPI {
 
         rootNode = parser.parse(xmlList);
         resultPath = fm.saveTempData(rootNode);
-        String documentPath = fm.saveDocumentsHash(parser.getCachedDocument());
-        
+
         mapper.put(resultPath, sourceFolder);
-        tempDocumentMapper.put(resultPath, documentPath);
-        
         storage.saveMap(mapper);
         return resultPath;
     }
@@ -116,24 +111,24 @@ public class CoreAPI {
     }
     
     public String generateCreationScript(String tempPath) throws IOException {
-    	String extractedFolder = mapper.get(tempPath);
-    	List<String> javaList = new ArrayList<>();
-    	fm.findFiles(extractedFolder, ".*\\.java", javaList);
-    	System.out.println(javaList);
-    	for (String javaPath : javaList) {
-    		File javaFile = new File(javaPath);
-    		String parentPath = javaFile.getParentFile().getAbsolutePath();
-    		String fileName = javaFile.getName().replaceAll("\\.java", ".hbm.xml");
-    		File hbmFile = new File(parentPath + File.separator + fileName);
-    		if (!hbmFile.exists())
-    			hbmFile.createNewFile();
-    	}
-    	
-    	List<String> hbmList = new ArrayList<>();
-    	fm.findFiles(extractedFolder, ".*\\.hbm.xml", hbmList);
-    	String sql = HibernateHelper.generateDdl(hbmList); 
-    	System.out.println(sql);
-    	return sql;
+        String extractedFolder = mapper.get(tempPath);
+        List<String> javaList = new ArrayList<>();
+        fm.findFiles(extractedFolder, ".*\\.java", javaList);
+
+        for (String javaPath : javaList) {
+            File javaFile = new File(javaPath);
+            String parentPath = javaFile.getParentFile().getAbsolutePath();
+            String fileName = javaFile.getName().replaceAll("\\.java", ".hbm.xml");
+            File hbmFile = new File(parentPath + File.separator + fileName);
+            if (!hbmFile.exists())
+                hbmFile.createNewFile();
+        }
+
+        List<String> hbmList = new ArrayList<>();
+        fm.findFiles(extractedFolder, ".*\\.hbm.xml", hbmList);
+        String sql = HibernateHelper.generateDdl(hbmList); 
+        System.out.println(sql);
+        return sql;
     }
     
     public void updateData(TreeNode tableNode) {

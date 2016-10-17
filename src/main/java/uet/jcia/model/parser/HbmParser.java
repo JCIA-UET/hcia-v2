@@ -1,4 +1,4 @@
-package uet.jcia.core.parser;
+package uet.jcia.model.parser;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -43,9 +43,7 @@ public class HbmParser implements Parser {
             e.printStackTrace();
         }
     }
-    
-    // refxml - Document
-    private HashMap<String, Document> cachedDocument;
+
     // table name - table node
     private HashMap<String, TableNode> tableNameMapper;
     // class name - table node
@@ -55,7 +53,6 @@ public class HbmParser implements Parser {
     
     
     public HbmParser(){
-        cachedDocument = new HashMap<>();
         tableNameMapper = new HashMap<>();
         classNameMapper = new HashMap<>();
         pkNameMapper = new HashMap<>();
@@ -133,7 +130,7 @@ public class HbmParser implements Parser {
     }
     
 
-    public TreeNode parseXml(String xmlPath){
+    public TreeNode parseSingleFile(String xmlPath){
         List<String> xmlList = new ArrayList<>();
         xmlList.add(xmlPath);
         return parse(xmlList);
@@ -151,10 +148,7 @@ public class HbmParser implements Parser {
             if (doc.getElementsByTagName("hibernate-mapping").getLength() == 0) {
                 return result;
             }
-            
-            // map xmlPath and document
-            cachedDocument.put(xmlPath, doc);
-            
+
             NodeList listClass = doc.getElementsByTagName(HbmConst.TAG_CLASS);
             
             // parse class tag
@@ -381,13 +375,5 @@ public class HbmParser implements Parser {
 
     private long generateId() {
         return tempIdGenerator++;
-    }
-    
-    public HashMap<String, Document> getCachedDocument() {
-        return cachedDocument;
-    }
-    
-    public Document getDocumentByXmlPath(String xmlPath) {
-        return cachedDocument.get(xmlPath);
     }
 }

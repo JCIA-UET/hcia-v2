@@ -7,10 +7,10 @@ import java.util.List;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import uet.jcia.core.parser.HbmParser;
 import uet.jcia.data.node.ColumnNode;
 import uet.jcia.data.node.TableNode;
 import uet.jcia.data.node.TreeNode;
+import uet.jcia.model.parser.HbmParser;
 import uet.jcia.utils.TreeDataHelper;
 
 public class TestImprovedParser {
