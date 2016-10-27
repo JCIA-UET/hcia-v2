@@ -6,18 +6,32 @@ function Relationshipd3(type , table , column , referTbl, referColumn){
 	this.referColumn = referColumn;
 	
 	this.draw = function(lCurrent){
+		var data = d3.select("#"+referTbl).data()[0];
+		var das = false;
+		
+		for(var i=0 ; i < data.listColumn.length ; i++){
+			if(this.referColumn == data.listColumn[i].name){
+				if(data.listColumn[i].primaryKey == false){
+					das = true;
+					break;
+				}
+			}
+		}
 		lCurrent.attr("points",this.calculate())
 			.attr("class", "line")
 		       .attr('id',"line"+this.table+this.referTbl)
 		       .attr("marker-start", "url(#oneMar)")
 		       .attr("marker-end", "url(#arrowhead)")
-		       .attr("style", "fill:none;stroke-width:2;")
-		       .attr("stroke-dasharray", "10,10")
+		       .attr("style", "fill:none;stroke-width:3;")
+		       //.attr("stroke-dasharray", "10,10")
 		       .attr("stroke", "#808080")
 		       .on("mouseover",mouse_over_line)
 		       .on("mouseout",mouse_out_line)
 		       .on("click",mouse_onclick_line)
 		       ;
+		if(das == true){
+			lCurrent.attr("stroke-dasharray", "10,10");
+		}
 	}
 	this.calculate = function(){
 		var result = "";

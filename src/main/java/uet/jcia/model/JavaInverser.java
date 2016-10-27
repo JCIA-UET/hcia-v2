@@ -16,7 +16,10 @@ import uet.jcia.data.node.ColumnNode;
 import uet.jcia.utils.FileManager;
 import uet.jcia.utils.Helper;
 
+import uet.jcia.model.parser.HASTVisitor;
+
 public class JavaInverser {
+	
 	
 	HASTVisitor visitor = new HASTVisitor();
 	List<CompilationUnit> cuList = new ArrayList<>();
