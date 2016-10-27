@@ -1,4 +1,4 @@
-package uet.jcia.model;
+package uet.jcia.utils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -13,10 +13,8 @@ import java.util.List;
 
 import org.w3c.dom.Document;
 
+import uet.jcia.data.node.TreeNode;
 import uet.jcia.entities.Table;
-import uet.jcia.entities.TreeNode;
-import uet.jcia.utils.Constants;
-import uet.jcia.utils.Helper;
 
 public class FileManager {
     
@@ -152,5 +150,10 @@ public class FileManager {
         }
         
         return null;
+    }
+    
+    public static String generateFolderName() {
+        return Constants.TEMP_SOURCE_FOLDER + File.separator
+                + "upload-src-" + Helper.DATE_FORMATER.format(new Date());
     }
 }

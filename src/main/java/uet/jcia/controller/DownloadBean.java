@@ -14,8 +14,8 @@ import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpSession;
 
-import uet.jcia.entities.RootNode;
-import uet.jcia.entities.TreeNode;
+import uet.jcia.data.node.RootNode;
+import uet.jcia.data.node.TreeNode;
 import uet.jcia.model.CoreAPI;
 import uet.jcia.utils.Constants;
 import uet.jcia.utils.JsonHelper;

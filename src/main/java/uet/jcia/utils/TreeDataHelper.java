@@ -12,9 +12,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import uet.jcia.entities.ColumnNode;
-import uet.jcia.entities.PrimaryKeyNode;
-import uet.jcia.entities.TreeNode;
+import uet.jcia.data.node.ColumnNode;
+import uet.jcia.data.node.PrimaryKeyNode;
+import uet.jcia.data.node.TreeNode;
 import uet.jcia.model.DeprecatedParser2;
 
 public class TreeDataHelper {

@@ -88,8 +88,6 @@
 			<artifactId>d3js</artifactId>
 			<version>3.4.11</version>
 		</dependency>
-
-
 		<dependency>
 		  <groupId>org.eclipse.jdt</groupId>
 		  <artifactId>org.eclipse.jdt.core</artifactId>
@@ -113,6 +111,16 @@
 					<warSourceDirectory>WebContent</warSourceDirectory>
 				</configuration>
 			</plugin>
+			<plugin>
+		        <groupId>org.apache.tomcat.maven</groupId>
+		        <artifactId>tomcat7-maven-plugin</artifactId>
+		        <version>2.2</version>
+		        <configuration>
+		          <url>http://128.199.168.162:8080/manager/text</url>
+		          <server>VPS</server>
+		          <path>/hcia</path>
+		        </configuration>
+	      </plugin>
 		</plugins>
 	</build>
 </project>

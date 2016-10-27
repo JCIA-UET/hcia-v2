@@ -3,9 +3,9 @@ package cuong;
 import java.io.File;
 import java.util.List;
 
+import uet.jcia.data.node.TreeNode;
 import uet.jcia.entities.Column;
 import uet.jcia.entities.Table;
-import uet.jcia.entities.TreeNode;
 import uet.jcia.model.CoreAPI;
 import uet.jcia.utils.JsonHelper;
 

@@ -8,38 +8,25 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.xml.sax.SAXException;
 
+import uet.jcia.data.node.TreeNode;
 import uet.jcia.entities.Table;
 import uet.jcia.model.DeprecatedParser2;
+import uet.jcia.model.parser.HbmParser;
+import uet.jcia.model.parser.Parser;
+import uet.jcia.utils.JsonHelper;
 
 public class TestParser {
 
     public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException {
         List<String> xmlList = new ArrayList<>();
-        xmlList.add("src/main/resources/sample-data/Address.hbm.xml");
-//        xmlList.add("src/main/resources/sample-data/Category.hbm.xml");
-//        xmlList.add("src/main/resources/sample-data/Customer.hbm.xml");
-//        xmlList.add("src/main/resources/sample-data/Order.hbm.xml");
-//        xmlList.add("src/main/resources/sample-data/OrderItem.hbm.xml");
-//        xmlList.add("src/main/resources/sample-data/Product.hbm.xml");
+        xmlList.add("temp/upload/vnu/jcia/Address.hbm.xml");
+        xmlList.add("temp/upload/vnu/jcia/Category.hbm.xml");
+        xmlList.add("temp/upload/vnu/jcia/Customer.hbm.xml");
+
+        Parser p = new HbmParser();
+        TreeNode root = p.parse(xmlList);
+
+        System.out.println(JsonHelper.toJsonString(root));
         
-        DeprecatedParser2 p = new DeprecatedParser2();
-        List<Table> resultList = p.parseXmlList(xmlList);
-        
-        for (Table t : resultList) {
-            System.out.println(t);
-        }
-        
-        
-//        for (String xmlLink : xmlList) {
-//            File fXmlFile = new File(xmlLink);
-//            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-//            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-//            
-//            System.out.println("[Parser] parsing [" + xmlLink + "]....");
-//            Document doc = dBuilder.parse(fXmlFile);
-//            doc.getDocumentElement().normalize();
-//            System.out.println("[Parser] parsed....");
-//        }
-    
-    }        
+    }
 }

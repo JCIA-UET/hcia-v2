@@ -2,7 +2,7 @@ package uet.jcia.utils;
 
 import java.util.HashMap;
 
-public class Mappers {
+public class SqlTypeMapper {
 
     private static final HashMap<String, String> hbmToSql = new HashMap<>();
     private static final HashMap<String, String> sqlToHbm = new HashMap<>();

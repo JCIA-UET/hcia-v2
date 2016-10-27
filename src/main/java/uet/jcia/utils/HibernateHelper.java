@@ -29,7 +29,6 @@ public class HibernateHelper {
 	private static void createConfiguration(List<String> hbmList) {
 		hibernateConfiguration = new Configuration();
 		for (String hbm : hbmList) {
-			System.out.println(hbm);
 			hibernateConfiguration.addFile(hbm);
 		}
 		hibernateConfiguration.setProperty(AvailableSettings.DIALECT, MYSQL_DIALECT);

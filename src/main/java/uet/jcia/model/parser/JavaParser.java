@@ -1,4 +1,4 @@
-package uet.jcia.model;
+package uet.jcia.model.parser;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -14,23 +14,24 @@ import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 
-import uet.jcia.entities.ColumnNode;
-import uet.jcia.entities.MTORelationshipNode;
-import uet.jcia.entities.OTMRelationshipNode;
-import uet.jcia.entities.PrimaryKeyNode;
-import uet.jcia.entities.RelationshipNode;
-import uet.jcia.entities.RootNode;
-import uet.jcia.entities.TableNode;
-import uet.jcia.entities.TreeNode;
+import uet.jcia.data.node.ColumnNode;
+import uet.jcia.data.node.CompositePkNode;
+import uet.jcia.data.node.MTORelationshipNode;
+import uet.jcia.data.node.OTMRelationshipNode;
+import uet.jcia.data.node.PrimaryKeyNode;
+import uet.jcia.data.node.RelationshipNode;
+import uet.jcia.data.node.RootNode;
+import uet.jcia.data.node.TableNode;
+import uet.jcia.data.node.TreeNode;
+import uet.jcia.model.HASTVisitor;
 import uet.jcia.utils.Helper;
 import uet.jcia.utils.JsonHelper;
 
-public class JavaParser {
+public class JavaParser implements Parser{
     
     public static final String[] SAMPLE_TEST =
     {
-            "I:\\Dropbox\\Workspace\\hcia-v2\\src\\test\\java\\cuong\\data\\javasample\\Customer.java",
-            "I:\\Dropbox\\Workspace\\hcia-v2\\src\\test\\java\\cuong\\data\\javasample\\Employee.java",
+            "F:\\Workspace\\hcia-v2\\src\\test\\java\\cuong\\data\\javasample\\Payment.java"
     };
 
     private HASTVisitor visitor;
@@ -43,46 +44,35 @@ public class JavaParser {
         JavaParser parser = new JavaParser();
         RootNode root = parser.parse(Arrays.asList(SAMPLE_TEST));
         System.out.println(JsonHelper.toJsonString(root));
-//        System.out.println(root);
     }
     
-    public RootNode parseJavaList(List<String> javaList) {
-    	try {
-			return parse(javaList);
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-    	return null;
-    }
-    
-    public RootNode parseJavaFile(String path) {
+    public RootNode parseSingleFile(String path) {
     	List<String> javaList = new ArrayList<>();
     	javaList.add(path);
-    	return parseJavaList(javaList);
+    	return parse(javaList);
     }
     
-    public RootNode parse(List<String> sourcePaths) throws IllegalArgumentException, IOException {
+    public RootNode parse(List<String> sourcePaths) {
         RootNode root = new RootNode();
         List<TreeNode> children = new ArrayList<>();
-        for (String sourcePath : sourcePaths) {
-            char[] source = file2CharArr(sourcePath);
-            TableNode table = parseSource(source);
-            if (table != null) {
-            	table.setJavaPath(sourcePath);
-            	String xmlPath = sourcePath.replace(".java", ".hbm.xml");
-            	table.setXmlPath(xmlPath);
-            	children.add(table);
+        try {
+            for (String sourcePath : sourcePaths) {
+                char[] source = file2CharArr(sourcePath);
+                TableNode table = parseSource(source);
+                if (table != null) {
+                	table.setJavaPath(sourcePath);
+                	String xmlPath = sourcePath.replace(".java", ".hbm.xml");
+                	table.setXmlPath(xmlPath);
+                	children.add(table);
+                }
             }
+        } catch (IllegalArgumentException | IOException e) {
+            e.printStackTrace();
         }
         root.setChilds(children);
-        
-        System.out.println("Root: " + root);
-        
         //!-------------------------------------------
         resolveRelationship(root);
-        
+        resolveCompositeId(root);
         return root;
     }
     
@@ -139,12 +129,41 @@ public class JavaParser {
         }
     }
     
+    public void resolveCompositeId(RootNode root) {
+    	for (TreeNode table : root.getChilds()) {
+    		for (TreeNode child : table.getChilds()) {
+    			if (child instanceof CompositePkNode) {
+    				CompositePkNode cp = (CompositePkNode) child;
+    				List<ColumnNode> tempFks = new ArrayList<>();
+    				for (ColumnNode fk : cp.getFkList()) {
+    					ColumnNode compositeIdColumn = getColumnNodeByName(table, fk.getColumnName());
+    					if (compositeIdColumn != null) {
+    						tempFks.add(compositeIdColumn);
+    					}
+    				}
+    				cp.setFkList(tempFks);
+    			}
+    		}
+    		
+    	}
+    }
+    
+    private ColumnNode getColumnNodeByName(TreeNode table, String columnName) {
+    	for (TreeNode child : table.getChilds())
+    		if (child instanceof ColumnNode) {
+    			ColumnNode column = (ColumnNode) child;
+    			if (column.getColumnName() != null && column.getColumnName().equals(columnName)) {
+    				return column;
+    			}
+    		}
+    	return null;
+    }
+    
     private ColumnNode generateFkFromPk(PrimaryKeyNode pk) {
         ColumnNode fk = new ColumnNode();
         fk.setColumnName(pk.getColumnName());
         fk.setDataType(pk.getDataType());
         fk.setLength(pk.getLength());
-        
         fk.setForeignKey(true);
         return fk;
     }

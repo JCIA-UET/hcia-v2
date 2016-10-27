@@ -1,4 +1,4 @@
-package uet.jcia.entities;
+package uet.jcia.data.node;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonTypeName;

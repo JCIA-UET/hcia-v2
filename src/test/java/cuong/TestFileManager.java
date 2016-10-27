@@ -3,7 +3,7 @@ package cuong;
 import java.util.ArrayList;
 import java.util.List;
 
-import uet.jcia.model.FileManager;
+import uet.jcia.utils.FileManager;
 
 public class TestFileManager {
 

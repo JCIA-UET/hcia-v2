@@ -2,7 +2,7 @@ package cuong;
 
 import java.io.IOException;
 
-import uet.jcia.model.ZipManager;
+import uet.jcia.utils.ZipManager;
 
 public class TestZipManager {
 

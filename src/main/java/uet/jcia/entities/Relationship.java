@@ -9,7 +9,7 @@ import java.io.Serializable;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public class Relationship{
+public class Relationship {
     private static final long serialVersionUID = 4079820745723632081L;
     
     private Column referColumn;

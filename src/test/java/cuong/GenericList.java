@@ -3,8 +3,8 @@ package cuong;
 import java.util.ArrayList;
 import java.util.List;
 
-import uet.jcia.entities.ColumnNode;
-import uet.jcia.entities.TreeNode;
+import uet.jcia.data.node.ColumnNode;
+import uet.jcia.data.node.TreeNode;
 
 public class GenericList {
 

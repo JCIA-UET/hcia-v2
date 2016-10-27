@@ -30,16 +30,14 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import uet.jcia.entities.Column;
-import uet.jcia.entities.ColumnNode;
-import uet.jcia.entities.MTORelationshipNode;
-import uet.jcia.entities.OTMRelationshipNode;
-import uet.jcia.entities.PrimaryKeyNode;
-import uet.jcia.entities.Relationship;
-import uet.jcia.entities.Table;
-import uet.jcia.entities.TableNode;
-import uet.jcia.entities.TreeNode;
-import uet.jcia.utils.Mappers;
+import uet.jcia.data.node.ColumnNode;
+import uet.jcia.data.node.CompositePkNode;
+import uet.jcia.data.node.MTORelationshipNode;
+import uet.jcia.data.node.OTMRelationshipNode;
+import uet.jcia.data.node.PrimaryKeyNode;
+import uet.jcia.data.node.TableNode;
+import uet.jcia.data.node.TreeNode;
+import uet.jcia.utils.SqlTypeMapper;
 
 public class Inverser {
     
@@ -84,12 +82,22 @@ public class Inverser {
         hibernateMapping.appendChild(clazz);
         
         for (TreeNode child : tableNode.getChilds()) {
-            if (child instanceof PrimaryKeyNode) {
+            if (child instanceof CompositePkNode) {
+                CompositePkNode compositePkNode = (CompositePkNode) child;
+                Element compositeId = doc.createElement("composite-id");
+                for (ColumnNode columnNode : compositePkNode.getFkList()) {
+                    Element column = doc.createElement("key-property");
+                    column.setAttribute("name", columnNode.getColumnName());
+                    column.setAttribute("column", columnNode.getColumnName());
+                    compositeId.appendChild(column);
+                }
+                clazz.appendChild(compositeId);
+            } else if (child instanceof PrimaryKeyNode) {
                 PrimaryKeyNode pk = (PrimaryKeyNode) child;
                 Element id = doc.createElement("id");
                 // set attributes for id tag
                 pk.setAttr("name", pk.getJavaName());
-                pk.setAttr("type", Mappers.getSqltoHbm(pk.getDataType()));
+                pk.setAttr("type", SqlTypeMapper.getSqltoHbm(pk.getDataType()));
                 setAttributes(pk, id);
                 
                 clazz.appendChild(id);
@@ -115,7 +123,7 @@ public class Inverser {
                     Element property = doc.createElement("property");
                     // set attributes for property tag
                     field.setAttr("name", field.getJavaName());
-                    field.setAttr("type", Mappers.getSqltoHbm(field.getDataType()));
+                    field.setAttr("type", SqlTypeMapper.getSqltoHbm(field.getDataType()));
                     setAttributes(field, property);
                     
                     clazz.appendChild(property);
