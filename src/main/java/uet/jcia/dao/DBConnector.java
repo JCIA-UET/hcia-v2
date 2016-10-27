@@ -41,6 +41,7 @@ public class DBConnector {
 			p.load(is);
 			
 			JDBC_DRIVER = p.getProperty("dbDriver");
+			System.out.println(JDBC_DRIVER);
 			DB_URL = p.getProperty("dbUrl");
 			USERNAME = p.getProperty("dbUsername");
 			PASSWORD = p.getProperty("dbPassword");
@@ -68,7 +69,8 @@ public class DBConnector {
 	 */
 	public Connection createConnection() {
 		try {
-			Class.forName(JDBC_DRIVER).newInstance();
+			//Class.forName(JDBC_DRIVER).newInstance();
+			Class.forName("com.mysql.jdbc.Driver").newInstance();
 			con = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
 			return con;
 			} catch (ClassNotFoundException e) {

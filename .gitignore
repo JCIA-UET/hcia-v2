@@ -1,3 +1,5 @@
 /target/
 /build/
-src/main/resources/
+/src/main/resources/
+/src/main/java/uet/jcia/dao/DBConnecter.java
+/src/main/java/uet/jcia/utils/Constants.java
