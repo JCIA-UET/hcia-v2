@@ -12,7 +12,7 @@ function Relationshipd3(type , table , column , referTbl, referColumn){
 		       .attr("marker-start", "url(#oneMar)")
 		       .attr("marker-end", "url(#arrowhead)")
 		       .attr("style", "fill:none;stroke-width:2;")
-		       //.attr("stroke-dasharray", "5,5")
+		       .attr("stroke-dasharray", "10,10")
 		       .attr("stroke", "#808080")
 		       .on("mouseover",mouse_over_line)
 		       .on("mouseout",mouse_out_line)
@@ -81,8 +81,6 @@ function Relationshipd3(type , table , column , referTbl, referColumn){
 	
 	this.checkps = function(table, findTable){
 		var data = d3.select("#" + table.toUpperCase()).data()[0];
-		console.log(table);
-		console.log(data);
 		
 		
 		for( var i = 0 ; i < data.bottom.length ; i++){

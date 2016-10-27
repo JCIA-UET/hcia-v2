@@ -16,11 +16,9 @@ $(document).ready(function(){
     /* function : draw
      * details: to draw ERD
      * */
-  	function draw() {
+function draw() {
   	if(RootNode.instance == null)
   		return;
-  	
-	var json = RootNode.instance;
 	var d3Obj = convert(RootNode.instance);
     listRelationship = d3Obj.relationships;
     listTable = d3Obj.tables;
@@ -44,21 +42,23 @@ $(document).ready(function(){
 				    .on("drag",function(d, i) {
 				      d.x += d3.event.dx;
 				      d.y += d3.event.dy;
-				      
+				      d3.select("#use").attr("xlink:href","#"+d.tableName);
 				      d3.select(this).attr("transform",function(d, i) {
 				    	  d3.selectAll('.jifj').each(function(d){
 						   		d.calculateAllRelative();
-						   		
+						   	
 						   	});
-				    	  
+	
 				         var dates = d3.selectAll(".line").each(
 				           function(dataLine) {
 				        	   dataLine.draw(d3.select("#line"+dataLine.table+dataLine.referTbl));
-				        	   console.log(dataLine.checkps('customer','order'));
 				            })
 				          
 				         return "translate(" + [d.x,d.y] + ")";
 				         });
+				     })
+				     .on("dragend",function(d,i){
+				    	 d3.select("#use").attr("xlink:href","#");
 				     });
 	   var zoom = d3.behavior.zoom().scaleExtent([0.2, 3]).on("zoom", zoomed);
 
@@ -76,19 +76,43 @@ $(document).ready(function(){
 		   .attr("markerHeight", 200)
 		   .attr("orient", "auto")
 		   .append("path")
-		   .attr("d", "M3 5  L8 9 , M3 5  L8 1 , M0 1 L0 8")
+		   .attr("d", "M3 5  L8 9 , M3 5  L8 1 , M1 1 L1 9")
 		   .attr("stroke", "grey")
 		   .attr("fill","none");
 		var marker2 =   gFirst.append("defs").append("marker")
 		.attr("id", "oneMar")
 		.attr("refX", -5) /*must be smarter way to calculate shift*/
-		.attr("refY", 4)
+		.attr("refY", 4.5)
 		.attr("markerWidth", 10)
 		.attr("markerHeight", 10)
 		.attr("orient", "auto")
 		.append("path")
-		.attr("d", "M2 1 L2 8 , M0 1 L0 8 ")
+		.attr("d", "M3 1 L3 8 , M1 1 L1 8 ")
 		   .attr("stroke", "grey")
+		   
+		   .attr("fill","none");
+		
+		var marker3 =   gFirst.append("defs").append("marker")
+		   .attr("id", "arrowheadr")
+		   .attr("refX",   8) /*must be smarter way to calculate shift*/
+		   .attr("refY", 5)
+		   .attr("markerWidth", 200)
+		   .attr("markerHeight", 200)
+		   .attr("orient", "auto")
+		   .append("path")
+		   .attr("d", "M3 5  L8 9 , M3 5  L8 1 , M1 1 L1 9")
+		   .attr("stroke", "red")
+		   .attr("fill","none");
+		var marker4 =   gFirst.append("defs").append("marker")
+		.attr("id", "oneMarr")
+		.attr("refX", -5) /*must be smarter way to calculate shift*/
+		.attr("refY", 4.5)
+		.attr("markerWidth", 10)
+		.attr("markerHeight", 10)
+		.attr("orient", "auto")
+		.append("path")
+		.attr("d", "M3 1 L3 8 , M1 1 L1 8 ")
+		   .attr("stroke", "red")
 		   
 		   .attr("fill","none");
 		
@@ -122,6 +146,7 @@ $(document).ready(function(){
 						    	  k++;
 						      }
 						     });
+	   var use = gSecond.append('use').attr('xlink:href',"").attr('id',"use");
 	   d3.selectAll('.jifj').each(function(d){
 	   		d.calculateAllRelative();
 	   	});
@@ -132,9 +157,7 @@ $(document).ready(function(){
 	    .append("polyline")
 	    .each(function(d) {
 	    	d.draw(d3.select(this));
-	    });
-		 
-	   		
+	    });   		
 	  };
 	  
 
@@ -291,7 +314,9 @@ $(document).ready(function(){
 	 * details: to handle event mouse over on the line in ERD
 	 * */
 	function mouse_over_line(d){
-		d3.select(this).attr('stroke',"red");
+		d3.select(this).attr('stroke',"red")
+		.attr("marker-start", "url(#oneMarr)")
+		       .attr("marker-end", "url(#arrowheadr)");
 		d3.select("#"+d.table+d.column).attr("fill","red");
 		d3.select("#"+d.referTbl+d.referColumn).attr("fill","red");
 	}
@@ -301,7 +326,9 @@ $(document).ready(function(){
 	 * details: to handle event mouse out on the line in ERD
 	 * */
 	function mouse_out_line(d){
-		d3.select(this).attr("stroke", "#808080");	
+		d3.select(this).attr("stroke", "#808080")
+		.attr("marker-start", "url(#oneMar)")
+		       .attr("marker-end", "url(#arrowhead)");	
 		d3.select("#"+d.table+d.column).attr("fill","#000");
 		d3.select("#"+d.referTbl+d.referColumn).attr("fill","#000");
 	}

@@ -70,6 +70,7 @@ public class DBConnector {
 	public Connection createConnection() {
 		try {
 			//Class.forName(JDBC_DRIVER).newInstance();
+			//somthing
 			Class.forName("com.mysql.jdbc.Driver").newInstance();
 			con = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
 			return con;
