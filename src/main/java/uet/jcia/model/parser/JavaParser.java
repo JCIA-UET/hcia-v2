@@ -23,7 +23,6 @@ import uet.jcia.data.node.RelationshipNode;
 import uet.jcia.data.node.RootNode;
 import uet.jcia.data.node.TableNode;
 import uet.jcia.data.node.TreeNode;
-import uet.jcia.model.HASTVisitor;
 import uet.jcia.utils.Helper;
 import uet.jcia.utils.JsonHelper;
 
@@ -47,9 +46,9 @@ public class JavaParser implements Parser{
     }
     
     public RootNode parseSingleFile(String path) {
-    	List<String> javaList = new ArrayList<>();
-    	javaList.add(path);
-    	return parse(javaList);
+        List<String> javaList = new ArrayList<>();
+        javaList.add(path);
+        return parse(javaList);
     }
     
     public RootNode parse(List<String> sourcePaths) {
@@ -60,10 +59,10 @@ public class JavaParser implements Parser{
                 char[] source = file2CharArr(sourcePath);
                 TableNode table = parseSource(source);
                 if (table != null) {
-                	table.setJavaPath(sourcePath);
-                	String xmlPath = sourcePath.replace(".java", ".hbm.xml");
-                	table.setXmlPath(xmlPath);
-                	children.add(table);
+                    table.setJavaPath(sourcePath);
+                    String xmlPath = sourcePath.replace(".java", ".hbm.xml");
+                    table.setXmlPath(xmlPath);
+                    children.add(table);
                 }
             }
         } catch (IllegalArgumentException | IOException e) {
@@ -130,33 +129,33 @@ public class JavaParser implements Parser{
     }
     
     public void resolveCompositeId(RootNode root) {
-    	for (TreeNode table : root.getChilds()) {
-    		for (TreeNode child : table.getChilds()) {
-    			if (child instanceof CompositePkNode) {
-    				CompositePkNode cp = (CompositePkNode) child;
-    				List<ColumnNode> tempFks = new ArrayList<>();
-    				for (ColumnNode fk : cp.getFkList()) {
-    					ColumnNode compositeIdColumn = getColumnNodeByName(table, fk.getColumnName());
-    					if (compositeIdColumn != null) {
-    						tempFks.add(compositeIdColumn);
-    					}
-    				}
-    				cp.setFkList(tempFks);
-    			}
-    		}
-    		
-    	}
+        for (TreeNode table : root.getChilds()) {
+            for (TreeNode child : table.getChilds()) {
+                if (child instanceof CompositePkNode) {
+                    CompositePkNode cp = (CompositePkNode) child;
+                    List<ColumnNode> tempFks = new ArrayList<>();
+                    for (ColumnNode fk : cp.getFkList()) {
+                        ColumnNode compositeIdColumn = getColumnNodeByName(table, fk.getColumnName());
+                        if (compositeIdColumn != null) {
+                            compositeIdColumn.setPrimaryKey(true);
+                            tempFks.add(compositeIdColumn);
+                        }
+                    }
+                    cp.setFkList(tempFks);
+                }
+            }
+        }
     }
     
     private ColumnNode getColumnNodeByName(TreeNode table, String columnName) {
-    	for (TreeNode child : table.getChilds())
-    		if (child instanceof ColumnNode) {
-    			ColumnNode column = (ColumnNode) child;
-    			if (column.getColumnName() != null && column.getColumnName().equals(columnName)) {
-    				return column;
-    			}
-    		}
-    	return null;
+        for (TreeNode child : table.getChilds())
+            if (child instanceof ColumnNode) {
+                ColumnNode column = (ColumnNode) child;
+                if (column.getColumnName() != null && column.getColumnName().equals(columnName)) {
+                    return column;
+                }
+            }
+        return null;
     }
     
     private ColumnNode generateFkFromPk(PrimaryKeyNode pk) {

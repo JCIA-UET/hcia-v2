@@ -1,4 +1,4 @@
-package uet.jcia.model;
+package uet.jcia.model.parser;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,10 +36,10 @@ public class HASTVisitor extends ASTVisitor {
     private static final String SQL_OTM = "One-to-Many";
     private static final String SQL_MTO = "Many-to-One";
     private static final String EMBEDDED_ID = "EmbeddedId";
-	private static final Object ATTRIBUTE_OVERRIDES = "AttributeOverrides";
-    
+    private static final Object ATTRIBUTE_OVERRIDES = "AttributeOverrides";
+
     private static long tempId = 0L;
-    
+
     private TableNode table;
     private List<TreeNode> children;
     
@@ -139,38 +139,38 @@ public class HASTVisitor extends ASTVisitor {
     }
 
 	private TreeNode parseEmbeddedId(List modifiers) {
-		for (Object modifier : modifiers) {
-			if (modifier instanceof SingleMemberAnnotation
-					&& ((SingleMemberAnnotation) modifier).getTypeName().toString().equals(ATTRIBUTE_OVERRIDES)) {
-				
-				SingleMemberAnnotation anno = (SingleMemberAnnotation) modifier;
-				if (anno.getValue() instanceof ArrayInitializer) {
-					ArrayInitializer attArr = (ArrayInitializer) anno.getValue();
-					List children = attArr.expressions();
-					CompositePkNode compositePk = new CompositePkNode();
-					for (Object child : children) {
-						if (child instanceof NormalAnnotation) {
-							ColumnNode fk = new ColumnNode();
-							String columnName = "";
-							for (Object p : ((NormalAnnotation) child).values()) {
-								MemberValuePair pair = (MemberValuePair) p;
-								if (pair.getName().toString().equals("name")) {
-									columnName = pair.getValue().toString().replace("\"", "");
-								}
-							}
-							fk.setColumnName(columnName);
-							compositePk.getFkList().add(fk);
-						}
-					}
-					return compositePk;
-				}
-				
-			}
-		}
-		return null;
-	}
+        for (Object modifier : modifiers) {
+            if (modifier instanceof SingleMemberAnnotation
+                    && ((SingleMemberAnnotation) modifier).getTypeName().toString().equals(ATTRIBUTE_OVERRIDES)) {
 
-	private MTORelationshipNode parseMto(List modifiers, Type returnType) {
+                SingleMemberAnnotation anno = (SingleMemberAnnotation) modifier;
+                if (anno.getValue() instanceof ArrayInitializer) {
+                    ArrayInitializer attArr = (ArrayInitializer) anno.getValue();
+                    List children = attArr.expressions();
+                    CompositePkNode compositePk = new CompositePkNode();
+                    for (Object child : children) {
+                        if (child instanceof NormalAnnotation) {
+                            ColumnNode fk = new ColumnNode();
+                            String columnName = "";
+                            for (Object p : ((NormalAnnotation) child).values()) {
+                                MemberValuePair pair = (MemberValuePair) p;
+                                if (pair.getName().toString().equals("name")) {
+                                    columnName = pair.getValue().toString().replace("\"", "");
+                                }
+                            }
+                            fk.setColumnName(columnName);
+                            compositePk.getFkList().add(fk);
+                        }
+                    }
+                    return compositePk;
+                }
+
+            }
+        }
+        return null;
+    }
+
+    private MTORelationshipNode parseMto(List modifiers, Type returnType) {
         MTORelationshipNode mto = new MTORelationshipNode();
         mto.setType(SQL_MTO);
         String referClassName = null;
@@ -226,8 +226,8 @@ public class HASTVisitor extends ASTVisitor {
         otm.setTempId(generateTempId());
         return otm;
     }
-    
-	private ColumnNode parseColumn(List modifiers, Type returnType) {
+
+    private ColumnNode parseColumn(List modifiers, Type returnType) {
         List<MemberValuePair> columnValues = null;
         String columnName = null;
         String javaType = null;
