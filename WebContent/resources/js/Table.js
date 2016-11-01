@@ -1,14 +1,18 @@
-/****************************************
-*********      Table Object     *********
-*****************************************/
-//Constructor
+/**
+ * Object Table chứa thông tin về Table đang được chọn tại tree-view
+ */
 function Table() {};
 
-/** Static property **/
-// Static instance for retrieving data
+// Biến lưu thông tin bảng
 Table.instance = null;
 
-/** Method **/
+/**
+ * Tìm một cột trong bảng
+ * 
+ * @param table			Đối tượng chứa bảng đang được chọn
+ * @param szColumnName 	Tên của cột muốn tìm
+ * @return Cột tìm thấy hoặc null nếu không tìm được
+ */
 Table.findColumnByName = function(table, szColumnName) {
 	for(var i = 0; i < table.childs.length; i++) {
 		if(table.childs[i].json == "column" || table.childs[i].json == "pk") {
@@ -20,19 +24,29 @@ Table.findColumnByName = function(table, szColumnName) {
 	return null;
 }
 
-Table.deleteColumn = function(table, colId, relatedList) {
-	var colIdList = [];
+/**
+ * Xóa một cột khỏi bảng
+ * 
+ * @param tableObj			Đối tượng chứa bảng được chọn
+ * @param iColumnId			Vị trí của cột muốn xóa trong bảng
+ * @param arrRelatedList	Mảng chứa những cột hoặc quan hệ có phụ thuộc cột muốn xóa
+ * 
+ * @return 					Không có giá trị trả về
+ */
+
+Table.deleteColumn = function(tableObj, iColumnId, relatedList) {
+	var arrColumnList = [];
 	for(var i = 0; i < relatedList.length; i++) {
-		colIdList.push(TablesList.instances[parseInt(relatedList[i][0])].childs[parseInt(relatedList[i][1])].tempId);
+		arrColumnList.push(TablesList.instances[parseInt(relatedList[i][0])].childs[parseInt(relatedList[i][1])].tempId);
 	}
 	
-	for(var i = 0; i < colIdList.length; i++) {
-		TablesList.deleteColumnById(colIdList[i].toString());
+	for(var i = 0; i < arrColumnList.length; i++) {
+		TablesList.deleteColumnById(arrColumnList[i].toString());
 	}
 	
-	for(var i = 0; i < table.childs.length; i++) {
-		if(table.childs[i].tempId == colId) {
-			table.childs.splice(i, 1);
+	for(var i = 0; i < tableObj.childs.length; i++) {
+		if(tableObj.childs[i].tempId == iColumnId) {
+			tableObj.childs.splice(i, 1);
 			break;
 		}
 	}
@@ -40,19 +54,28 @@ Table.deleteColumn = function(table, colId, relatedList) {
 	InfoPanel.displayCurrentTable();
 };
 
-Table.deleteRela = function(table, colId, relatedList) {
-	var colIdList = [];
-	for(var i = 0; i < relatedList.length; i++) {
-		colIdList.push(TablesList.instances[parseInt(relatedList[i][0])].childs[parseInt(relatedList[i][1])].tempId);
+/**
+ * Xóa một quan hệ khỏi bảng
+ * 
+ * @param tableObj			Đối tượng chứa bảng được chọn
+ * @param iRelaId			Chỉ số của quan hệ muốn xóa trong bảng
+ * @param arrRelatedList	Mảng chứa những cột hoặc quan hệ có phụ thuộc quan hệ muốn xóa
+ * 
+ * @return 					Không có giá trị trả về
+ */
+Table.deleteRela = function(tableObj, iRelaId, arrRelatedList) {
+	var relaIdList = [];
+	for(var i = 0; i < arrRelatedList.length; i++) {
+		arrRelatedList.push(TablesList.instances[parseInt(arrRelatedList[i][0])].childs[parseInt(arrRelatedList[i][1])].tempId);
 	}
 	
-	for(var i = 0; i < colIdList.length; i++) {
-		TablesList.deleteColumnById(colIdList[i].toString());
+	for(var i = 0; i < relaIdList.length; i++) {
+		TablesList.deleteColumnById(arrRelatedList[i]);
 	}
 	
-	for(var i = 0; i < table.childs.length; i++) {
-		if(table.childs[i].tempId == colId) {
-			table.childs.splice(i, 1);	
+	for(var i = 0; i < tableObj.childs.length; i++) {
+		if(tableObj.childs[i].tempId == iRelaId) {
+			tableObj.childs.splice(i, 1);	
 			break;
 		}
 	}
@@ -60,6 +83,14 @@ Table.deleteRela = function(table, colId, relatedList) {
 	InfoPanel.displayCurrentTable();
 }
 
+/**
+ * Thêm một cột vào bảng
+ * 
+ * @param table			Đối tượng Table cần thêm
+ * @param simpleCol		Đối tượng chứa dạng đơn giản của cột muốn thêm
+ * 
+ * @return 				True nếu tạo thành công. Ngược lại, false nếu có lỗi
+ */
 Table.addColumn = function(table, simpleCol) {
 	var col = new Object();
 	var generatedColTempId = TablesList.findMaximumTempId() + 1;
@@ -161,6 +192,13 @@ Table.addColumn = function(table, simpleCol) {
 	return true;
 };
 
+/**
+ * Copy object
+ * 
+ * @param oldObj		Đối tượng muốn copy
+ * 
+ * @return 				Đối tượng mới
+ */
 function deepCopy(oldObj) {
     var newObj = oldObj;
     if (oldObj && typeof oldObj === 'object') {

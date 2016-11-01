@@ -1,3 +1,7 @@
+/**
+ * Đối tượng chứa danh sách các mối quan hệ
+ * @returns
+ */
 function Relationship() {};
 
 Relationship.mto = {};
@@ -5,6 +9,14 @@ Relationship.mto.instances = [];
 Relationship.otm = {};
 Relationship.otm.instances = [];
 
+
+/**
+ * Tách và lưu thông tin của các Quan Hệ từ TablesList
+ * 
+ * @param No param.
+ * 
+ * @return No return.
+ */
 Relationship.loadAll = function() {
 	if(TablesList.instances == null) {
 		console.log("No data");

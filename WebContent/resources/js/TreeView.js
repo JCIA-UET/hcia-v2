@@ -1,5 +1,15 @@
+/**
+ * Object quản lí tree view của danh sách các bảng
+ */
 function TreeView() {};
 
+/**
+ * Tạo tree
+ * 
+ * @param Không có tham số truyền vào
+ * 
+ * @return Không có giá trị trả về
+ */
 TreeView.createTree = function() {
 	if(TablesList.instances == null) {
 		console.log("Can't create tree: No data");
@@ -48,16 +58,30 @@ TreeView.createTree = function() {
 	$(".nav>li ul").hide();
 }
 
+/**
+ * Tạo lại tree
+ * 
+ * @param Không có tham số truyền vào
+ * 
+ * @return Không có giá trị trả về
+ */
 TreeView.recreateTree = function() {
 	$("#tree-root").empty();
 	TreeView.createTree();
 }
 
-TreeView.expanseElement = function(tableName) {
+/**
+ * Mở table-node
+ * 
+ * @param szTableName Tên của bảng muốn mở
+ * 
+ * @return Không có giá trị trả về
+ */
+TreeView.expanseElement = function(szTableName) {
 	var treeElements = document.getElementsByClassName("tree-toggle");
 	
 	for(var i = 0; i < treeElements.length; i++) {
-		if($(treeElements[i]).text() == tableName) {
+		if($(treeElements[i]).text() == szTableName) {
 			$(treeElements[i]).parent().children("ul").show();
 		}
 	}

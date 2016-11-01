@@ -36,18 +36,6 @@ $(document).ready(function() {
 		$('.transfer-nav').slideToggle("200");
 	});
 	
-	/*// Nav Mouse Over Event
-	$('.navbar').mouseover(function() {
-		console.log("over");
-	});
-	
-	// Nav Mouse Out Event
-	$('.navbar').mouseout(function() {
-		console.log("out");
-		$('.navbar').slideUp("200");
-		$('.toggle-nav').slideDown("200");
-	});*/
-	
 	/** Tree Events **/
 	// Table Click Event
 	$('.hcia-treepanel').on("click", ".tree-toggle", function() {

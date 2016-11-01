@@ -1,7 +1,18 @@
-function TableAction() {
+/**
+ * Object quản lí các action làm thay đổi dữ liệu trong bảng hiện thông tin
+ * của đối tượng Table
+ * 
+ * @returns
+ */
+function TableAction() {}
 
-}
-
+/**
+ * Đặt lại giá trị mặc định cho các trường trong phần Detail
+ * 
+ * @param No param.
+ * 
+ * @return No return.
+ */
 TableAction.resetDetails = function() {
 	// reset column details
 	$("#col-tempid-detail").val("");
@@ -21,6 +32,13 @@ TableAction.resetDetails = function() {
 	$("#rela-rfcol-detail").val("");
 }
 
+/**
+ * Lưu object Table đang hiện
+ * 
+ * @param No param.
+ * 
+ * @return No return.
+ */
 TableAction.save = function() {
 	updateColumn();
 	updateRelationship();
@@ -28,6 +46,13 @@ TableAction.save = function() {
 	InfoPanel.displayCurrentTable();
 }
 
+/**
+ * Thay đổi hiển thị của cột khi chọn vào 1 dòng bất kì ở bảng thông tin
+ * 
+ * @param No param.
+ * 
+ * @return No return.
+ */
 TableAction.setFocus = function(parentElement, chosenElement) {
 	var childrenElement = $(parentElement).children();
 	console.log(childrenElement.length);
@@ -42,6 +67,14 @@ TableAction.setFocus = function(parentElement, chosenElement) {
 	}
 }
 
+/**
+ * Cập nhật những thông tin thay đổi từ phần Detail
+ * trong tab Relation vào đối tượng RelationShip
+ * 
+ * @param No param.
+ * 
+ * @return No return.
+ */
 function updateRelationship() {
 	var relTempId = $("#rela-tempid-detail").val();
 	if (relTempId == "")
@@ -119,6 +152,14 @@ function updateRelationship() {
 	}
 }
 
+/**
+ * Cập nhật những thông tin thay đổi từ phần Detail
+ * trong tab Table vào đối tượng Table đang được chọn
+ * 
+ * @param No param.
+ * 
+ * @return No return.
+ */
 function updateColumn() {
 	var colTempId = $("#col-tempid-detail").val();
 	if (colTempId == "")

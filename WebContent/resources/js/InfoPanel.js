@@ -1,5 +1,15 @@
+/**
+ * Đối tượng quản lý phần hiển thị cho Panel hiện thông tin của đối tượng Table.
+ * Panel có 2 tab: Table và Relation.
+ */
 function InfoPanel() {};
 
+/**
+ * Hiện bảng thông tin của đối tượng Table đang được chọn
+ * 
+ * @param Không có tham số.
+ * @return Không có giá trị trả về.
+ */
 InfoPanel.displayCurrentTable = function() {
 	// Show table and detail area
 	$(".hcia-contentpanel").children("ul").show();
@@ -62,14 +72,39 @@ InfoPanel.displayCurrentTable = function() {
 	}
 };
 
-InfoPanel.deleteColumn = function(table, szColumnId, relatedList) {
-	Table.deleteColumn(table, szColumnId, relatedList);
+/**
+ * Xóa một cột khỏi bảng
+ * 
+ * @param tableObj			Đối tượng chứa bảng được chọn
+ * @param iColumnId			Vị trí của cột muốn xóa trong bảng
+ * @param arrRelatedList	Mảng chứa những cột hoặc quan hệ có phụ thuộc cột muốn xóa
+ * 
+ * @return 					Không có giá trị trả về
+ */
+InfoPanel.deleteColumn = function(table, iColumnId, relatedList) {
+	Table.deleteColumn(table, iColumnId, relatedList);
 };
 
-InfoPanel.deleteRela = function(table, szColumnId, relatedList) {
-	Table.deleteRela(table, szColumnId, relatedList);
+/**
+ * Xóa một quan hệ khỏi bảng
+ * 
+ * @param tableObj			Đối tượng chứa bảng được chọn
+ * @param iRelaId			Chỉ số của quan hệ muốn xóa trong bảng
+ * @param arrRelatedList	Mảng chứa những cột hoặc quan hệ có phụ thuộc quan hệ muốn xóa
+ * 
+ * @return 					Không có giá trị trả về
+ */
+InfoPanel.deleteRela = function(tableObj, iRelaId, arrRelatedList) {
+	Table.deleteRela(tableObj, iRelaId, arrRelatedList);
 }
 
+/**
+ * Hiện thông tin chi tiết về một cột tại phần Detail ở tab Table
+ * 
+ * @param szColName			Tên cột muốn xem thông tin
+ * 
+ * @return 					Không có giá trị trả về
+ */
 InfoPanel.showColDetail = function(szColName) {
 	for(var i = 0; i < Table.instance.childs.length; i++) {
 		var col = Table.instance.childs[i];
@@ -104,14 +139,29 @@ InfoPanel.showColDetail = function(szColName) {
 	}
 };
 
-InfoPanel.addColumn = function(table, simpleCol) {
-	var result = Table.addColumn(table, simpleCol);
+/**
+ * Thêm 1 cột vào bảng
+ * 
+ * @param tableObj			Đối tượng Table muốn thêm cột
+ * @param simpleColObj		Dạng đơn giản của cột muốn thêm
+ * 
+ * @return 					Không có giá trị trả về
+ */
+InfoPanel.addColumn = function(tableObj, simpleColObj) {
+	var result = Table.addColumn(tableObj, simpleCol);
 	if(result == true) $('#addColModal').modal("hide");
 }
 
-InfoPanel.showRelaDetail = function(szColName) {
+/**
+ * Hiện thông tin chi tiết về một Quan Hệ tại phần Detail ở tab Relation
+ * 
+ * @param szRelaName		Tên Quan Hệ muốn xem thông tin
+ * 
+ * @return 					Không có giá trị trả về
+ */
+InfoPanel.showRelaDetail = function(szRelaName) {
 	for(var i = 0; i < Table.instance.childs.length; i++) {
-		if(szColName == Table.instance.childs[i].foreignKey.columnName) {
+		if(szRelaName == Table.instance.childs[i].foreignKey.columnName) {
 			$("#btn-save").text("Update");
 		  
 			var element = Table.instance.childs[i];
@@ -142,6 +192,13 @@ InfoPanel.showRelaDetail = function(szColName) {
 	}
 }
 
+/**
+ * Xóa hết thông tin hiển thị trên panel
+ * 
+ * @param 	Không có tham số
+ * 
+ * @return 	Không có giá trị trả về
+ */
 InfoPanel.clearData = function() {
 	$(".table-info").html("");
 	$(".relationship-info").html("");
